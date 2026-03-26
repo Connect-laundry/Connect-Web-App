@@ -594,6 +594,11 @@ function WhyChooseUs() {
 
 // ─── CTA Banner ─────────────────────────────────────────
 function CTABanner() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <section className="py-24 sm:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -601,21 +606,24 @@ function CTABanner() {
           <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-primary to-primary/80 p-10 sm:p-16 text-center">
             <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/5 blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse" />
             <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white/5 blur-3xl translate-y-1/2 -translate-x-1/2 animate-pulse delay-700" />
-            {/* Animated dots */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {[...Array(20)].map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute w-1 h-1 rounded-full bg-white/10 animate-float"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 5}s`,
-                    animationDuration: `${5 + Math.random() * 5}s`,
-                  }}
-                />
-              ))}
-            </div>
+            
+            {/* Animated dots - Client side only to avoid hydration mismatch */}
+            {mounted && (
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {[...Array(20)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-1 h-1 rounded-full bg-white/10 animate-float"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      animationDelay: `${Math.random() * 5}s`,
+                      animationDuration: `${5 + Math.random() * 5}s`,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="relative z-10 space-y-6 max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-4xl font-bold text-primary-foreground tracking-tight">
