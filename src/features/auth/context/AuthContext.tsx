@@ -3,49 +3,60 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User } from '@/shared/types'
 import { getCurrentUser, logout as logoutUser } from '@/features/auth/api'
-import { getToken, clearTokens } from '@/shared/api/client'
+import { getLaundryProfile } from '@/features/business/api'
 
 interface AuthContextType {
   user: User | null
+  laundry: any | null
   isLoading: boolean
+  isLaundryLoading: boolean
   isAuthenticated: boolean
   login: (user: User) => void
   logout: () => Promise<void>
   hydrate: () => Promise<void>
+  refreshLaundry: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [laundry, setLaundry] = useState<any | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isLaundryLoading, setIsLaundryLoading] = useState(false)
 
   const hydrate = async () => {
     try {
-      const token = getToken()
-      if (!token) {
-        setUser(null)
-        setIsLoading(false)
-        return
-      }
-
+      setIsLoading(true)
+      // Directly fetch user, apiGet wrapper will handle 401 via refresh token route automatically
       const currentUser = await getCurrentUser()
-
-      // Check if user has OWNER role
-      if (currentUser.role !== 'OWNER') {
-        clearTokens()
-        setUser(null)
-        setIsLoading(false)
-        return
+      
+      if (!currentUser || currentUser.role !== 'OWNER') {
+        throw new Error('Unauthorized or not OWNER')
       }
 
       setUser(currentUser)
+      
+      setIsLaundryLoading(true)
+      const laundryProfile = await getLaundryProfile()
+      setLaundry(laundryProfile)
     } catch (error) {
-      console.error('Failed to hydrate auth:', error)
-      clearTokens()
+      console.warn('Silent hydration failure (unauthenticated):', error)
       setUser(null)
+      setLaundry(null)
     } finally {
       setIsLoading(false)
+      setIsLaundryLoading(false)
+    }
+  }
+
+  const refreshLaundry = async () => {
+    setIsLaundryLoading(true)
+    try {
+      const profile = await getLaundryProfile()
+      setLaundry(profile)
+    } finally {
+      setIsLaundryLoading(false)
     }
   }
 
@@ -56,21 +67,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleLogout = async () => {
     try {
       await logoutUser()
-    } catch (error) {
-      console.error('Logout error:', error)
-      clearTokens()
     } finally {
       setUser(null)
+      setLaundry(null)
     }
   }
 
   const value: AuthContextType = {
     user,
+    laundry,
     isLoading,
+    isLaundryLoading,
     isAuthenticated: !!user,
     login: setUser,
     logout: handleLogout,
     hydrate,
+    refreshLaundry,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -4,15 +4,21 @@ import { Laundry, Service, BusinessHours } from '@/shared/types'
 /**
  * Get laundry profile for the current owner
  */
-export async function getLaundryProfile(): Promise<Laundry> {
-  return apiGet<Laundry>('/laundries/laundries/')
+export async function getLaundryProfile(): Promise<Laundry | null> {
+  try {
+    const response = await apiGet<any>('/laundries/dashboard/my-laundry/')
+    // Handle both { data: ... } wrapped and flat responses
+    return response.data || response
+  } catch (error) {
+    return null
+  }
 }
 
 /**
  * Update laundry profile
  */
 export async function updateLaundryProfile(data: Partial<Laundry>): Promise<Laundry> {
-  return apiPatch<Laundry>('/laundries/laundries/', data)
+  return apiPatch<Laundry>('/laundries/dashboard/my-laundry/', data)
 }
 
 /**

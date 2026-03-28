@@ -28,7 +28,8 @@ const registerSchema = z
     password_confirm: z.string(),
     first_name: z.string().min(2, 'First name is required'),
     last_name: z.string().min(2, 'Last name is required'),
-    phone_number: z.string().min(10, 'Valid phone number is required'),
+    phone: z.string().min(10, 'Valid phone number is required'),
+    role: z.enum(['OWNER', 'CUSTOMER']).default('OWNER'),
   })
   .refine((data) => data.password === data.password_confirm, {
     message: "Passwords don't match",
@@ -51,7 +52,8 @@ export function RegisterForm() {
       password_confirm: '',
       first_name: '',
       last_name: '',
-      phone_number: '',
+      phone: '',
+      role: 'OWNER',
     },
   })
 
@@ -63,27 +65,30 @@ export function RegisterForm() {
       const response = await register({
         email: values.email,
         password: values.password,
+        password_confirm: values.password_confirm,
         first_name: values.first_name,
         last_name: values.last_name,
-        phone_number: values.phone_number,
+        phone: values.phone,
+        role: values.role,
       })
 
       // Verify user is an OWNER
-      if (response.user.role !== 'OWNER') {
-        setError('Account created but OWNER role not assigned. Please contact support.')
-        setIsLoading(false)
-        return
+      if (response?.user) {
+        setUser(response.user)
+        router.push('/onboarding/setup')
+      } else {
+        console.error('[connectlaundry.app] Missing user in response:', response)
+        throw new Error('Registration successful, but user data was missing. Please try logging in.')
       }
-
-      setUser(response.user)
-      router.push('/dashboard')
     } catch (err: any) {
-      setError(err.message || 'Failed to register. Please try again.')
+      // Handle structured backend errors if available
+      const errorMessage = err.message || 'Failed to register. Please try again.'
+      setError(errorMessage)
       console.error('[connectlaundry.app] Register error:', err)
     } finally {
       setIsLoading(false)
     }
-  }
+}
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -157,13 +162,13 @@ export function RegisterForm() {
 
             <FormField
               control={form.control}
-              name="phone_number"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="+234 800 000 0000"
+                      placeholder="+233 20 000 0000"
                       type="tel"
                       {...field}
                       disabled={isLoading}

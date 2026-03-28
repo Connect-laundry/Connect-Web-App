@@ -2,8 +2,9 @@
 export interface User {
   id: string
   email: string
-  first_name: string
-  last_name: string
+  fullName: string
+  first_name?: string
+  last_name?: string
   role: 'OWNER' | 'ADMIN' | 'CUSTOMER' | 'DRIVER'
 }
 
@@ -21,9 +22,11 @@ export interface LoginResponse {
 export interface RegisterRequest {
   email: string
   password: string
+  password_confirm: string
   first_name: string
   last_name: string
-  phone_number: string
+  phone: string
+  role: 'OWNER' | 'CUSTOMER'
 }
 
 export interface AuthTokens {
