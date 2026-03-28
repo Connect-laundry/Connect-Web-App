@@ -1,70 +1,27 @@
 import { ApiError } from '@/shared/types'
 
-// External backend API base URL
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://connect-full-backend.onrender.com/api/v1'
+// For client-side requests, hit the internal proxy
+const BASE_URL = '/api/proxy'
 
 /**
- * Get the JWT token from localStorage
- */
-export function getToken(): string | null {
-  if (typeof window === 'undefined') return null
-  return localStorage.getItem('access_token')
-}
-
-/**
- * Set the JWT token in localStorage
- */
-export function setToken(token: string): void {
-  if (typeof window === 'undefined') return
-  localStorage.setItem('access_token', token)
-}
-
-/**
- * Set the refresh token in localStorage
- */
-export function setRefreshToken(token: string): void {
-  if (typeof window === 'undefined') return
-  localStorage.setItem('refresh_token', token)
-}
-
-/**
- * Get the refresh token from localStorage
- */
-export function getRefreshToken(): string | null {
-  if (typeof window === 'undefined') return null
-  return localStorage.getItem('refresh_token')
-}
-
-/**
- * Clear all auth tokens
- */
-export function clearTokens(): void {
-  if (typeof window === 'undefined') return
-  localStorage.removeItem('access_token')
-  localStorage.removeItem('refresh_token')
-}
-
-/**
- * Main API client function with JWT interceptor
+ * Main API client function routing through BFF proxy
  */
 export async function apiClient<T = any>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${BASE_URL}${endpoint}`
-  const token = getToken()
+  // Ensure endpoint starts with slash
+  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+  const url = `${BASE_URL}${normalizedEndpoint}`
 
+  const isFormData = options.body instanceof FormData
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   }
 
-  // Add JWT token to Authorization header
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
+  if (!isFormData && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json'
   }
-
-
 
   let response: Response
   try {
@@ -74,39 +31,27 @@ export async function apiClient<T = any>(
     })
 
   } catch (error: any) {
-    console.error('[connectlaundry.app] Fetch Error:', error.message)
-    throw new Error(`Failed to connect to API: ${error.message}. Please check if the backend is running and CORS is enabled.`)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[connectlaundry.app] API Connectivity Error:', error.message)
+    }
+    throw new Error(`Connection failed. Please check your internet or try again later.`)
   }
 
   // Handle token expiration (401)
   if (response.status === 401) {
-    const refreshToken = getRefreshToken()
-    if (refreshToken) {
-      try {
-        const newToken = await refreshAccessToken(refreshToken)
-        if (newToken) {
-          // Retry the original request with new token
-          headers['Authorization'] = `Bearer ${newToken}`
-          const retryResponse = await fetch(url, {
-            ...options,
-            headers,
-          })
-          return handleResponse<T>(retryResponse)
-        }
-      } catch (error) {
-        // Refresh failed, redirect to login
-        if (typeof window !== 'undefined') {
-          clearTokens()
-          window.location.href = '/auth/login'
-        }
-        throw new Error('Session expired. Please log in again.')
+    // Attempt auto-refresh using the secure HttpOnly refresh token
+    try {
+      const refreshRes = await fetch('/api/auth/refresh', { method: 'POST' })
+      if (refreshRes.ok) {
+        // Retry the original request
+        const retryResponse = await fetch(url, { ...options, headers })
+        return handleResponse<T>(retryResponse)
+      } else {
+        throw new Error('Refresh failed')
       }
-    } else {
-      // No refresh token available, redirect to login
-      if (typeof window !== 'undefined') {
-        clearTokens()
-        window.location.href = '/auth/login'
-      }
+    } catch (refError) {
+      // Don't force redirect here, as it causes loops on auth pages.
+      // The middleware or protected routes will handle redirection if needed.
       throw new Error('Session expired. Please log in again.')
     }
   }
@@ -128,40 +73,35 @@ async function handleResponse<T>(response: Response): Promise<T> {
   }
 
   if (!response.ok) {
-    const error: ApiError = data || {}
-    const message = error.detail || error.error || `HTTP ${response.status}`
-    const apiError = new Error(message) as Error & { status?: number }
+    let message = `HTTP ${response.status}`
+    
+    if (data && typeof data === 'object') {
+      if (data.message && data.message !== 'Validation failed.') {
+        message = data.message
+      } else if (data.error) {
+        message = typeof data.error === 'string' ? data.error : JSON.stringify(data.error)
+      } else if (data.detail) {
+        message = data.detail
+      } else if (data.data) {
+        const firstErrorKey = Object.keys(data.data)[0]
+        if (firstErrorKey && Array.isArray(data.data[firstErrorKey])) {
+          message = `${firstErrorKey}: ${data.data[firstErrorKey][0]}`
+        }
+      } else {
+        const firstErrorKey = Object.keys(data)[0]
+        if (firstErrorKey && Array.isArray(data[firstErrorKey])) {
+          message = `${firstErrorKey}: ${data[firstErrorKey][0]}`
+        }
+      }
+    }
+
+    const apiError = new Error(message) as Error & { status?: number, data?: any }
     apiError.status = response.status
+    apiError.data = data
     throw apiError
   }
 
   return data as T
-}
-
-/**
- * Refresh access token using refresh token
- */
-async function refreshAccessToken(refreshToken: string): Promise<string | null> {
-  try {
-    const response = await fetch(`${BASE_URL}/auth/refresh/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ refresh: refreshToken }),
-    })
-
-    if (response.ok) {
-      const data = await response.json()
-      setToken(data.access)
-      return data.access
-    }
-
-    return null
-  } catch (error) {
-    console.error('Failed to refresh token:', error)
-    return null
-  }
 }
 
 /**
@@ -175,9 +115,10 @@ export async function apiGet<T = any>(endpoint: string): Promise<T> {
  * Type-safe POST request
  */
 export async function apiPost<T = any>(endpoint: string, data?: any): Promise<T> {
+  const isBodyRaw = data instanceof FormData || typeof data === 'string'
   return apiClient<T>(endpoint, {
     method: 'POST',
-    body: data ? JSON.stringify(data) : undefined,
+    body: data ? (isBodyRaw ? data : JSON.stringify(data)) : undefined,
   })
 }
 
@@ -185,9 +126,10 @@ export async function apiPost<T = any>(endpoint: string, data?: any): Promise<T>
  * Type-safe PATCH request
  */
 export async function apiPatch<T = any>(endpoint: string, data?: any): Promise<T> {
+  const isBodyRaw = data instanceof FormData || typeof data === 'string'
   return apiClient<T>(endpoint, {
     method: 'PATCH',
-    body: data ? JSON.stringify(data) : undefined,
+    body: data ? (isBodyRaw ? data : JSON.stringify(data)) : undefined,
   })
 }
 
@@ -195,9 +137,10 @@ export async function apiPatch<T = any>(endpoint: string, data?: any): Promise<T
  * Type-safe PUT request
  */
 export async function apiPut<T = any>(endpoint: string, data?: any): Promise<T> {
+  const isBodyRaw = data instanceof FormData || typeof data === 'string'
   return apiClient<T>(endpoint, {
     method: 'PUT',
-    body: data ? JSON.stringify(data) : undefined,
+    body: data ? (isBodyRaw ? data : JSON.stringify(data)) : undefined,
   })
 }
 

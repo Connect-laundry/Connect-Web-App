@@ -51,15 +51,13 @@ export function LoginForm() {
     try {
       const response = await login(values)
 
-      // Verify user is an OWNER
-      if (response.user.role !== 'OWNER') {
-        setError('Only laundry owners can access this dashboard.')
-        setIsLoading(false)
-        return
+      if (response?.user) {
+        setUser(response.user)
+        // Redirection logic will be handled by the ProtectedRoute/Layout based on profile status
+        router.push('/dashboard')
+      } else {
+        throw new Error('Invalid response from server')
       }
-
-      setUser(response.user)
-      router.push('/dashboard')
     } catch (err: any) {
       setError(err.message || 'Failed to log in. Please check your credentials.')
       console.error('Login error:', err)

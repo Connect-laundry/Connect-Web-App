@@ -1,59 +1,63 @@
-import { apiPost, apiGet, setToken, setRefreshToken, clearTokens } from '@/shared/api/client'
+import { apiPost, apiGet } from '@/shared/api/client'
 import { LoginRequest, LoginResponse, User, RegisterRequest } from '@/shared/types'
 
 /**
- * Login with email and password
+ * Login with email and password via Secure Next.js API
  */
 export async function login(credentials: LoginRequest): Promise<LoginResponse> {
-  const response = await apiPost<any>('/auth/login/', credentials)
+  // Hit internal Next.js auth endpoint, NOT the backend directly
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credentials)
+  })
 
-  // Handle both key formats: access/refresh and accessToken/refreshToken
-  const accessToken = response.access || response.accessToken
-  const refreshToken = response.refresh || response.refreshToken
+  const data = await res.json().catch(() => ({ message: 'Invalid response from server' }))
+  
+  if (!res.ok) {
+    throw new Error(data.message || data.detail || `Login failed (HTTP ${res.status})`)
+  }
 
-  // Store tokens
-  setToken(accessToken)
-  setRefreshToken(refreshToken)
-
-  return { access: accessToken, refresh: refreshToken, user: response.user }
+  // The backend now wraps responses in a { status, message, data } object
+  return data.data || data
 }
 
 /**
- * Register a new owner account
+ * Register a new owner account via Secure Next.js API
  */
 export async function register(data: RegisterRequest): Promise<LoginResponse> {
-  const response = await apiPost<any>('/auth/register/', data)
-
-  // Handle both key formats: access/refresh and accessToken/refreshToken
-  const accessToken = response.access || response.accessToken
-  const refreshToken = response.refresh || response.refreshToken
-
-  // Store tokens
-  setToken(accessToken)
-  setRefreshToken(refreshToken)
-
-  return { access: accessToken, refresh: refreshToken, user: response.user }
+  const result = await apiPost<any>('/auth/register/', {
+    ...data,
+    role: data.role || 'OWNER',
+  })
+  
+  // After successful registration, log them in automatically using the secure route
+  return await login({ email: data.email, password: data.password })
 }
 
 /**
  * Get current user profile
  */
 export async function getCurrentUser(): Promise<User> {
-  const response = await apiGet<any>('/auth/me/')
-  // Backend may wrap user data in a 'user' key or return flat
-  return response.user || response
+  const result = await apiGet<any>('/auth/me/')
+  // Handle the backend's data wrapper
+  const actualData = result.data || result
+  return actualData.user || actualData
 }
 
 /**
- * Logout - clear tokens and call backend if needed
+ * Logout - clears server-side HttpOnly cookies and calls backend
  */
 export async function logout(): Promise<void> {
   try {
-    await apiPost('/auth/logout/')
-  } catch (error) {
-    console.error('Logout failed:', error)
+    // Optional: Call actual backend logout via proxy first
+    await apiPost('/auth/logout/').catch(console.error)
   } finally {
-    clearTokens()
+    // Clear local HttpOnly cookies
+    await fetch('/api/auth/logout', { method: 'POST' })
+    if (typeof window !== 'undefined') {
+      window.location.href = '/auth/login'
+    }
   }
 }
 
