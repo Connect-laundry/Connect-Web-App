@@ -6,7 +6,7 @@ import { DashboardStats, DashboardEarnings, OrderListResponse } from '@/shared/t
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Spinner } from '@/shared/ui/spinner'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
-import { AlertCircle, TrendingUp, Package, CheckCircle, Clock, Search, Bell, Filter, MoreHorizontal, ArrowUpRight, ArrowDownRight, Users, Settings, Store } from 'lucide-react'
+import { AlertCircle, TrendingUp, Package, CheckCircle, Clock, Search, Bell, Filter, MoreHorizontal, ArrowUpRight, Users, Settings, Store } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'

@@ -73,13 +73,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const login = (userData: User) => {
+    setUser(userData)
+    // Trigger laundry fetch immediately after login
+    refreshLaundry()
+  }
+
   const value: AuthContextType = {
     user,
     laundry,
     isLoading,
     isLaundryLoading,
     isAuthenticated: !!user,
-    login: setUser,
+    login,
     logout: handleLogout,
     hydrate,
     refreshLaundry,

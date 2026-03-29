@@ -1,0 +1,14 @@
+# This file defines the CODEOWNERS for the repository.
+# Every Pull Request that touches these files will require an approved review from at least one owner.
+
+# Global owner
+* @PhilipTheBackendDeveloper
+
+# Sensitive files that need careful review
+/src/auth/** @PhilipTheBackendDeveloper
+/src/features/auth/** @PhilipTheBackendDeveloper
+/package.json @PhilipTheBackendDeveloper
+/package-lock.json @PhilipTheBackendDeveloper
+next.config.mjs @PhilipTheBackendDeveloper
+vercel.json @PhilipTheBackendDeveloper
+.github/workflows/** @PhilipTheBackendDeveloper

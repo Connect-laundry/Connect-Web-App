@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useAuth } from '@/features/auth/context/AuthContext'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -383,7 +382,7 @@ function Services() {
             Services Tailored for You
           </h2>
           <p className="text-muted-foreground text-lg">
-            From everyday laundry to specialty garment care, we've got every fabric covered.
+            From everyday laundry to specialty garment care, we&apos;ve got every fabric covered.
           </p>
         </AnimateOnScroll>
 
@@ -554,7 +553,7 @@ function WhyChooseUs() {
             <AnimateOnScroll animation="fade-left">
               <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Why Connect Laundry</p>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-6">
-                We Don't Just Clean Clothes.{' '}
+                We Don&apos;t Just Clean Clothes.{' '}
                 <span className="text-primary">We Care for Them.</span>
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-8">
@@ -596,6 +595,7 @@ function WhyChooseUs() {
 function CTABanner() {
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
   }, [])
 
@@ -615,10 +615,10 @@ function CTABanner() {
                     key={i}
                     className="absolute w-1 h-1 rounded-full bg-white/10 animate-float"
                     style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
-                      animationDelay: `${Math.random() * 5}s`,
-                      animationDuration: `${5 + Math.random() * 5}s`,
+                      left: `${(i * 7) % 100}%`,
+                      top: `${(i * 13) % 100}%`,
+                      animationDelay: `${(i * 0.5) % 5}s`,
+                      animationDuration: `${5 + (i % 5)}s`,
                     }}
                   />
                 ))}
@@ -635,7 +635,7 @@ function CTABanner() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
                 <Button size="lg" variant="secondary" asChild className="h-13 px-8 text-base font-semibold shadow-lg group">
                   <Link href="/auth/register">
-                    Start Today — It's Free
+                    Start Today — It&apos;s Free
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>

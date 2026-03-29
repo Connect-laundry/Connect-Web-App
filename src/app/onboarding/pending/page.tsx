@@ -32,12 +32,12 @@ export default function PendingPage() {
             </div>
             <CardTitle className="text-2xl font-bold">Profile Under Review</CardTitle>
             <CardDescription>
-              We're reviewing your business details. This usually takes less than 24 hours.
+              We&apos;re reviewing your business details. This usually takes less than 24 hours.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="p-4 bg-muted/30 rounded-lg text-sm text-muted-foreground italic">
-              "We've received your application for <strong>{laundry?.name || 'your laundry'}</strong>. You'll receive an email notification once your account is active."
+              &quot;We&apos;ve received your application for <strong>{laundry?.name || 'your laundry'}</strong>. You&apos;ll receive an email notification once your account is active.&quot;
             </div>
             
             <Button 

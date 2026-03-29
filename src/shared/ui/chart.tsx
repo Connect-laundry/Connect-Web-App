@@ -9,7 +9,7 @@ import { cn } from '@/shared/lib/utils'
 const THEMES = { light: '', dark: '.dark' } as const
 
 export type ChartConfig = {
-  [k in string]: {
+  [_k in string]: {
     label?: React.ReactNode
     icon?: React.ComponentType
   } & (
@@ -90,7 +90,7 @@ ${colorConfig
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
     const safeColor = color?.replace(/[;<>]/g, '')
-    return safeColor ? \`  --color-\${key}: \${safeColor};\` : null
+    return safeColor ? `  --color-${key}: ${safeColor};` : null
   })
   .filter(Boolean)
   .join('\n')}

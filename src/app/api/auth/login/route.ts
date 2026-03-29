@@ -21,20 +21,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(data, { status: res.status })
     }
 
-    if (data.access && data.refresh) {
+    // The backend provides tokens either directly or wrapped in a 'data' object
+    const accessToken = data.data?.accessToken || data.access
+    const refreshToken = data.data?.refreshToken || data.refresh
+    const user = data.data?.user || data.user
+
+    if (accessToken && refreshToken) {
       // Set HttpOnly cookies
       const cookieStore = await cookies()
       
-      cookieStore.set('access_token', data.access, {
+      cookieStore.set('access_token', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        // Usually, access tokens expire quickly (e.g., 15m to 1h)
-        maxAge: 60 * 60 * 24, // 1 day as a fallback
+        maxAge: 60 * 60 * 24, // 1 day
       })
 
-      cookieStore.set('refresh_token', data.refresh, {
+      cookieStore.set('refresh_token', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -43,12 +47,12 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Return the user data to the client, but DO NOT return the tokens
-    const clientData = { ...data }
-    delete clientData.access
-    delete clientData.refresh
-
-    return NextResponse.json(clientData)
+    // Return the user data to the client, but DO NOT return the sensitive tokens in JSON body
+    // This forces the frontend to rely on the HttpOnly cookies for security.
+    return NextResponse.json({
+      status: 'success',
+      user: user || null
+    })
   } catch (error: any) {
     return NextResponse.json(
       { error: 'Internal Server Error', message: error.message },

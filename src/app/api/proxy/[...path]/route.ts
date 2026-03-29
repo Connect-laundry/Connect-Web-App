@@ -91,7 +91,7 @@ async function handleProxyRequest(req: NextRequest, params: { path: string[] }) 
           status: response.status,
           headers: responseHeaders,
         })
-      } catch (e) {
+      } catch (_e) {
         // Fallback to text if JSON parsing fails on proxy side
         const text = await response.text()
         return new NextResponse(text, {

@@ -81,8 +81,8 @@ export default function DiagnosticsPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: 'test@example.com',
-          password: 'test',
+          email: '',
+          password: '',
         }),
       })
 
@@ -117,7 +117,7 @@ export default function DiagnosticsPage() {
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              If you're experiencing "Failed to fetch" errors, run these diagnostics to troubleshoot.
+              If you&apos;re experiencing &quot;Failed to fetch&quot; errors, run these diagnostics to troubleshoot.
             </AlertDescription>
           </Alert>
 
