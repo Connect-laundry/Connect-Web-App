@@ -1,4 +1,4 @@
-import { ApiError } from '@/shared/types'
+import { type ApiError as _ApiError } from '@/shared/types'
 
 // For client-side requests, hit the internal proxy
 const BASE_URL = '/api/proxy'
@@ -49,7 +49,7 @@ export async function apiClient<T = any>(
       } else {
         throw new Error('Refresh failed')
       }
-    } catch (refError) {
+    } catch (_refError) {
       // Don't force redirect here, as it causes loops on auth pages.
       // The middleware or protected routes will handle redirection if needed.
       throw new Error('Session expired. Please log in again.')

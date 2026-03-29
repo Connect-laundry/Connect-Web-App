@@ -13,7 +13,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
-      "npm test -- findRelatedTests",
+      "vitest related --run --passWithNoTests",
       "bash -c 'tsc --noEmit'"
     ]
   },

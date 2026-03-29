@@ -31,7 +31,7 @@ export default function Error({
       <div className="space-y-4 max-w-md">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground">Something went wrong</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          We encountered an unexpected error. Don't worry, your laundry is safe! 
+          We encountered an unexpected error. Don&apos;t worry, your laundry is safe! 
           Try refreshing the page or head back to home.
         </p>
         {process.env.NODE_ENV === 'development' && (

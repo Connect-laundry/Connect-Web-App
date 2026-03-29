@@ -1,5 +1,5 @@
 import { apiGet } from '@/shared/api/client'
-import { DashboardStats, DashboardEarnings, Order, OrderListResponse } from '@/shared/types'
+import { DashboardStats, DashboardEarnings, OrderListResponse } from '@/shared/types'
 
 /**
  * Get dashboard statistics

@@ -26,7 +26,7 @@ export async function login(credentials: LoginRequest): Promise<LoginResponse> {
  * Register a new owner account via Secure Next.js API
  */
 export async function register(data: RegisterRequest): Promise<LoginResponse> {
-  const result = await apiPost<any>('/auth/register/', {
+  await apiPost<any>('/auth/register/', {
     ...data,
     role: data.role || 'OWNER',
   })
@@ -68,7 +68,7 @@ export async function hasOwnerRole(): Promise<boolean> {
   try {
     const user = await getCurrentUser()
     return user.role === 'OWNER'
-  } catch (error) {
+  } catch (_error) {
     return false
   }
 }

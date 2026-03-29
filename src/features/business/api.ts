@@ -9,7 +9,7 @@ export async function getLaundryProfile(): Promise<Laundry | null> {
     const response = await apiGet<any>('/laundries/dashboard/my-laundry/')
     // Handle both { data: ... } wrapped and flat responses
     return response.data || response
-  } catch (error) {
+  } catch (_error) {
     return null
   }
 }
@@ -84,7 +84,7 @@ export async function reactivateLaundry(): Promise<Laundry> {
  * Get business operating hours
  */
 export async function getBusinessHours(): Promise<BusinessHours> {
-  const laundry = await getLaundryProfile()
+  const _laundry = await getLaundryProfile()
   // This would need to be added to the Laundry model from the API
   return {}
 }

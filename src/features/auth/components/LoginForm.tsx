@@ -68,7 +68,7 @@ export function LoginForm() {
           } else {
             router.push('/dashboard')
           }
-        } catch (e) {
+        } catch (_e) {
           // If laundry fetch fails, default to dashboard and let ProtectedRoute handle it
           router.push('/dashboard')
         }
@@ -186,7 +186,7 @@ export function LoginForm() {
 
 
         <div className="text-center text-sm text-muted-foreground">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/auth/register" className="text-primary hover:text-primary/80 font-semibold underline-offset-4 hover:underline transition-all">
             Get started
           </Link>

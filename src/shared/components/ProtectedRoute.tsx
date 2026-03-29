@@ -24,12 +24,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         logout()
         router.push('/auth/login?error=unauthorized')
       } else if (isAuthenticated && (!laundry || laundry.status === 'PENDING')) {
-        const path = window.location.pathname
-        const isOnboarding = path.startsWith('/onboarding')
+        const _path = window.location.pathname
         
-        if (!laundry && path !== '/onboarding/setup') {
+        if (!laundry && _path !== '/onboarding/setup') {
           router.push('/onboarding/setup')
-        } else if (laundry?.status === 'PENDING' && path !== '/onboarding/pending') {
+        } else if (laundry?.status === 'PENDING' && _path !== '/onboarding/pending') {
           router.push('/onboarding/pending')
         }
       }
