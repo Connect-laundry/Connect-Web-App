@@ -35,7 +35,7 @@ jobs:
       - name: Build Application
         run: npm run build
         env:
-          NEXT_PUBLIC_API_BASE_URL: https://dummy-api.com
+          NEXT_PUBLIC_API_BASE_URL: https://connect-full-backend.onrender.com/api/v1
           NEXT_PUBLIC_APP_NAME: CI-Test
 
   e2e:
@@ -61,7 +61,7 @@ jobs:
       - name: Run Playwright Tests
         run: npx playwright test
         env:
-          NEXT_PUBLIC_API_BASE_URL: https://dummy-api.com
+          NEXT_PUBLIC_API_BASE_URL: https://connect-full-backend.onrender.com/api/v1
           NEXT_PUBLIC_APP_NAME: CI-E2E
           # Add any other required CI envs here
 
