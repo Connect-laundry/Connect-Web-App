@@ -21,8 +21,8 @@
   --secondary-foreground: oklch(1 0 0);
   
   /* Muted - Soft gray */
-  --muted: oklch(0.92 0 0);
-  --muted-foreground: oklch(0.55 0 0);
+  --muted: oklch(0.92 0 0);              
+  --muted-foreground: oklch(0.55 0 0);  
   
   /* Accent - Teal green for success states */
   --accent: oklch(0.6 0.14 175);

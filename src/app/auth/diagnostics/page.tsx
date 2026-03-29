@@ -81,8 +81,8 @@ export default function DiagnosticsPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: 'test@example.com',
-          password: 'test',
+          email: '',
+          password: '',
         }),
       })
 

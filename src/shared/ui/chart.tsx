@@ -90,7 +90,7 @@ ${colorConfig
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
     const safeColor = color?.replace(/[;<>]/g, '')
-    return safeColor ? \`  --color-\${key}: \${safeColor};\` : null
+    return safeColor ? `  --color-${key}: ${safeColor};` : null
   })
   .filter(Boolean)
   .join('\n')}

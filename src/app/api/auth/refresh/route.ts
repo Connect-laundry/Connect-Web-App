@@ -6,9 +6,9 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://connect-ful
 export async function POST() {
   try {
     const cookieStore = await cookies()
-    const refreshToken = cookieStore.get('refresh_token')?.value
+    const currentRefreshToken = cookieStore.get('refresh_token')?.value
 
-    if (!refreshToken) {
+    if (!currentRefreshToken) {
       return NextResponse.json({ error: 'No refresh token available' }, { status: 401 })
     }
 
@@ -17,20 +17,24 @@ export async function POST() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ refresh: refreshToken }),
+      body: JSON.stringify({ refresh: currentRefreshToken }),
     })
 
-    const data = await res.json()
+    const rawData = await res.json()
+    const data = rawData.data || rawData
 
     if (!res.ok) {
       // Clear invalid tokens
       cookieStore.delete('access_token')
       cookieStore.delete('refresh_token')
-      return NextResponse.json(data, { status: res.status })
+      return NextResponse.json(rawData, { status: res.status })
     }
 
-    if (data.access) {
-      cookieStore.set('access_token', data.access, {
+    const accessToken = data.accessToken || data.access
+    const newRefreshToken = data.refreshToken || data.refresh
+
+    if (accessToken) {
+      cookieStore.set('access_token', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -40,8 +44,8 @@ export async function POST() {
     }
     
     // Some backends rotate refresh tokens as well
-    if (data.refresh) {
-      cookieStore.set('refresh_token', data.refresh, {
+    if (newRefreshToken) {
+      cookieStore.set('refresh_token', newRefreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',

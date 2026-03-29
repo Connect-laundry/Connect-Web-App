@@ -172,16 +172,16 @@ The app communicates with the Connect Laundry backend using SimpleJWT authentica
 - `POST /staff/staff-members/` - Create staff member
 - `PATCH /staff/staff-members/{id}/` - Update staff member
 
-## Authentication Flow
+## Authentication Flow (Secure BFF Pattern)
 
-1. User navigates to `/` and is redirected to login if not authenticated
-2. User enters email and password on login page
-3. Credentials are sent to backend's `POST /auth/login/` endpoint
-4. Upon success, access and refresh tokens are stored in localStorage
-5. Auth context is hydrated with user data on app load
-6. All subsequent API requests include the JWT token in the Authorization header
-7. If token expires (401 response), the refresh token is used to obtain a new access token
-8. If refresh fails, user is redirected to login
+1. User navigates to `/` and is automatically redirected to `/auth/login` by **Server-Side Middleware** if no session exists.
+2. User enters email and password on the login page.
+3. Credentials are sent to an internal Next.js route: `POST /api/auth/login`.
+4. The internal route communicates with the backend and sets two **HttpOnly, Secure, SameSite=Lax** cookies: `access_token` and `refresh_token`.
+5. **No sensitive tokens are stored in the browser (localStorage/sessionStorage)**, eliminating the risk of XSS-based token theft.
+6. All subsequent client-side API requests pass through an internal `/api/proxy` which automatically forwards the secure cookies to the backend.
+7. If a token expires (401), the internal `refreshToken` logic automatically attempts to rotate the session using the secure HttpOnly refresh cookie.
+8. If the session cannot be refreshed, the middleware intercepts the next request and forces a redirect to login.
 
 ## Styling
 

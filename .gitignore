@@ -8,7 +8,8 @@ __v0_jsx-dev-runtime.ts
 .vercel/
 next.user-config.*
 
-# Environment variables
+# Sensitive Secrets
+.sentryclirc
 .env*.local
 
 # Common ignores

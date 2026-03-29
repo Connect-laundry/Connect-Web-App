@@ -52,9 +52,26 @@ export function LoginForm() {
       const response = await login(values)
 
       if (response?.user) {
+        // Use the auth context login which now triggers laundry hydration
         setUser(response.user)
-        // Redirection logic will be handled by the ProtectedRoute/Layout based on profile status
-        router.push('/dashboard')
+        
+        // Give a tiny moment for the laundry state to be initiated, 
+        // OR better yet, fetch it right here to decide the immediate redirect
+        try {
+          const { getLaundryProfile } = await import('@/features/business/api')
+          const laundry = await getLaundryProfile()
+          
+          if (!laundry) {
+            router.push('/onboarding/setup')
+          } else if (laundry.status === 'PENDING') {
+            router.push('/onboarding/pending')
+          } else {
+            router.push('/dashboard')
+          }
+        } catch (e) {
+          // If laundry fetch fails, default to dashboard and let ProtectedRoute handle it
+          router.push('/dashboard')
+        }
       } else {
         throw new Error('Invalid response from server')
       }

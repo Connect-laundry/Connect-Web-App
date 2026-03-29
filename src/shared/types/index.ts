@@ -110,6 +110,7 @@ export interface Laundry {
   delivery_fee: number
   min_order: number
   price_range: '$' | '$$' | '$$$'
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
   owner_id: string
   created_at: string
   updated_at: string

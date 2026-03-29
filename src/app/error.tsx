@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { AlertCircle, RotateCcw, Home } from 'lucide-react'
 import Link from 'next/link'
+import * as Sentry from '@sentry/nextjs'
 import { Button } from '@/shared/ui/button'
 
 export default function Error({
@@ -14,6 +15,7 @@ export default function Error({
 }) {
   useEffect(() => {
     // Log the error to an error reporting service
+    Sentry.captureException(error)
     console.error('Landing Page Error:', error)
   }, [error])
 

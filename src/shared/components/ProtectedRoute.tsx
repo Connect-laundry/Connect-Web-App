@@ -23,11 +23,14 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         console.error('[Security] Unauthorized access attempt by non-OWNER account.')
         logout()
         router.push('/auth/login?error=unauthorized')
-      } else if (isAuthenticated && !laundry) {
-        // SetupGuard: redirect to onboarding if no laundry profile
-        const isAlreadyOnOnboarding = window.location.pathname.startsWith('/onboarding')
-        if (!isAlreadyOnOnboarding) {
+      } else if (isAuthenticated && (!laundry || laundry.status === 'PENDING')) {
+        const path = window.location.pathname
+        const isOnboarding = path.startsWith('/onboarding')
+        
+        if (!laundry && path !== '/onboarding/setup') {
           router.push('/onboarding/setup')
+        } else if (laundry?.status === 'PENDING' && path !== '/onboarding/pending') {
+          router.push('/onboarding/pending')
         }
       }
     }
