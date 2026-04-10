@@ -18,9 +18,17 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     if (!isLoading && !isLaundryLoading) {
       if (!isAuthenticated) {
         router.push('/auth/login')
-      } else if (user && user.role !== 'OWNER') {
-        // Strict enforcement: log out if not an OWNER
-        console.error('[Security] Unauthorized access attempt by non-OWNER account.')
+      } else if (
+        // Case-insensitive check to prevent login failure if backend sends lowercase 'owner'.
+        // Also supports fallback to 'user_type' depending on API schema variations.
+        user && 
+        (() => {
+          const role = (user.role || (user as any).user_type || '').toString().toUpperCase()
+          return role !== 'OWNER' && role !== 'ADMIN'
+        })()
+      ) {
+        // Strict enforcement: log out if not an OWNER or ADMIN
+        console.error('[Security] Unauthorized. User object:', user)
         logout()
         router.push('/auth/login?error=unauthorized')
       } else if (isAuthenticated && (!laundry || laundry.status === 'PENDING')) {
