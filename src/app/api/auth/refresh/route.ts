@@ -24,9 +24,14 @@ export async function POST() {
     const data = rawData.data || rawData
 
     if (!res.ok) {
-      // Clear invalid tokens
-      cookieStore.delete('access_token')
-      cookieStore.delete('refresh_token')
+      // Only a definitive auth rejection means the refresh token is truly dead
+      // (expired, invalid, or already rotated). Transient upstream failures —
+      // Render free-tier cold-start 5xx or timeouts — must NOT clear the session,
+      // otherwise a slow backend silently logs the user out.
+      if (res.status === 401 || res.status === 403) {
+        cookieStore.delete('access_token')
+        cookieStore.delete('refresh_token')
+      }
       return NextResponse.json(rawData, { status: res.status })
     }
 

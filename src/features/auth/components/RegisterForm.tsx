@@ -77,18 +77,32 @@ export function RegisterForm() {
         setUser(response.user)
         router.push('/onboarding/setup')
       } else {
-        console.error('[connectlaundry.app] Missing user in response:', response)
+        console.warn('[register] missing user in response', response)
         throw new Error('Registration successful, but user data was missing. Please try logging in.')
       }
     } catch (err: any) {
-      // Handle structured backend errors if available
-      const errorMessage = err.message || 'Failed to register. Please try again.'
+      // Map common backend uniqueness errors to friendly copy.
+      const fields = err?.data?.data ?? err?.data ?? {}
+      const emailTaken = Array.isArray(fields.email) && /unique/i.test(fields.email[0] ?? '')
+      const phoneTaken = Array.isArray(fields.phone) && /unique/i.test(fields.phone[0] ?? '')
+
+      let errorMessage: string
+      if (emailTaken && phoneTaken) {
+        errorMessage = 'An account with this email and phone number already exists. Try logging in instead.'
+      } else if (emailTaken) {
+        errorMessage = 'An account with this email already exists. Try logging in instead.'
+      } else if (phoneTaken) {
+        errorMessage = 'An account with this phone number already exists. Try logging in instead.'
+      } else {
+        errorMessage = err.message || 'Failed to register. Please try again.'
+      }
+
       setError(errorMessage)
-      console.error('[connectlaundry.app] Register error:', err)
+      console.warn('[register] failed', { status: err?.status, message: err?.message, data: err?.data })
     } finally {
       setIsLoading(false)
     }
-}
+  }
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -217,7 +231,11 @@ export function RegisterForm() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+            >
               {isLoading ? 'Creating account...' : 'Register'}
             </Button>
           </form>

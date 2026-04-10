@@ -21,42 +21,47 @@ const navigationItems = [
     name: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
+    section: 'overview',
   },
   {
     name: 'Orders',
     href: '/orders',
     icon: Package,
+    section: 'overview',
   },
   {
     name: 'Business',
     href: '/business',
     icon: Store,
-  },
-  {
-    name: 'Machines',
-    href: '/machines',
-    icon: WashingMachine,
+    section: 'business',
   },
   {
     name: 'Earnings',
     href: '/earnings',
     icon: TrendingUp,
+    section: 'business',
   },
   {
     name: 'Staff',
     href: '/staff',
     icon: Users,
+    section: 'business',
   },
   {
     name: 'Settings',
     href: '/settings',
     icon: Settings,
+    section: 'system',
   },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const { logout } = useAuth()
+
+  const overviewItems = navigationItems.filter((i) => i.section === 'overview')
+  const businessItems = navigationItems.filter((i) => i.section === 'business')
+  const systemItems = navigationItems.filter((i) => i.section === 'system')
 
   return (
     <aside className="w-64 bg-background border-r border-border h-full flex flex-col z-30 relative">
@@ -84,7 +89,7 @@ export function Sidebar() {
             Overview
           </p>
           <nav className="space-y-1">
-            {navigationItems.slice(0, 2).map((item) => {
+            {overviewItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
 
@@ -112,7 +117,7 @@ export function Sidebar() {
             Business
           </p>
           <nav className="space-y-1">
-            {navigationItems.slice(2, 6).map((item) => {
+            {businessItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname.startsWith(item.href)
 
@@ -137,7 +142,7 @@ export function Sidebar() {
 
         <div className="pt-2">
           <nav className="space-y-1">
-            {navigationItems.slice(6).map((item) => {
+            {systemItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname.startsWith(item.href)
 

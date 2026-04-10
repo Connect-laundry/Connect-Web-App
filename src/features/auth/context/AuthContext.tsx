@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User } from '@/shared/types'
+import { User } from '@/shared/interfaces'
 import { getCurrentUser, logout as logoutUser } from '@/features/auth/api'
 import { getLaundryProfile } from '@/features/business/api'
 
@@ -62,7 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    hydrate()
+    const run = async () => {
+      await hydrate()
+    }
+    run()
   }, [])
 
   const handleLogout = async () => {

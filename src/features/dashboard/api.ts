@@ -1,13 +1,13 @@
 import { apiGet } from '@/shared/api/client'
-import { DashboardStats, DashboardEarnings, OrderListResponse } from '@/shared/types'
+import { unwrap, unwrapPaginated } from '@/shared/api/unwrap'
+import { DashboardStats, DashboardEarnings, OrderListResponse } from '@/shared/interfaces'
 
 /**
  * Get dashboard statistics
  */
 export async function getDashboardStats(): Promise<DashboardStats> {
   const response = await apiGet<any>('/laundries/dashboard/stats/')
-  // Backend wraps data in { status, data } envelope
-  return response.data || response
+  return unwrap<DashboardStats>(response)
 }
 
 /**
@@ -15,8 +15,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
  */
 export async function getDashboardEarnings(): Promise<DashboardEarnings> {
   const response = await apiGet<any>('/laundries/dashboard/earnings/')
-  // Backend wraps data in { status, data } envelope
-  return response.data || response
+  return unwrap<DashboardEarnings>(response)
 }
 
 /**
@@ -38,7 +37,14 @@ export async function getDashboardOrders(params?: {
   const query = queryString.toString()
   const endpoint = `/laundries/dashboard/orders/${query ? '?' + query : ''}`
 
-  return apiGet<OrderListResponse>(endpoint)
+  const response = await apiGet<any>(endpoint)
+  const page = unwrapPaginated<OrderListResponse['results'][number]>(response)
+  return {
+    count: page.count,
+    results: page.results,
+    next: page.next ?? undefined,
+    previous: page.previous ?? undefined,
+  }
 }
 
 /**

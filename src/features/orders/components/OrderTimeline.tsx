@@ -1,4 +1,4 @@
-import { OrderTimeline as OrderTimelineType } from "@/shared/types";
+import { OrderTimeline as OrderTimelineType } from "@/shared/interfaces";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 
 interface OrderTimelineProps {

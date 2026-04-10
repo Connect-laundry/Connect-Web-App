@@ -1,4 +1,4 @@
-import { Order } from "@/shared/types";
+import { Order } from "@/shared/interfaces";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 
 interface OrderCustomerInfoProps {

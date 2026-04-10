@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Service } from '@/shared/types'
+import { Service } from '@/shared/interfaces'
 import { createService, updateService } from '@/features/business/api'
 import {
   Dialog,
@@ -44,24 +44,26 @@ export function ServiceModal({
   })
 
   useEffect(() => {
-    if (service) {
-      setFormData({
-        name: service.name,
-        wash_price: service.wash_price,
-        iron_price: service.iron_price,
-        dry_clean_price: service.dry_clean_price,
-        is_active: service.is_active,
-      })
-    } else {
-      setFormData({
-        name: '',
-        wash_price: 0,
-        iron_price: 0,
-        dry_clean_price: 0,
-        is_active: true,
-      })
-    }
-    setError(null)
+    Promise.resolve().then(() => {
+      if (service) {
+        setFormData({
+          name: service.name,
+          wash_price: service.wash_price,
+          iron_price: service.iron_price,
+          dry_clean_price: service.dry_clean_price,
+          is_active: service.is_active,
+        })
+      } else {
+        setFormData({
+          name: '',
+          wash_price: 0,
+          iron_price: 0,
+          dry_clean_price: 0,
+          is_active: true,
+        })
+      }
+      setError(null)
+    })
   }, [service, open])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,7 +118,7 @@ export function ServiceModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="wash_price">Wash Price (₦)</Label>
+              <Label htmlFor="wash_price">Wash Price (GH₵)</Label>
               <Input
                 id="wash_price"
                 type="number"
@@ -126,7 +128,7 @@ export function ServiceModal({
               />
             </div>
             <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="iron_price">Iron Price (₦)</Label>
+              <Label htmlFor="iron_price">Iron Price (GH₵)</Label>
               <Input
                 id="iron_price"
                 type="number"
@@ -138,7 +140,7 @@ export function ServiceModal({
           </div>
 
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="dry_clean_price">Dry Clean Price (₦)</Label>
+            <Label htmlFor="dry_clean_price">Dry Clean Price (GH₵)</Label>
             <Input
               id="dry_clean_price"
               type="number"

@@ -1,5 +1,5 @@
 import { apiPost, apiGet } from '@/shared/api/client'
-import { LoginRequest, LoginResponse, User, RegisterRequest } from '@/shared/types'
+import { User, LoginRequest, LoginResponse, RegisterRequest } from '@/shared/interfaces'
 
 /**
  * Login with email and password via Secure Next.js API
@@ -23,16 +23,39 @@ export async function login(credentials: LoginRequest): Promise<LoginResponse> {
 }
 
 /**
- * Register a new owner account via Secure Next.js API
+ * Register a new owner account via Secure Next.js API.
+ *
+ * The register endpoint already returns auth tokens, so this is a single
+ * round-trip: the Next route sets the session cookies and returns the user.
+ * (Previously this did register + a second login call, which doubled latency.)
  */
 export async function register(data: RegisterRequest): Promise<LoginResponse> {
-  await apiPost<any>('/auth/register/', {
-    ...data,
-    role: data.role || 'OWNER',
+  const res = await fetch('/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...data, role: data.role || 'OWNER' }),
   })
-  
-  // After successful registration, log them in automatically using the secure route
-  return await login({ email: data.email, password: data.password })
+
+  const body = await res.json().catch(() => ({ message: 'Invalid response from server' }))
+
+  if (!res.ok) {
+    // Surface the backend's field-level error (e.g. duplicate email) when present.
+    const detail = body?.data && typeof body.data === 'object'
+      ? (() => {
+          const key = Object.keys(body.data)[0]
+          const val = key ? body.data[key] : null
+          return Array.isArray(val) ? `${key}: ${val[0]}` : null
+        })()
+      : null
+    const apiError = new Error(
+      detail || body.message || body.detail || `Registration failed (HTTP ${res.status})`
+    ) as Error & { status?: number; data?: any }
+    apiError.status = res.status
+    apiError.data = body
+    throw apiError
+  }
+
+  return body.data || body
 }
 
 /**
@@ -50,8 +73,11 @@ export async function getCurrentUser(): Promise<User> {
  */
 export async function logout(): Promise<void> {
   try {
-    // Optional: Call actual backend logout via proxy first
-    await apiPost('/auth/logout/').catch(console.error)
+    // Optional: Call actual backend logout via proxy first.
+    // A failure here is non-fatal (cookies are cleared below regardless), so we
+    // swallow it quietly rather than console.error — which would trip the
+    // Next.js dev error overlay for an expected, harmless case.
+    await apiPost('/auth/logout/').catch(() => {})
   } finally {
     // Clear local HttpOnly cookies
     await fetch('/api/auth/logout', { method: 'POST' })

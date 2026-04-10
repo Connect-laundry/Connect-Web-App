@@ -1,9 +1,9 @@
 /**
- * Format currency to Nigerian Naira
+ * Format currency to Ghana Cedis
  */
 export function formatCurrency(value: number | undefined | null): string {
   const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
-  return `₦${safeValue.toLocaleString('en-NG', {
+  return `GH₵${safeValue.toLocaleString('en-GH', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })}`
@@ -36,12 +36,13 @@ export function formatDateTime(date: string | Date): string {
 }
 
 /**
- * Format phone number
+ * Format phone number (Ghana)
  */
 export function formatPhoneNumber(phone: string): string {
   const cleaned = phone.replace(/\D/g, '')
   if (cleaned.length === 10) {
-    return `+234${cleaned}`
+    // Local 10-digit number (e.g. 0555123456) → E.164 Ghana format
+    return `+233${cleaned.replace(/^0/, '')}`
   }
   return phone
 }

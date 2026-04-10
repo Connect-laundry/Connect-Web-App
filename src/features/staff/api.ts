@@ -1,81 +1,57 @@
-import { apiGet, apiPost, apiPatch } from '@/shared/api/client'
-import { StaffMember } from '@/shared/types'
-
 /**
- * Get all staff members
+ * Staff management is not implemented on the backend yet.
+ * Delivery assignments live under /logistics/assignments/ — use logistics/api.ts instead.
  */
-export async function getStaffMembers(): Promise<StaffMember[]> {
-  const response = await apiGet<{ results: StaffMember[] }>('/staff/staff-members/')
-  return response.results || []
+import {
+  createDeliveryAssignment,
+  deleteDeliveryAssignment,
+  getDeliveryAssignments,
+  updateDeliveryAssignment,
+} from '@/features/logistics/api'
+
+export {
+  createDeliveryAssignment,
+  deleteDeliveryAssignment,
+  getDeliveryAssignments,
+  updateDeliveryAssignment,
 }
 
-/**
- * Get a single staff member
- */
-export async function getStaffMemberById(staffId: string): Promise<StaffMember> {
-  return apiGet<StaffMember>(`/staff/staff-members/${staffId}/`)
+const STAFF_UNAVAILABLE =
+  'Staff member endpoints (/staff/staff-members/) are not implemented on the backend yet.'
+
+export async function getStaffMembers(): Promise<never[]> {
+  console.warn(STAFF_UNAVAILABLE)
+  return []
 }
 
-/**
- * Create a new staff member (invite)
- */
-export async function createStaffMember(data: {
-  email: string
-  first_name: string
-  last_name: string
-  role: 'LaundryStaff' | 'Driver'
-  phone_number?: string
-}): Promise<StaffMember> {
-  return apiPost<StaffMember>('/staff/staff-members/', data)
+export async function getStaffMemberById(_staffId: string): Promise<never> {
+  throw new Error(STAFF_UNAVAILABLE)
 }
 
-/**
- * Update staff member details
- */
-export async function updateStaffMember(
-  staffId: string,
-  data: Partial<StaffMember>
-): Promise<StaffMember> {
-  return apiPatch<StaffMember>(`/staff/staff-members/${staffId}/`, data)
+export async function createStaffMember(_data: unknown): Promise<never> {
+  throw new Error(STAFF_UNAVAILABLE)
 }
 
-/**
- * Update staff role
- */
-export async function updateStaffRole(
-  staffId: string,
-  role: 'LaundryStaff' | 'Driver'
-): Promise<StaffMember> {
-  return updateStaffMember(staffId, { role })
+export async function updateStaffMember(_staffId: string, _data: unknown): Promise<never> {
+  throw new Error(STAFF_UNAVAILABLE)
 }
 
-/**
- * Deactivate staff member
- */
-export async function deactivateStaffMember(staffId: string): Promise<StaffMember> {
-  return updateStaffMember(staffId, { is_active: false })
+export async function updateStaffRole(_staffId: string, _role: string): Promise<never> {
+  throw new Error(STAFF_UNAVAILABLE)
 }
 
-/**
- * Get staff member current status
- */
-export async function getStaffStatus(staffId: string): Promise<string> {
-  const staff = await getStaffMemberById(staffId)
-  return staff.current_status || 'Idle'
+export async function deactivateStaffMember(_staffId: string): Promise<never> {
+  throw new Error(STAFF_UNAVAILABLE)
 }
 
-/**
- * Assign order to driver
- */
+export async function getStaffStatus(_staffId: string): Promise<string> {
+  return 'Unavailable'
+}
+
 export async function assignOrderToDriver(orderId: string, driverId: string): Promise<void> {
-  await apiPost(`/booking/orders/${orderId}/assign-driver/`, {
-    driver_id: driverId,
-  })
+  await createDeliveryAssignment({ order: orderId, driver: driverId })
 }
 
-/**
- * Get staff assigned orders
- */
-export async function getStaffAssignedOrders(staffId: string) {
-  return apiGet(`/staff/staff-members/${staffId}/orders/`)
+export async function getStaffAssignedOrders(_staffId: string) {
+  return getDeliveryAssignments()
 }

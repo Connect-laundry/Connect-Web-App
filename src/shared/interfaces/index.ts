@@ -1,4 +1,4 @@
-// Auth Types
+// Auth Interfaces
 export interface User {
   id: string;
   email: string;
@@ -34,7 +34,7 @@ export interface AuthTokens {
   refresh: string;
 }
 
-// Dashboard Types
+// Dashboard Interfaces
 export interface DashboardStats {
   pending_count: number;
   confirmed_count: number;
@@ -50,7 +50,7 @@ export interface DashboardEarnings {
   total_revenue: number;
 }
 
-// Order Types
+// Order Types & Interfaces
 export type OrderStatus =
   | "PENDING"
   | "CONFIRMED"
@@ -74,12 +74,22 @@ export interface OrderTimeline {
   created_at: string;
 }
 
+export interface OrderItem {
+  id: string;
+  item_name: string;
+  quantity: number;
+  unit_price: number;
+  service: string;
+}
+
 export interface Order {
   id: string;
   order_no: string;
   customer_name: string;
   customer_phone?: string;
   customer_address?: string;
+  pickup_address?: string;
+  delivery_address?: string;
   status: OrderStatus;
   status_display: string;
   total_amount: number;
@@ -90,20 +100,12 @@ export interface Order {
   special_instructions?: string;
   assigned_staff?: string;
   notes?: string;
-  actual_weight?: number; // actual weight of the order (entered by laundry owner)
-  estimated_weight?: number; // provided by customer at the start of the order
-  order_timeline?: OrderTimeline[]; // hisotory of all status changes
-  rejection_reason?: string; // why order was rejected (if applicable)
+  actual_weight?: number;
+  estimated_weight?: number;
+  order_timeline?: OrderTimeline[];
+  rejection_reason?: string;
   created_at: string;
   updated_at: string;
-}
-
-export interface OrderItem {
-  id: string;
-  item_name: string;
-  quantity: number;
-  unit_price: number;
-  service: string;
 }
 
 export interface OrderListResponse {
@@ -113,23 +115,71 @@ export interface OrderListResponse {
   results: Order[];
 }
 
-// Business Types
+// Business Interfaces
+export interface OperatingHour {
+  id?: string;
+  day: number;
+  opening_time: string | null;
+  closing_time: string | null;
+  is_closed: boolean;
+  is_overnight: boolean;
+}
+
 export interface Laundry {
   id: string;
   name: string;
   description: string;
   phone_number: string;
   address: string;
-  image?: string;
-  cover_photo?: string;
+  city: string;
+  latitude: string | number;
+  longitude: string | number;
+  image?: string | null;
+  imageUrl?: string | null;
+  cover_photo?: string | null;
   is_active: boolean;
-  delivery_fee: number;
-  min_order: number;
+  vacation_mode: boolean;
+  pricing_model: "BY_ITEM" | "BY_WEIGHT" | "HYBRID";
+  delivery_fee: number | string;
+  pickup_fee: number | string;
+  min_order: number | string;
+  service_radius_km: number | string;
   price_range: "$" | "$$" | "$$$";
-  status: "PENDING" | "APPROVED" | "REJECTED";
-  owner_id: string;
+  estimated_delivery_hours: number;
+  express_available?: boolean;
+  express_delivery_hours?: number | null;
+  express_surcharge_percent?: number | string | null;
+  is_eco_friendly: boolean;
+  ironing_available: boolean;
+  operating_hours?: OperatingHour[];
+  status: "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+  owner_id?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface PricingItem {
+  id: string;
+  item_name: string;
+  category: string;
+  image?: string | null;
+  imageUrl?: string | null;
+  unit_price: string;
+  is_active: boolean;
+  display_order: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface WeightPricing {
+  id: string;
+  base_price_per_kg: string;
+  minimum_charge: string;
+  minimum_order_weight_kg: string | null;
+  rounding_strategy: "NONE" | "UP_0_5_KG" | "UP_1_KG";
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface BusinessSettings {
@@ -143,7 +193,7 @@ export interface BusinessSettings {
   is_active: boolean;
 }
 
-// Service Types
+// Service Interfaces
 export interface Service {
   id: string;
   name: string;
@@ -153,7 +203,7 @@ export interface Service {
   is_active: boolean;
 }
 
-// Staff Types
+// Staff Interfaces
 export type StaffRole = "LaundryStaff" | "Driver";
 
 export interface StaffMember {
@@ -168,7 +218,7 @@ export interface StaffMember {
   assigned_orders?: string[];
 }
 
-// Earnings Types
+// Earnings Interfaces
 export interface Transaction {
   id: string;
   order_id: string;
@@ -187,7 +237,7 @@ export interface EarningsResponse {
   transactions?: Transaction[];
 }
 
-// Hours Types
+// Hours Interfaces
 export interface BusinessHours {
   [day: string]: {
     open: string | null;
@@ -196,20 +246,20 @@ export interface BusinessHours {
   };
 }
 
-// Machine Types
+// Machine Interfaces
 export interface Machine {
   id: string;
   name: string;
   machine_type: MachineType;
-  typeDisplay: string; // human readable type ("Washinh")
+  typeDisplay: string;
   status: MachineStatus;
-  statusDisplay: string; // human readable status ("Idle")
-  notes?: string; // any note about the machine
+  statusDisplay: string;
+  notes?: string;
   created_at: string;
   updated_at: string;
 }
 
-// API Response wrapper
+// API Interfaces
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -217,7 +267,6 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-// API Error response
 export interface ApiError {
   detail?: string;
   error?: string;

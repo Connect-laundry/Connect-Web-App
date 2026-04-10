@@ -1,55 +1,91 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
-import { Button } from '@/shared/ui/button'
-import { Plus } from 'lucide-react'
+import { Alert, AlertDescription } from '@/shared/ui/alert'
+import { AlertCircle } from 'lucide-react'
+import { useStaffManagement } from '@/features/staff/hooks/useStaffManagement'
+import { StaffHeader } from '@/features/staff/components/StaffHeader'
+import { StaffStatsCard } from '@/features/staff/components/StaffStatsCard'
+import { StaffGuidanceBanner } from '@/features/staff/components/StaffGuidanceBanner'
+import { StaffTable } from '@/features/staff/components/StaffTable'
+import { StaffModal } from '@/features/staff/components/StaffModal'
 
 export default function StaffPage() {
+  const {
+    filteredAssignments,
+    orders,
+    loading,
+    error,
+    searchQuery,
+    setSearchQuery,
+    fetchData,
+    isModalOpen,
+    setIsModalOpen,
+    selectedOrderId,
+    setSelectedOrderId,
+    driverId,
+    setDriverId,
+    assignmentType,
+    setAssignmentType,
+    isSubmitting,
+    modalError,
+    handleCreateAssignment,
+    handleDeleteAssignment,
+    uniqueDrivers,
+    activeAssignments,
+    completedAssignments,
+  } = useStaffManagement()
+
   return (
-    <div className="p-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Staff Management</h1>
-          <p className="text-muted-foreground mt-1">Manage your team and their assignments</p>
-        </div>
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          Add Staff
-        </Button>
-      </div>
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
+      {/* Header */}
+      <StaffHeader
+        loading={loading}
+        onRefresh={fetchData}
+        onOpenModal={() => setIsModalOpen(true)}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">0</CardTitle>
-            <CardDescription>Total Staff Members</CardDescription>
-          </CardHeader>
-        </Card>
+      {error && (
+        <Alert variant="destructive" className="border-destructive/20 bg-destructive/5">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="font-bold">{error}</AlertDescription>
+        </Alert>
+      )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">0</CardTitle>
-            <CardDescription>Laundry Staff</CardDescription>
-          </CardHeader>
-        </Card>
+      {/* Guidance Banner */}
+      <StaffGuidanceBanner onAssignClick={() => setIsModalOpen(true)} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">0</CardTitle>
-            <CardDescription>Drivers</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
+      {/* Stat Cards */}
+      <StaffStatsCard
+        driverCount={uniqueDrivers.size}
+        activeCount={activeAssignments.length}
+        completedCount={completedAssignments.length}
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Staff List</CardTitle>
-          <CardDescription>Your team members</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Staff management features coming soon...</p>
-        </CardContent>
-      </Card>
+      {/* Assignments Table */}
+      <StaffTable
+        loading={loading}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        assignments={filteredAssignments}
+        onDeleteAssignment={handleDeleteAssignment}
+      />
+
+      {/* Assignment Dialog Modal */}
+      <StaffModal
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        orders={orders}
+        uniqueDrivers={uniqueDrivers}
+        selectedOrderId={selectedOrderId}
+        setSelectedOrderId={setSelectedOrderId}
+        driverId={driverId}
+        setDriverId={setDriverId}
+        assignmentType={assignmentType}
+        setAssignmentType={setAssignmentType}
+        isSubmitting={isSubmitting}
+        modalError={modalError}
+        onSubmit={handleCreateAssignment}
+      />
     </div>
   )
 }

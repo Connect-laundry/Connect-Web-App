@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/features/auth/context/AuthContext'
 import { Spinner } from '@/shared/ui/spinner'
+import { useAuth } from '@/features/auth/context/AuthContext'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -12,7 +12,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter()
   const { isAuthenticated, isLoading, user, laundry, isLaundryLoading } = useAuth()
-  const { logout } = useAuth() 
+  const { logout } = useAuth()
 
   useEffect(() => {
     if (!isLoading && !isLaundryLoading) {
@@ -21,7 +21,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
       } else if (
         // Case-insensitive check to prevent login failure if backend sends lowercase 'owner'.
         // Also supports fallback to 'user_type' depending on API schema variations.
-        user && 
+        user &&
         (() => {
           const role = (user.role || (user as any).user_type || '').toString().toUpperCase()
           return role !== 'OWNER' && role !== 'ADMIN'
@@ -33,7 +33,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         router.push('/auth/login?error=unauthorized')
       } else if (isAuthenticated && (!laundry || laundry.status === 'PENDING')) {
         const _path = window.location.pathname
-        
+
         if (!laundry && _path !== '/onboarding/setup') {
           router.push('/onboarding/setup')
         } else if (laundry?.status === 'PENDING' && _path !== '/onboarding/pending') {
