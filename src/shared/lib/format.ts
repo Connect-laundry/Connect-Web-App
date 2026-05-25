@@ -1,8 +1,9 @@
 /**
  * Format currency to Nigerian Naira
  */
-export function formatCurrency(value: number): string {
-  return `₦${value.toLocaleString('en-NG', {
+export function formatCurrency(value: number | undefined | null): string {
+  const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
+  return `₦${safeValue.toLocaleString('en-NG', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })}`

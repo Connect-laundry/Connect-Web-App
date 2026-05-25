@@ -31,8 +31,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Directly fetch user, apiGet wrapper will handle 401 via refresh token route automatically
       const currentUser = await getCurrentUser()
       
-      if (!currentUser || currentUser.role !== 'OWNER') {
-        throw new Error('Unauthorized or not OWNER')
+      const userRole = (currentUser.role || (currentUser as any).user_type || '').toString().toUpperCase()
+      if (!currentUser || (userRole !== 'OWNER' && userRole !== 'ADMIN')) {
+        throw new Error('Unauthorized or not OWNER/ADMIN')
       }
 
       setUser(currentUser)

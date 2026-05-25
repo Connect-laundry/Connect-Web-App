@@ -33,6 +33,11 @@ const navigationItems = [
     icon: Store,
   },
   {
+    name: 'Machines',
+    href: '/machines',
+    icon: WashingMachine,
+  },
+  {
     name: 'Earnings',
     href: '/earnings',
     icon: TrendingUp,
@@ -107,7 +112,7 @@ export function Sidebar() {
             Business
           </p>
           <nav className="space-y-1">
-            {navigationItems.slice(2, 5).map((item) => {
+            {navigationItems.slice(2, 6).map((item) => {
               const Icon = item.icon
               const isActive = pathname.startsWith(item.href)
 
@@ -132,7 +137,7 @@ export function Sidebar() {
 
         <div className="pt-2">
           <nav className="space-y-1">
-            {navigationItems.slice(5).map((item) => {
+            {navigationItems.slice(6).map((item) => {
               const Icon = item.icon
               const isActive = pathname.startsWith(item.href)
 
