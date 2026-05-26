@@ -14,10 +14,6 @@ export default function MachinesPage() {
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchMachines();
-  }, []);
-
   const fetchMachines = async () => {
     try {
       setIsLoading(true);
@@ -40,6 +36,11 @@ export default function MachinesPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchMachines();
+  }, []);
+
 
   const handleStatusChange = async (id: string, newStatus: MachineStatus) => {
     try {

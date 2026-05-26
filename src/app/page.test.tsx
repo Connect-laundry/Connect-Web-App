@@ -10,9 +10,22 @@ vi.mock('next/navigation', () => ({
   }),
 }))
 
-// Mock next/image to avoid issues in tests
+// Mock next/image — omit Next.js-only props that are invalid on <img>
 vi.mock('next/image', () => ({
-  default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} {...props} />,
+  default: ({
+    src,
+    alt,
+    priority: _priority,
+    unoptimized: _unoptimized,
+    fill: _fill,
+    ...props
+  }: {
+    src: string
+    alt: string
+    priority?: boolean
+    unoptimized?: boolean
+    fill?: boolean
+  }) => <img src={src} alt={alt} {...props} />,
 }))
 
 // Mock Auth Context
@@ -26,9 +39,11 @@ vi.mock('@/features/auth/context/AuthContext', () => ({
 describe('HomePage', () => {
   it('renders the hero section', () => {
     render(<HomePage />)
-    // Check for the hero text
-    expect(screen.getByText(/Fresh, Clean &/i)).toBeInTheDocument()
-    expect(screen.getByText(/Professional Laundry Services/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/We'll take the laundry/i)
+    expect(screen.getByText(/You take the time/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Connect picks up, cleans, and delivers/i),
+    ).toBeInTheDocument()
   })
 
   it('renders the Get Started button', () => {

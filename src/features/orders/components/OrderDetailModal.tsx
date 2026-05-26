@@ -83,12 +83,20 @@ export function OrderDetailModal({
 
   const handleAction = async (action: string) => {
     setIsLoading(true);
-    setWeight("");
     setError(null);
     setSuccessMessage(null);
 
     try {
-      const updatedOrder = await executeOrderAction(order.id, action, weight);
+      const result = await executeOrderAction(order.id, action, weight);
+      const updatedOrder: Order = {
+        ...order,
+        ...result,
+        status: result.status ?? order.status,
+        status_display:
+          result.status_display ??
+          result.status?.replace(/_/g, " ") ??
+          order.status_display,
+      };
       setSuccessMessage(
         `Order ${ACTION_LABELS[action].toLowerCase()} successfully`,
       );
@@ -105,7 +113,7 @@ export function OrderDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-96 overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto surface-card border-0 shadow-[0_24px_60px_-12px_oklch(0.42_0.15_260/0.25)]">
         <DialogHeader>
           <DialogTitle>Order Details</DialogTitle>
           <DialogDescription>Order #{order.order_no}</DialogDescription>

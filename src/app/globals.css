@@ -189,3 +189,65 @@
 .dark .glass-morphism {
   @apply bg-black/40 backdrop-blur-lg border border-white/10 shadow-none;
 }
+
+/* --- v2 polish (revert via UI_BASELINE.md) --- */
+
+.mesh-bg {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 0% -10%, oklch(0.42 0.15 260 / 0.08), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, oklch(0.6 0.14 175 / 0.1), transparent 50%),
+    radial-gradient(ellipse 50% 30% at 50% 100%, oklch(0.55 0.12 190 / 0.06), transparent 45%);
+}
+
+.dark .mesh-bg {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 0% -10%, oklch(0.75 0.12 260 / 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, oklch(0.7 0.13 175 / 0.1), transparent 50%);
+}
+
+.text-gradient-brand {
+  @apply bg-linear-to-br from-foreground via-foreground to-primary/80 bg-clip-text text-transparent;
+}
+
+.surface-card {
+  @apply bg-card/90 backdrop-blur-sm border border-border/60 shadow-[0_1px_2px_oklch(0_0_0/0.04),0_8px_24px_-4px_oklch(0.42_0.15_260/0.08)] rounded-2xl;
+}
+
+.dark .surface-card {
+  @apply bg-card/80 shadow-[0_1px_2px_oklch(0_0_0/0.2),0_8px_24px_-4px_oklch(0_0_0/0.4)];
+}
+
+.shadow-glow-sm {
+  box-shadow: 0 4px 14px -2px oklch(0.42 0.15 260 / 0.25);
+}
+
+.sidebar-glass {
+  @apply bg-sidebar/95 backdrop-blur-xl border-r border-sidebar-border/80;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/30;
+}
+
+/* Marketing / landing (Connect blue + teal only) */
+.landing-mesh {
+  background-image:
+    radial-gradient(ellipse 70% 50% at 10% 0%, oklch(0.42 0.15 260 / 0.07), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 90% 10%, oklch(0.6 0.14 175 / 0.08), transparent 50%);
+}
+
+.landing-cta-panel {
+  background: linear-gradient(
+    135deg,
+    oklch(0.42 0.15 260) 0%,
+    oklch(0.38 0.14 255) 50%,
+    oklch(0.45 0.13 200) 100%
+  );
+}

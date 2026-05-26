@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -31,10 +31,23 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { login: setUser } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [resetSuccess, setResetSuccess] = useState(false)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  useEffect(() => {
+    if (searchParams.get('reset') === 'success') {
+      setResetSuccess(true)
+    }
+    if (searchParams.get('session') === 'expired') {
+      setSessionExpired(true)
+      router.replace('/auth/login')
+    }
+  }, [searchParams, router])
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -61,10 +74,11 @@ export function LoginForm() {
           const { getLaundryProfile } = await import('@/features/business/api')
           const laundry = await getLaundryProfile()
           
-          if (!laundry) {
+          const { hasPendingOnboardingApplication } = await import(
+            '@/features/onboarding/lib/storage'
+          )
+          if (!laundry && !hasPendingOnboardingApplication()) {
             router.push('/onboarding/setup')
-          } else if (laundry.status === 'PENDING') {
-            router.push('/onboarding/pending')
           } else {
             router.push('/dashboard')
           }
@@ -84,7 +98,7 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] bg-background/60 backdrop-blur-xl">
+    <Card className="w-full surface-card border-0 shadow-[0_20px_50px_-12px_oklch(0.42_0.15_260/0.2)]">
       <CardHeader className="space-y-1 pb-6">
         <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
         <CardDescription className="text-muted-foreground/80">
@@ -94,6 +108,20 @@ export function LoginForm() {
       <CardContent className="grid gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {resetSuccess && (
+              <Alert className="border-green-200 bg-green-50">
+                <AlertDescription className="text-green-800">
+                  Password updated. You can sign in now.
+                </AlertDescription>
+              </Alert>
+            )}
+            {sessionExpired && (
+              <Alert className="border-amber-200 bg-amber-50">
+                <AlertDescription className="text-amber-900">
+                  Your session expired. Please sign in again.
+                </AlertDescription>
+              </Alert>
+            )}
             {error && (
               <Alert variant="destructive" className="animate-in fade-in zoom-in-95 duration-300">
                 <AlertDescription>{error}</AlertDescription>
