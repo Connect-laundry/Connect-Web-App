@@ -23,15 +23,23 @@ export function useApi<T>(
     error: null,
   })
 
-  const refetch = useCallback(async () => {
-    // Only set loading if not already loading to avoid sync setState warning in useEffect
-    setState((prev) => (prev.isLoading ? prev : { ...prev, isLoading: true }))
+  const refetch = useCallback(async (silent = false) => {
+    setState((prev) => {
+      // Background poll: keep showing existing data, no full-page spinner
+      if (silent && prev.data !== null) return prev
+      if (prev.isLoading) return prev
+      return { ...prev, isLoading: true }
+    })
     try {
       const data = await fetchFn()
       setState({ data, isLoading: false, error: null })
     } catch (err) {
       const errorObj = err instanceof Error ? err : new Error(String(err))
-      setState({ data: null, isLoading: false, error: errorObj })
+      setState((prev) => ({
+        data: silent ? prev.data : null,
+        isLoading: false,
+        error: errorObj,
+      }))
       options?.onError?.(errorObj)
     }
   }, [fetchFn, options])
@@ -49,7 +57,7 @@ export function useApi<T>(
     // Set up refetch interval if specified
     let interval: NodeJS.Timeout | null = null
     if (options?.refetchInterval) {
-      interval = setInterval(refetch, options.refetchInterval)
+      interval = setInterval(() => void refetch(true), options.refetchInterval)
     }
 
     return () => {

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/features/auth/context/AuthContext'
+import { AppToaster } from '@/shared/components/AppToaster'
 import './globals.css'
 
 export const viewport: Viewport = {
@@ -40,7 +41,10 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <AppToaster />
+        </AuthProvider>
         <Analytics />
       </body>
     </html>

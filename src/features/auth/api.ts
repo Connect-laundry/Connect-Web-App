@@ -1,24 +1,22 @@
-import { apiPost, apiGet } from '@/shared/api/client'
+import { apiPost, apiGet, apiPatch } from '@/shared/api/client'
 import { LoginRequest, LoginResponse, User, RegisterRequest } from '@/shared/types'
 
 /**
  * Login with email and password via Secure Next.js API
  */
 export async function login(credentials: LoginRequest): Promise<LoginResponse> {
-  // Hit internal Next.js auth endpoint, NOT the backend directly
   const res = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(credentials)
+    body: JSON.stringify(credentials),
   })
 
   const data = await res.json().catch(() => ({ message: 'Invalid response from server' }))
-  
+
   if (!res.ok) {
     throw new Error(data.message || data.detail || `Login failed (HTTP ${res.status})`)
   }
 
-  // The backend now wraps responses in a { status, message, data } object
   return data.data || data
 }
 
@@ -30,45 +28,66 @@ export async function register(data: RegisterRequest): Promise<LoginResponse> {
     ...data,
     role: data.role || 'OWNER',
   })
-  
-  // After successful registration, log them in automatically using the secure route
+
   return await login({ email: data.email, password: data.password })
 }
 
 /**
- * Get current user profile
+ * Get current user profile (silent — no session-expired toast on public pages).
  */
 export async function getCurrentUser(): Promise<User> {
-  const result = await apiGet<any>('/auth/me/')
-  // Handle the backend's data wrapper
+  const result = await apiGet<any>('/auth/me/', { silentAuth: true })
   const actualData = result.data || result
   return actualData.user || actualData
 }
 
-/**
- * Logout - clears server-side HttpOnly cookies and calls backend
- */
-export async function logout(): Promise<void> {
+/** Clear HttpOnly auth cookies via BFF (does not require backend). */
+export async function clearAuthCookies(): Promise<void> {
   try {
-    // Optional: Call actual backend logout via proxy first
-    await apiPost('/auth/logout/').catch(console.error)
-  } finally {
-    // Clear local HttpOnly cookies
     await fetch('/api/auth/logout', { method: 'POST' })
-    if (typeof window !== 'undefined') {
-      window.location.href = '/auth/login'
-    }
+  } catch {
+    // ignore
   }
 }
 
 /**
- * Check if user has OWNER role
+ * Logout — clear cookies first; backend logout is best-effort.
  */
+export async function logout(): Promise<void> {
+  await clearAuthCookies()
+  try {
+    await apiPost('/auth/logout/')
+  } catch {
+    // Tokens may already be invalid
+  }
+}
+
 export async function hasOwnerRole(): Promise<boolean> {
   try {
     const user = await getCurrentUser()
     return user.role === 'OWNER'
-  } catch (_error) {
+  } catch {
     return false
   }
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  await apiPost('/auth/forgot-password/', { email })
+}
+
+export async function resetPassword(
+  token: string,
+  new_password: string,
+): Promise<void> {
+  await apiPost('/auth/reset-password/', { token, new_password })
+}
+
+export async function updateProfile(data: {
+  first_name?: string
+  last_name?: string
+  phone?: string
+}): Promise<User> {
+  const result = await apiPatch<{ user: User } | User>('/auth/me/', data)
+  const actualData = (result as { user?: User }).user ?? result
+  return actualData as User
 }
