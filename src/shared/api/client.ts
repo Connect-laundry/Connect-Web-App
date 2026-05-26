@@ -1,15 +1,30 @@
 import { type ApiError as _ApiError } from '@/shared/types'
+import { notifySessionExpired } from '@/features/auth/lib/session-expired'
+import { refreshAccessToken } from '@/shared/api/token-refresh'
 
 // For client-side requests, hit the internal proxy
 const BASE_URL = '/api/proxy'
+
+export class SessionExpiredError extends Error {
+  constructor(message = 'Session expired. Please log in again.') {
+    super(message)
+    this.name = 'SessionExpiredError'
+  }
+}
+
+export type ApiRequestOptions = RequestInit & {
+  /** No toast/redirect when refresh fails (e.g. hydrate on public pages). */
+  silentAuth?: boolean
+}
 
 /**
  * Main API client function routing through BFF proxy
  */
 export async function apiClient<T = any>(
   endpoint: string,
-  options: RequestInit = {}
+  options: ApiRequestOptions = {},
 ): Promise<T> {
+  const { silentAuth, ...fetchOptions } = options
   // Ensure endpoint starts with slash
   const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
   const url = `${BASE_URL}${normalizedEndpoint}`
@@ -26,7 +41,7 @@ export async function apiClient<T = any>(
   let response: Response
   try {
     response = await fetch(url, {
-      ...options,
+      ...fetchOptions,
       headers,
     })
 
@@ -37,23 +52,18 @@ export async function apiClient<T = any>(
     throw new Error(`Connection failed. Please check your internet or try again later.`)
   }
 
-  // Handle token expiration (401)
   if (response.status === 401) {
-    // Attempt auto-refresh using the secure HttpOnly refresh token
-    try {
-      const refreshRes = await fetch('/api/auth/refresh', { method: 'POST' })
-      if (refreshRes.ok) {
-        // Retry the original request
-        const retryResponse = await fetch(url, { ...options, headers })
-        return handleResponse<T>(retryResponse)
-      } else {
-        throw new Error('Refresh failed')
+    const refreshed = await refreshAccessToken()
+    if (refreshed) {
+      const retryResponse = await fetch(url, { ...fetchOptions, headers })
+      if (retryResponse.status === 401) {
+        if (!silentAuth) notifySessionExpired()
+        throw new SessionExpiredError()
       }
-    } catch (_refError) {
-      // Don't force redirect here, as it causes loops on auth pages.
-      // The middleware or protected routes will handle redirection if needed.
-      throw new Error('Session expired. Please log in again.')
+      return handleResponse<T>(retryResponse)
     }
+    if (!silentAuth) notifySessionExpired()
+    throw new SessionExpiredError()
   }
 
   return handleResponse<T>(response)
@@ -107,8 +117,11 @@ async function handleResponse<T>(response: Response): Promise<T> {
 /**
  * Type-safe GET request
  */
-export async function apiGet<T = any>(endpoint: string): Promise<T> {
-  return apiClient<T>(endpoint, { method: 'GET' })
+export async function apiGet<T = any>(
+  endpoint: string,
+  options?: Pick<ApiRequestOptions, 'silentAuth'>,
+): Promise<T> {
+  return apiClient<T>(endpoint, { method: 'GET', ...options })
 }
 
 /**

@@ -7,9 +7,10 @@ import { Laundry, Service, BusinessHours } from '@/shared/types'
 export async function getLaundryProfile(): Promise<Laundry | null> {
   try {
     const response = await apiGet<any>('/laundries/dashboard/my-laundry/')
-    // Handle both { data: ... } wrapped and flat responses
     return response.data || response
-  } catch (_error) {
+  } catch (error: unknown) {
+    const err = error as Error & { status?: number }
+    if (err.status === 404) return null
     return null
   }
 }

@@ -38,7 +38,18 @@ export async function getDashboardOrders(params?: {
   const query = queryString.toString()
   const endpoint = `/laundries/dashboard/orders/${query ? '?' + query : ''}`
 
-  return apiGet<OrderListResponse>(endpoint)
+  const response = await apiGet<OrderListResponse | { data: OrderListResponse }>(
+    endpoint,
+  )
+
+  if (response && "results" in response && Array.isArray(response.results)) {
+    return response
+  }
+  if (response && "data" in response && response.data?.results) {
+    return response.data
+  }
+
+  return { count: 0, results: [] }
 }
 
 /**

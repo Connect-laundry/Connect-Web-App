@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { getDashboardOrders } from '@/features/dashboard/api'
 import { OrderListResponse, Order } from '@/shared/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
@@ -10,6 +10,10 @@ import { AlertCircle } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { OrderDetailModal } from '@/features/orders/components/OrderDetailModal'
+import { PageShell } from '@/shared/components/layout/PageShell'
+import { PageHeader } from '@/shared/components/layout/PageHeader'
+import { getOrderStatusBadgeClass } from '@/shared/lib/order-status'
+import { cn } from '@/shared/lib/utils'
 import {
   Select,
   SelectContent,
@@ -31,6 +35,7 @@ const ORDER_STATUSES = [
 export default function OrdersPage() {
   const [orders, setOrders] = useState<OrderListResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const hasLoadedOnce = useRef(false)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>('')
   const [searchQuery, setSearchQuery] = useState('')
@@ -42,7 +47,7 @@ export default function OrdersPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        setIsLoading(true)
+        if (!hasLoadedOnce.current) setIsLoading(true)
         setError(null)
 
         const offset = (currentPage - 1) * ordersPerPage
@@ -59,49 +64,34 @@ export default function OrdersPage() {
         setError(err.message || 'Failed to load orders')
       } finally {
         setIsLoading(false)
+        hasLoadedOnce.current = true
       }
     }
 
     fetchOrders()
   }, [statusFilter, searchQuery, currentPage])
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      PENDING: 'bg-yellow-100 text-yellow-800',
-      CONFIRMED: 'bg-blue-100 text-blue-800',
-      PICKED_UP: 'bg-purple-100 text-purple-800',
-      IN_PROCESS: 'bg-orange-100 text-orange-800',
-      OUT_FOR_DELIVERY: 'bg-indigo-100 text-indigo-800',
-      DELIVERED: 'bg-green-100 text-green-800',
-      COMPLETED: 'bg-emerald-100 text-emerald-800',
-    }
-    return colors[status] || 'bg-gray-100 text-gray-800'
-  }
-
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Orders</h1>
-        <p className="text-muted-foreground mt-1">Manage all your laundry orders</p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Orders"
+        description="Manage and update every order in your pipeline."
+      />
 
-      {/* Error Alert */}
       {error && (
-        <Alert variant="destructive" className="mb-6">
+        <Alert variant="destructive" className="mb-6 surface-card border-destructive/30">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      {/* Filters */}
-      <Card className="mb-6">
+      <Card className="surface-card border-0 mb-6">
         <CardHeader>
-          <CardTitle className="text-lg">Filters</CardTitle>
+          <CardTitle className="text-lg font-black">Filters</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium">Search Order</label>
+            <label className="text-sm font-semibold text-muted-foreground">Search</label>
             <Input
               placeholder="Order no or customer name..."
               value={searchQuery}
@@ -109,16 +99,16 @@ export default function OrdersPage() {
                 setSearchQuery(e.target.value)
                 setCurrentPage(1)
               }}
-              className="mt-1"
+              className="mt-1.5 h-11 rounded-xl border-border/60 bg-background/80"
             />
           </div>
           <div>
-            <label className="text-sm font-medium">Status</label>
+            <label className="text-sm font-semibold text-muted-foreground">Status</label>
             <Select value={statusFilter || 'ALL'} onValueChange={(value) => {
               setStatusFilter(value === 'ALL' ? '' : value)
               setCurrentPage(1)
             }}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1.5 h-11 rounded-xl">
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -141,54 +131,51 @@ export default function OrdersPage() {
         </div>
       ) : (
         /* Orders Table */
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>All Orders</CardTitle>
-                <CardDescription>Total: {orders?.count || 0} orders</CardDescription>
-              </div>
-            </div>
+        <Card className="surface-card border-0 overflow-hidden py-0 gap-0">
+          <CardHeader className="border-b border-border/40 bg-muted/15 py-5">
+            <CardTitle className="font-black">All orders</CardTitle>
+            <CardDescription>{orders?.count ?? 0} total</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             {orders?.results && orders.results.length > 0 ? (
-              <div className="space-y-2 overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b border-border/40 bg-muted/10">
                     <tr>
-                      <th className="text-left py-3 px-4 font-medium">Order No</th>
-                      <th className="text-left py-3 px-4 font-medium">Customer</th>
-                      <th className="text-left py-3 px-4 font-medium">Status</th>
-                      <th className="text-left py-3 px-4 font-medium">Amount</th>
-                      <th className="text-left py-3 px-4 font-medium">Pickup Date</th>
-                      <th className="text-right py-3 px-4 font-medium">Action</th>
+                      <th className="text-left py-4 px-5 font-bold text-muted-foreground text-xs uppercase tracking-wider">Order</th>
+                      <th className="text-left py-4 px-5 font-bold text-muted-foreground text-xs uppercase tracking-wider">Customer</th>
+                      <th className="text-left py-4 px-5 font-bold text-muted-foreground text-xs uppercase tracking-wider">Status</th>
+                      <th className="text-left py-4 px-5 font-bold text-muted-foreground text-xs uppercase tracking-wider">Amount</th>
+                      <th className="text-left py-4 px-5 font-bold text-muted-foreground text-xs uppercase tracking-wider">Pickup</th>
+                      <th className="text-right py-4 px-5 font-bold text-muted-foreground text-xs uppercase tracking-wider">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {orders.results.map((order: Order) => (
                       <tr
                         key={order.id}
-                        className="border-b hover:bg-muted/50 transition-colors cursor-pointer"
+                        className="border-b border-border/30 hover:bg-primary/[0.04] transition-colors cursor-pointer"
                         onClick={() => {
                           setSelectedOrder(order)
                           setDetailModalOpen(true)
                         }}
                       >
-                        <td className="py-3 px-4 font-medium">{order.order_no}</td>
-                        <td className="py-3 px-4">{order.customer_name}</td>
-                        <td className="py-3 px-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                        <td className="py-4 px-5 font-bold">{order.order_no}</td>
+                        <td className="py-4 px-5">{order.customer_name}</td>
+                        <td className="py-4 px-5">
+                          <span className={cn('px-3 py-1 rounded-full text-[10px] font-bold uppercase', getOrderStatusBadgeClass(order.status))}>
                             {order.status_display}
                           </span>
                         </td>
-                        <td className="py-3 px-4 font-medium">₦{order.total_amount.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-sm text-muted-foreground">
+                        <td className="py-4 px-5 font-black tabular-nums">₦{order.total_amount.toLocaleString()}</td>
+                        <td className="py-4 px-5 text-muted-foreground">
                           {new Date(order.pickup_date).toLocaleDateString()}
                         </td>
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-4 px-5 text-right">
                           <Button
                             variant="outline"
                             size="sm"
+                            className="rounded-lg font-semibold"
                             onClick={(e) => {
                               e.stopPropagation()
                               setSelectedOrder(order)
@@ -252,6 +239,6 @@ export default function OrdersPage() {
           }
         }}
       />
-    </div>
+    </PageShell>
   )
 }
