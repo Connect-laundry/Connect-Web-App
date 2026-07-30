@@ -30,7 +30,7 @@ export default function BusinessPage() {
   } = useBusinessProfile()
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
       <BusinessHeader
         laundry={laundry}
         isTogglingVacation={isTogglingVacation}
@@ -50,7 +50,7 @@ export default function BusinessPage() {
         </div>
       ) : (
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList>
+          <TabsList className="w-full flex overflow-x-auto justify-start sm:justify-center border-b pb-1 custom-scrollbar">
             <TabsTrigger value="profile">Business Profile</TabsTrigger>
             <TabsTrigger value="hours">Operating Hours</TabsTrigger>
             <TabsTrigger value="services">Services &amp; Pricing</TabsTrigger>

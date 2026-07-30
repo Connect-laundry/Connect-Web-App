@@ -62,7 +62,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Settings</h1>
         <p className="text-muted-foreground mt-1">Manage your account and preferences</p>
@@ -75,7 +75,7 @@ export default function SettingsPage() {
       )}
 
       <Tabs defaultValue="account" className="w-full">
-        <TabsList>
+        <TabsList className="w-full flex overflow-x-auto justify-start sm:justify-center border-b pb-1 custom-scrollbar">
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
