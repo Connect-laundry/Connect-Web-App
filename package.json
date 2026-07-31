@@ -57,7 +57,7 @@
     "framer-motion": "^12.38.0",
     "input-otp": "1.4.2",
     "lucide-react": "^0.564.0",
-    "next": "^16.2.6",
+    "next": "^16.2.12",
     "next-themes": "^0.4.6",
     "react": "19.2.4",
     "react-day-picker": "9.13.2",
@@ -65,6 +65,7 @@
     "react-hook-form": "^7.54.1",
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.0",
+    "sharp": "^0.35.3",
     "sonner": "^1.7.1",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
@@ -72,9 +73,10 @@
     "zod": "^3.24.1"
   },
   "overrides": {
-    "brace-expansion": "2.0.1",
-    "postcss": "^8.5.10"
-  },
+  "postcss": "^8.5.10",
+  "sharp": "^0.35.3",
+  "brace-expansion": "^5.0.8"
+},
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@sentry/nextjs": "^10.46.0",
@@ -85,8 +87,8 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "^16.2.1",
+    "eslint": "^10.8.0",
+    "eslint-config-next": "^16.2.12",
     "husky": "^9.1.7",
     "jsdom": "^29.0.1",
     "lint-staged": "^16.4.0",
