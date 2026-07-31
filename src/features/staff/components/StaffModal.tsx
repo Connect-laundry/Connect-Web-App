@@ -28,6 +28,7 @@ interface StaffModalProps {
   setAssignmentType: (type: string) => void
   isSubmitting: boolean
   modalError: string | null
+  isOrderLocked?: boolean
   onSubmit: (e: React.FormEvent) => void
 }
 
@@ -44,6 +45,7 @@ export function StaffModal({
   setAssignmentType,
   isSubmitting,
   modalError,
+  isOrderLocked = false,
   onSubmit,
 }: StaffModalProps) {
   return (
@@ -71,7 +73,8 @@ export function StaffModal({
             <select
               value={selectedOrderId}
               onChange={(e) => setSelectedOrderId(e.target.value)}
-              className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm font-medium focus:ring-2 focus:ring-primary"
+              disabled={isOrderLocked}
+              className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm font-medium focus:ring-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed"
               required
             >
               <option value="">-- Choose active order --</option>

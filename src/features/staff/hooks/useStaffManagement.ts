@@ -1,16 +1,19 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import {
   getDeliveryAssignments,
   createDeliveryAssignment,
   deleteDeliveryAssignment,
   type DeliveryAssignment,
 } from '@/features/logistics/api'
-import { getOrders } from '@/features/orders/api'
+import { getOrders, getOrderById } from '@/features/orders/api'
 import { Order } from '@/shared/interfaces'
 
 export function useStaffManagement() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const [assignments, setAssignments] = useState<DeliveryAssignment[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
@@ -24,6 +27,7 @@ export function useStaffManagement() {
   const [assignmentType, setAssignmentType] = useState('BOTH')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [modalError, setModalError] = useState<string | null>(null)
+  const [isOrderLocked, setIsOrderLocked] = useState(false)
 
   const fetchData = useCallback(async () => {
     try {
@@ -67,6 +71,37 @@ export function useStaffManagement() {
     }
   }, [])
 
+  useEffect(() => {
+    const orderId = searchParams.get('orderId')
+    const shouldOpenAssign = searchParams.get('assign') === '1'
+
+    if (!orderId || !shouldOpenAssign) return
+
+    setSelectedOrderId(orderId)
+    setIsOrderLocked(true)
+    setIsModalOpen(true)
+    router.replace('/staff', { scroll: false })
+
+    getOrderById(orderId)
+      .then((order) => {
+        setOrders((prev) => {
+          if (prev.some((o) => o.id === order.id)) return prev
+          return [order, ...prev]
+        })
+      })
+      .catch(() => {})
+  }, [searchParams, router])
+
+  const handleModalOpenChange = (open: boolean) => {
+    setIsModalOpen(open)
+    if (!open) {
+      setSelectedOrderId('')
+      setDriverId('')
+      setIsOrderLocked(false)
+      setModalError(null)
+    }
+  }
+
   const handleCreateAssignment = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedOrderId || !driverId) {
@@ -85,6 +120,7 @@ export function useStaffManagement() {
       setIsModalOpen(false)
       setSelectedOrderId('')
       setDriverId('')
+      setIsOrderLocked(false)
       fetchData()
     } catch (err: any) {
       setModalError(err.message || 'Failed to create driver assignment. Verify driver UUID/account.')
@@ -140,7 +176,7 @@ export function useStaffManagement() {
     fetchData,
     // Modal & Form State
     isModalOpen,
-    setIsModalOpen,
+    setIsModalOpen: handleModalOpenChange,
     selectedOrderId,
     setSelectedOrderId,
     driverId,
@@ -149,6 +185,7 @@ export function useStaffManagement() {
     setAssignmentType,
     isSubmitting,
     modalError,
+    isOrderLocked,
     handleCreateAssignment,
     handleDeleteAssignment,
     // Derived Stats
