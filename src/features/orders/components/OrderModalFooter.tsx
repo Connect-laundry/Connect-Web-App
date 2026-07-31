@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/shared/ui/button";
 import { Spinner } from "@/shared/ui/spinner";
 import { DialogFooter } from "@/shared/ui/dialog";
@@ -6,19 +7,23 @@ import { ACTION_LABELS } from "../data";
 import { OrderModalFooterProps } from "../interfaces";
 
 
-export function OrderModalFooter({ onClose, availableActions, isLoading, onAction }: OrderModalFooterProps) {
+export function OrderModalFooter({ orderId, onClose, availableActions, isLoading, onAction }: OrderModalFooterProps) {
     return (
         <DialogFooter className="px-6 py-4 border-t border-border/40 bg-muted/20 flex flex-col sm:flex-row gap-2 justify-between items-center">
             <div className="flex gap-2 items-center">
                 <Button variant="outline" onClick={onClose} className="font-semibold text-xs h-10 px-5">
                     Close
                 </Button>
-                <a href="/staff">
-                    <Button variant="secondary" className="font-bold text-xs h-10 gap-1.5 border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10">
+                <Button
+                    asChild
+                    variant="secondary"
+                    className="font-bold text-xs h-10 gap-1.5 border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+                >
+                    <Link href={`/staff?orderId=${orderId}&assign=1`}>
                         <User className="w-3.5 h-3.5" />
                         Assign Driver
-                    </Button>
-                </a>
+                    </Link>
+                </Button>
             </div>
 
             {availableActions.length > 0 && (

@@ -113,6 +113,7 @@ export function OrderDetailModal({
         </div>
 
         <OrderModalFooter
+          orderId={order.id}
           onClose={() => onOpenChange(false)}
           availableActions={availableActions}
           isLoading={isLoading}

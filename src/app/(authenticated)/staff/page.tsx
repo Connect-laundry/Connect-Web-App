@@ -1,6 +1,8 @@
 'use client'
 
+import { Suspense } from 'react'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
+import { Spinner } from '@/shared/ui/spinner'
 import { AlertCircle } from 'lucide-react'
 import { useStaffManagement } from '@/features/staff/hooks/useStaffManagement'
 import { StaffHeader } from '@/features/staff/components/StaffHeader'
@@ -9,7 +11,7 @@ import { StaffGuidanceBanner } from '@/features/staff/components/StaffGuidanceBa
 import { StaffTable } from '@/features/staff/components/StaffTable'
 import { StaffModal } from '@/features/staff/components/StaffModal'
 
-export default function StaffPage() {
+function StaffPageContent() {
   const {
     filteredAssignments,
     orders,
@@ -28,6 +30,7 @@ export default function StaffPage() {
     setAssignmentType,
     isSubmitting,
     modalError,
+    isOrderLocked,
     handleCreateAssignment,
     handleDeleteAssignment,
     uniqueDrivers,
@@ -37,7 +40,6 @@ export default function StaffPage() {
 
   return (
     <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8">
-      {/* Header */}
       <StaffHeader
         loading={loading}
         onRefresh={fetchData}
@@ -51,17 +53,14 @@ export default function StaffPage() {
         </Alert>
       )}
 
-      {/* Guidance Banner */}
-      <StaffGuidanceBanner onAssignClick={() => setIsModalOpen(true)} />
+      <StaffGuidanceBanner />
 
-      {/* Stat Cards */}
       <StaffStatsCard
         driverCount={uniqueDrivers.size}
         activeCount={activeAssignments.length}
         completedCount={completedAssignments.length}
       />
 
-      {/* Assignments Table */}
       <StaffTable
         loading={loading}
         searchQuery={searchQuery}
@@ -70,7 +69,6 @@ export default function StaffPage() {
         onDeleteAssignment={handleDeleteAssignment}
       />
 
-      {/* Assignment Dialog Modal */}
       <StaffModal
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
@@ -84,8 +82,23 @@ export default function StaffPage() {
         setAssignmentType={setAssignmentType}
         isSubmitting={isSubmitting}
         modalError={modalError}
+        isOrderLocked={isOrderLocked}
         onSubmit={handleCreateAssignment}
       />
     </div>
+  )
+}
+
+export default function StaffPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center py-24">
+          <Spinner />
+        </div>
+      }
+    >
+      <StaffPageContent />
+    </Suspense>
   )
 }

@@ -8,6 +8,7 @@ export interface OrderDetailModalProps {
 }
 
 export interface OrderModalFooterProps {
+    orderId: string;
     onClose: () => void;
     availableActions: string[];
     isLoading: boolean;
