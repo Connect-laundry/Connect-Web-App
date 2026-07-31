@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/features/auth/context/AuthContext'
 import { PwaRegister } from '@/shared/components/PwaRegister'
+import { AppToaster } from '@/shared/components/AppToaster'
 import './globals.css'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -55,11 +56,13 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning className={plusJakartaSans.variable}>
       <body className={`${plusJakartaSans.className} font-sans antialiased`}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <AppToaster />
+        </AuthProvider>
         <PwaRegister />
         <Analytics />
       </body>
     </html>
   )
 }
-

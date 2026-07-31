@@ -2,8 +2,15 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Spinner } from '@/shared/ui/spinner'
 import { useAuth } from '@/features/auth/context/AuthContext'
+import { hasPendingOnboardingApplication } from '@/features/onboarding/lib/storage'
+import { Spinner } from '@/shared/ui/spinner'
+
+const ONBOARDING_PATHS = ['/onboarding/setup', '/onboarding/pending']
+
+function isOnboardingPath(path: string) {
+  return ONBOARDING_PATHS.some((p) => path === p || path.startsWith(`${p}/`))
+}
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -11,8 +18,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter()
-  const { isAuthenticated, isLoading, user, laundry, isLaundryLoading } = useAuth()
-  const { logout } = useAuth()
+  const { isAuthenticated, isLoading, user, laundry, isLaundryLoading, logout } = useAuth()
 
   useEffect(() => {
     if (!isLoading && !isLaundryLoading) {
@@ -23,21 +29,27 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         // Also supports fallback to 'user_type' depending on API schema variations.
         user &&
         (() => {
-          const role = (user.role || (user as any).user_type || '').toString().toUpperCase()
+          const role = (user.role || (user as { user_type?: string }).user_type || '')
+            .toString()
+            .toUpperCase()
           return role !== 'OWNER' && role !== 'ADMIN'
         })()
       ) {
-        // Strict enforcement: log out if not an OWNER or ADMIN
         console.error('[Security] Unauthorized. User object:', user)
         logout()
         router.push('/auth/login?error=unauthorized')
-      } else if (isAuthenticated && (!laundry || laundry.status === 'PENDING')) {
-        const _path = window.location.pathname
+      } else if (isAuthenticated) {
+        const path = window.location.pathname
+        const pendingApplication = hasPendingOnboardingApplication()
 
-        if (!laundry && _path !== '/onboarding/setup') {
+        // Only send to setup if they never finished onboarding (no laundry, no local application).
+        // Pending approval does NOT block dashboard — backend may not have my-laundry yet.
+        if (
+          !laundry &&
+          !pendingApplication &&
+          !isOnboardingPath(path)
+        ) {
           router.push('/onboarding/setup')
-        } else if (laundry?.status === 'PENDING' && _path !== '/onboarding/pending') {
-          router.push('/onboarding/pending')
         }
       }
     }

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute'
 import { Sidebar } from '@/shared/components/layout/Sidebar'
 import { Header } from '@/shared/components/layout/Header'
+import { OnboardingStatusBanner } from '@/features/onboarding/components/OnboardingStatusBanner'
 
 export default function AuthenticatedLayout({
   children,
@@ -36,6 +37,9 @@ export default function AuthenticatedLayout({
 
           {/* Scrollable Page Body */}
           <main className="flex-1 overflow-y-auto custom-scrollbar relative">
+            <div className="px-6 md:px-8 lg:px-10 pt-6 max-w-[1400px] mx-auto">
+              <OnboardingStatusBanner />
+            </div>
             {children}
           </main>
         </div>

@@ -4,13 +4,15 @@ import { ProtectedRoute } from '@/shared/components/ProtectedRoute'
 import { Button } from '@/shared/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { useAuth } from '@/features/auth/context/AuthContext'
+import { getOnboardingApplication } from '@/features/onboarding/lib/storage'
 import { useRouter } from 'next/navigation'
 import { Loader2, Clock, RefreshCw } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function PendingPage() {
   const { laundry, refreshLaundry, isLaundryLoading } = useAuth()
   const router = useRouter()
+   const [applicationName] = useState<string | null>(() => getOnboardingApplication()?.name ?? null)
 
   useEffect(() => {
     if (laundry?.status === 'APPROVED') {
@@ -18,48 +20,55 @@ export default function PendingPage() {
     }
   }, [laundry, router])
 
-  const handleRefresh = async () => {
-    await refreshLaundry()
-  }
+  const displayName = laundry?.name || applicationName || 'your laundry'
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen flex items-center justify-center bg-slate-50/50 p-4">
-        <Card className="max-w-md w-full text-center glass-morphism border-white/20">
+      <div className="min-h-screen flex items-center justify-center landing-mesh p-4">
+        <Card className="max-w-md w-full text-center surface-card border-0">
           <CardHeader>
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-              <Clock className="w-10 h-10 text-primary" />
+            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Clock className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl font-bold">Profile Under Review</CardTitle>
-            <CardDescription>
-              We&apos;re reviewing your business details. This usually takes less than 24 hours.
+            <CardTitle className="text-2xl font-black">Application received</CardTitle>
+            <CardDescription className="font-medium">
+              We&apos;re reviewing <strong>{displayName}</strong>. This usually takes less than 24 hours.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="p-4 bg-muted/30 rounded-lg text-sm text-muted-foreground italic">
-              &quot;We&apos;ve received your application for <strong>{laundry?.name || 'your laundry'}</strong>. You&apos;ll receive an email notification once your account is active.&quot;
-            </div>
-            
-            <Button 
-              onClick={handleRefresh} 
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Your application is on file. You can use the dashboard now — some shop settings
+              will unlock once your laundry is linked and approved on the server.
+            </p>
+
+            <Button
+              onClick={() => router.push('/dashboard')}
+              className="w-full rounded-xl font-bold"
+            >
+              Go to dashboard
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => refreshLaundry()}
               disabled={isLaundryLoading}
-              className="w-full"
+              className="w-full rounded-xl font-bold"
             >
               {isLaundryLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Checking Status...
+                  Checking...
                 </>
               ) : (
                 <>
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Refresh Status
+                  Refresh status
                 </>
               )}
             </Button>
 
             <p className="text-xs text-muted-foreground">
-              Questions? Contact our support team at support@connectlaundry.app
+              Questions? support@connectlaundry.app
             </p>
           </CardContent>
         </Card>

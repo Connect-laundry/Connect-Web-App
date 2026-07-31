@@ -14,7 +14,7 @@ import { RecentOrdersCard } from '@/features/dashboard/components/RecentOrdersCa
 
 export default function DashboardPage() {
   const {
-    isLoading,
+    isInitialLoading,
     error,
     recentOrders,
     metrics,
@@ -22,10 +22,10 @@ export default function DashboardPage() {
     modalOpen,
     setModalOpen,
     handleSelectOrder,
-    handleOrderUpdated,
+    updateRecentOrder,
   } = useDashboardData()
 
-  if (isLoading) {
+  if (isInitialLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Spinner className="w-8 h-8 text-primary" />
@@ -85,7 +85,7 @@ export default function DashboardPage() {
         order={selectedOrder}
         open={modalOpen}
         onOpenChange={setModalOpen}
-        onOrderUpdated={handleOrderUpdated}
+        onOrderUpdated={updateRecentOrder}
       />
     </div>
   )

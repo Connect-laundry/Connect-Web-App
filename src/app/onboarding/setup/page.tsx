@@ -4,7 +4,7 @@ import { OnboardingWizard } from '@/features/onboarding/components/OnboardingWiz
 export default function SetupPage() {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-slate-50/50">
+      <div className="min-h-screen landing-mesh">
         <div className="container mx-auto">
           <OnboardingWizard />
         </div>

@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Bell,
 } from 'lucide-react'
 import { useAuth } from '@/features/auth/context/AuthContext'
 import { Button } from '@/shared/ui/button'
@@ -37,6 +38,12 @@ const navigationItems = [
     name: 'Orders',
     href: '/orders',
     icon: Package,
+    section: 'overview',
+  },
+  {
+    name: 'Notifications',
+    href: '/notifications',
+    icon: Bell,
     section: 'overview',
   },
   {

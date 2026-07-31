@@ -39,8 +39,11 @@ export async function acceptOrder(orderId: string): Promise<Partial<Order>> {
   return lifecycleAction(orderId, "accept");
 }
 
-export async function rejectOrder(orderId: string): Promise<Partial<Order>> {
-  return lifecycleAction(orderId, "reject");
+export async function rejectOrder(
+  orderId: string,
+  reason?: string,
+): Promise<Partial<Order>> {
+  return lifecycleAction(orderId, "reject", reason ? { reason } : undefined);
 }
 
 export async function markPickedUp(orderId: string): Promise<Partial<Order>> {
@@ -115,19 +118,20 @@ export async function executeOrderAction(
   action: string,
   existingOrder: Order,
   weight?: string,
+  reason?: string,
 ): Promise<Order> {
   const actionMap: Record<
     string,
     (id: string, weight?: string) => Promise<Partial<Order>>
   > = {
     accept: acceptOrder,
-    reject: rejectOrder,
+    reject: (id) => rejectOrder(id, reason),
     markPickedUp,
     markWashed,
     markOutForDelivery,
     markDelivered,
     complete: completeOrder,
-    cancel: cancelOrder,
+    cancel: (id) => cancelOrder(id, reason),
   };
 
   const actionFn = actionMap[action];

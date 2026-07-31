@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
+import { useSilentPolling } from '@/shared/hooks/useSilentPolling'
 import { getDashboardEarnings } from '@/features/dashboard/api'
 import { getTransactionHistory, exportEarningsCSV } from '@/features/earnings/api'
 import { DashboardEarnings, Transaction } from '@/shared/interfaces'
@@ -20,7 +21,6 @@ export default function EarningsPage() {
   })
   const [transactions, setTransactions] = useState<Transaction[]>([])
   
-  const [isLoading, setIsLoading] = useState(true)
   const [isExporting, setIsExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -64,19 +64,10 @@ export default function EarningsPage() {
       
     } catch (err: any) {
       console.error('Critical page error:', err)
-    } finally {
-      setIsLoading(false)
     }
-  }, []) // Empty dependency array prevents infinite loops
+  }, [])
 
-  useEffect(() => {
-    const run = async () => {
-      await fetchEarningsData()
-    }
-    run()
-    const interval = setInterval(run, 30000)
-    return () => clearInterval(interval)
-  }, [fetchEarningsData])
+  const { isInitialLoading } = useSilentPolling(fetchEarningsData, 30000)
 
   const handleExport = async () => {
     try {
@@ -130,7 +121,7 @@ export default function EarningsPage() {
       </div>
 
       {/* Transaction History Table */}
-      <TransactionHistory transactions={transactions} isLoading={isLoading} />
+      <TransactionHistory transactions={transactions} isLoading={isInitialLoading} />
     </div>
   )
 }

@@ -5,7 +5,19 @@ export interface User {
   fullName: string;
   first_name?: string;
   last_name?: string;
+  phone?: string;
   role: "OWNER" | "ADMIN" | "CUSTOMER" | "DRIVER";
+}
+
+export interface Notification {
+  id: string;
+  title: string;
+  body: string;
+  type: string;
+  is_read: boolean;
+  created_at: string;
+  read_at?: string | null;
+  related_order?: string | null;
 }
 
 export interface LoginRequest {

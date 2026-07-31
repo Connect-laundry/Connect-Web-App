@@ -1,31 +1,20 @@
 import { type ApiError as _ApiError } from '@/shared/interfaces'
+import { notifySessionExpired } from '@/features/auth/lib/session-expired'
+import { refreshAccessToken } from '@/shared/api/token-refresh'
 
 // For client-side requests, hit the internal proxy
 const BASE_URL = '/api/proxy'
 
-// Single in-flight refresh shared by all concurrent callers.
-//
-// The backend rotates refresh tokens and blacklists the old one on first use
-// (SIMPLE_JWT ROTATE_REFRESH_TOKENS + BLACKLIST_AFTER_ROTATION). If several
-// requests 401 at once (e.g. the dashboard loading stats + earnings + orders),
-// each firing its own refresh would race: the first rotates the token, the rest
-// send the now-blacklisted token and fail — and a failed refresh clears the
-// session cookies, destroying the session the first refresh just renewed.
-//
-// Coalescing every concurrent 401 onto ONE refresh call fixes the race: only a
-// single token is ever exchanged, everyone else awaits the same result.
-let refreshPromise: Promise<boolean> | null = null
-
-function refreshSession(): Promise<boolean> {
-  if (!refreshPromise) {
-    refreshPromise = fetch('/api/auth/refresh', { method: 'POST' })
-      .then((res) => res.ok)
-      .catch(() => false)
-      .finally(() => {
-        refreshPromise = null
-      })
+export class SessionExpiredError extends Error {
+  constructor(message = 'Session expired. Please log in again.') {
+    super(message)
+    this.name = 'SessionExpiredError'
   }
-  return refreshPromise
+}
+
+export type ApiRequestOptions = RequestInit & {
+  /** No toast/redirect when refresh fails (e.g. hydrate on public pages). */
+  silentAuth?: boolean
 }
 
 /**
@@ -33,8 +22,9 @@ function refreshSession(): Promise<boolean> {
  */
 export async function apiClient<T = any>(
   endpoint: string,
-  options: RequestInit = {}
+  options: ApiRequestOptions = {},
 ): Promise<T> {
+  const { silentAuth, ...fetchOptions } = options
   // Ensure endpoint starts with slash
   const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
   const url = `${BASE_URL}${normalizedEndpoint}`
@@ -51,7 +41,7 @@ export async function apiClient<T = any>(
   let response: Response
   try {
     response = await fetch(url, {
-      ...options,
+      ...fetchOptions,
       headers,
     })
 
@@ -62,20 +52,22 @@ export async function apiClient<T = any>(
     throw new Error(`Connection failed. Please check your internet or try again later.`)
   }
 
-  // Handle token expiration (401)
   if (response.status === 401) {
     // Attempt auto-refresh using the secure HttpOnly refresh token. All
-    // concurrent 401s share ONE refresh (see refreshSession) to avoid racing
-    // the backend's single-use rotating refresh tokens.
-    const refreshed = await refreshSession()
+    // concurrent 401s share ONE refresh (see refreshAccessToken) to avoid
+    // racing the backend's single-use rotating refresh tokens.
+    const refreshed = await refreshAccessToken()
     if (refreshed) {
       // Retry the original request with the freshly rotated access cookie.
-      const retryResponse = await fetch(url, { ...options, headers })
+      const retryResponse = await fetch(url, { ...fetchOptions, headers })
+      if (retryResponse.status === 401) {
+        if (!silentAuth) notifySessionExpired()
+        throw new SessionExpiredError()
+      }
       return handleResponse<T>(retryResponse)
     }
-    // Refresh genuinely failed (token expired/invalid). Don't force a redirect
-    // here — it causes loops on auth pages; middleware/protected routes handle it.
-    throw new Error('Session expired. Please log in again.')
+    if (!silentAuth) notifySessionExpired()
+    throw new SessionExpiredError()
   }
 
   return handleResponse<T>(response)
@@ -142,8 +134,11 @@ async function handleResponse<T>(response: Response): Promise<T> {
 /**
  * Type-safe GET request
  */
-export async function apiGet<T = any>(endpoint: string): Promise<T> {
-  return apiClient<T>(endpoint, { method: 'GET' })
+export async function apiGet<T = any>(
+  endpoint: string,
+  options?: Pick<ApiRequestOptions, 'silentAuth'>,
+): Promise<T> {
+  return apiClient<T>(endpoint, { method: 'GET', ...options })
 }
 
 /**
