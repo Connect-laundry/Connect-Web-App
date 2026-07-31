@@ -1,5 +1,5 @@
 import { apiGet, apiPatch, apiPost } from '@/shared/api/client'
-import { Notification } from '@/shared/types'
+import { Notification } from '@/shared/interfaces'
 
 export interface NotificationsListResponse {
   count: number

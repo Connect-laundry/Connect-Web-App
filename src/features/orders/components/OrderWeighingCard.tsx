@@ -1,12 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Scale } from "lucide-react";
+import { OrderWeighingCardProps } from "../interfaces";
 
-interface OrderWeighingCardProps {
-  status: string;
-  weight: string;
-  setWeight: (weight: string) => void;
-}
+
 
 export function OrderWeighingCard({ status, weight, setWeight }: OrderWeighingCardProps) {
   if (status !== "PICKED_UP") return null;

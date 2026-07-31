@@ -6,7 +6,7 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
 } from '@/features/notifications/api'
-import { Notification } from '@/shared/types'
+import { Notification } from '@/shared/interfaces'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Spinner } from '@/shared/ui/spinner'

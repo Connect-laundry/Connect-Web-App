@@ -3,8 +3,6 @@ import type { NextRequest } from 'next/server'
 
 // Routes that require authentication
 const protectedRoutes = ['/dashboard', '/orders', '/earnings', '/settings', '/staff', '/onboarding']
-// Routes that are accessible only for unauthenticated users
-const authRoutes = ['/auth/login', '/auth/register', '/auth/forgot-password']
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -16,12 +14,6 @@ export function proxy(request: NextRequest) {
     const url = new URL('/auth/login', request.url)
     url.searchParams.set('redirect', pathname)
     return NextResponse.redirect(url)
-  }
-
-  // 2. Redirect authenticated users away from auth pages
-  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route))
-  if (isAuthRoute && hasToken) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return NextResponse.next()

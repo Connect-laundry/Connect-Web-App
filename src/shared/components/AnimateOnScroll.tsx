@@ -3,19 +3,34 @@
 import { useEffect, useRef, useState, ReactNode } from 'react'
 import { cn } from '@/shared/lib/utils'
 
+export type AnimationVariant =
+  | 'fade-in'
+  | 'fade-up'
+  | 'fade-down'
+  | 'fade-left'
+  | 'fade-right'
+  | 'slide-up'
+  | 'slide-down'
+  | 'slide-left'
+  | 'slide-right'
+  | 'zoom-in'
+  | 'fade'
+
 interface AnimateOnScrollProps {
   children: ReactNode
-  animation?: 'fade-in' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right'
+  animation?: AnimationVariant
   delay?: number
+  duration?: number
   className?: string
   threshold?: number
 }
 
 export function AnimateOnScroll({
   children,
-  animation = 'fade-in',
+  animation = 'fade-up',
   delay = 0,
-  className,
+  duration = 700,
+  className = '',
   threshold = 0.1,
 }: AnimateOnScrollProps) {
   const ref = useRef<HTMLDivElement>(null)
@@ -32,38 +47,37 @@ export function AnimateOnScroll({
           observer.unobserve(element)
         }
       },
-      { threshold }
+      { threshold, rootMargin: '0px 0px -40px 0px' }
     )
 
     observer.observe(element)
     return () => observer.disconnect()
   }, [threshold])
 
-  const animationStyles: Record<string, string> = {
-    'fade-in': 'translate-y-0 opacity-100',
-    'slide-up': 'translate-y-0 opacity-100',
-    'slide-down': 'translate-y-0 opacity-100',
-    'slide-left': 'translate-x-0 opacity-100',
-    'slide-right': 'translate-x-0 opacity-100',
-  }
-
-  const initialStyles: Record<string, string> = {
-    'fade-in': 'translate-y-2 opacity-0',
-    'slide-up': 'translate-y-8 opacity-0',
-    'slide-down': '-translate-y-8 opacity-0',
-    'slide-left': 'translate-x-8 opacity-0',
-    'slide-right': '-translate-x-8 opacity-0',
+  const transforms: Record<AnimationVariant, string> = {
+    'fade-up': 'translateY(40px)',
+    'fade-down': 'translateY(-40px)',
+    'fade-left': 'translateX(40px)',
+    'fade-right': 'translateX(-40px)',
+    'slide-up': 'translateY(32px)',
+    'slide-down': 'translateY(-32px)',
+    'slide-left': 'translateX(32px)',
+    'slide-right': 'translateX(-32px)',
+    'zoom-in': 'scale(0.9)',
+    'fade-in': 'none',
+    'fade': 'none',
   }
 
   return (
     <div
       ref={ref}
-      className={cn(
-        'transition-all duration-700 ease-out',
-        isVisible ? animationStyles[animation] : initialStyles[animation],
-        className
-      )}
-      style={{ transitionDelay: `${delay}ms` }}
+      className={cn('transition-all ease-out', className)}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'none' : transforms[animation] || 'none',
+        transitionDuration: `${duration}ms`,
+        transitionDelay: `${delay}ms`,
+      }}
     >
       {children}
     </div>

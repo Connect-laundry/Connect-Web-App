@@ -39,10 +39,11 @@ vi.mock('@/features/auth/context/AuthContext', () => ({
 describe('HomePage', () => {
   it('renders the hero section', () => {
     render(<HomePage />)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/We'll take the laundry/i)
-    expect(screen.getByText(/You take the time/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      /Fresh, Clean & Delivered to Your Door/i,
+    )
     expect(
-      screen.getByText(/Connect picks up, cleans, and delivers/i),
+      screen.getByText(/Connect Laundry offers premium laundry and dry cleaning services/i),
     ).toBeInTheDocument()
   })
 

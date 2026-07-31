@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { formatCurrency } from '@/shared/lib/format'
-import type { DashboardEarnings } from '@/shared/types'
+import type { DashboardEarnings } from '@/shared/interfaces'
 import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 
 interface RevenueOverviewCardProps {

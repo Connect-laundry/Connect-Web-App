@@ -25,6 +25,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
       if (!isAuthenticated) {
         router.push('/auth/login')
       } else if (
+        // Case-insensitive check to prevent login failure if backend sends lowercase 'owner'.
+        // Also supports fallback to 'user_type' depending on API schema variations.
         user &&
         (() => {
           const role = (user.role || (user as { user_type?: string }).user_type || '')

@@ -91,7 +91,7 @@ export function LoginForm() {
       }
     } catch (err: any) {
       setError(err.message || 'Failed to log in. Please check your credentials.')
-      console.error('Login error:', err)
+      console.warn('[login] failed', { status: err?.status, message: err?.message, data: err?.data })
     } finally {
       setIsLoading(false)
     }
@@ -208,6 +208,12 @@ export function LoginForm() {
                 'Sign In'
               )}
             </Button>
+
+            <p className="text-center text-sm">
+              <Link href="/auth/forgot-password" className="text-primary hover:underline">
+                Forgot password?
+              </Link>
+            </p>
           </form>
         </Form>
 

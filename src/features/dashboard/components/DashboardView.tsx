@@ -16,7 +16,7 @@ import { AlertCircle, Bell, Package } from 'lucide-react'
 export function DashboardView() {
   const { user } = useAuth()
   const {
-    stats,
+    metrics,
     earnings,
     recentOrders,
     error,
@@ -61,7 +61,12 @@ export function DashboardView() {
         </Alert>
       )}
 
-      <DashboardStatsGrid stats={stats} />
+      <DashboardStatsGrid
+        pendingCount={metrics.pendingCount}
+        inProcessCount={metrics.inProcessCount}
+        readyCount={metrics.readyCount}
+        dailyRevenue={metrics.dailyRevenue}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <RevenueOverviewCard earnings={earnings} />

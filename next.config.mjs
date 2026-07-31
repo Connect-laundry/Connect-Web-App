@@ -1,7 +1,17 @@
 import { withSentryConfig } from "@sentry/nextjs";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Pin Turbopack's project root to this directory. Without this, Next 16.2.x
+  // mis-infers the workspace root and fails to resolve `next/package.json`
+  // ("Next.js package not found" panic loop on HMR). See vercel/next.js#92540.
+  turbopack: {
+    root: __dirname,
+  },
   images: {
     unoptimized: true,
   },
@@ -24,7 +34,7 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
+            value: 'camera=(), microphone=(), geolocation=(self)',
           },
           {
             key: 'Content-Security-Policy',

@@ -1,4 +1,4 @@
-import type { DashboardEarnings, DashboardStats, Order, OrderListResponse } from '@/shared/types'
+import type { DashboardEarnings, DashboardStats, Order, OrderListResponse } from '@/shared/interfaces'
 
 export interface DashboardData {
   stats: DashboardStats | null

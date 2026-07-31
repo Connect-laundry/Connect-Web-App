@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useSilentPolling } from '@/shared/hooks/useSilentPolling'
 import { getDashboardEarnings } from '@/features/dashboard/api'
 import { getTransactionHistory, exportEarningsCSV } from '@/features/earnings/api'
-import { DashboardEarnings, Transaction } from '@/shared/types'
+import { DashboardEarnings, Transaction } from '@/shared/interfaces'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { AlertCircle, TrendingUp, Download, Loader2 } from 'lucide-react'
@@ -27,10 +27,8 @@ export default function EarningsPage() {
   const fetchEarningsData = useCallback(async () => {
     try {
       setError(null)
-      // We wrap these in separate try/catch blocks so one failing API doesn't kill the whole page.
-      // This defends against backend 500s when database tables are empty.
       let fetchedEarnings = null;
-      let fetchedTransactions = null;
+      let fetchedTransactions: Transaction[] = [];
       
       try {
         fetchedEarnings = await getDashboardEarnings()
@@ -46,6 +44,19 @@ export default function EarningsPage() {
           : (txResponse as any).results || (txResponse as any).data || [];
       } catch (_err: any) {
         console.warn('Transactions API endpoint not available yet (404). Falling back to empty state.')
+      }
+
+      // Fallback calculation from orders/transactions if backend stats are strictly filtering DELIVERED
+      const totalTx = fetchedTransactions.reduce((acc, tx) => acc + (Number(tx.amount) || 0), 0)
+      if (!fetchedEarnings || fetchedEarnings.total_revenue === 0 || fetchedEarnings.today === 0) {
+        if (totalTx > 0) {
+          fetchedEarnings = {
+            today: fetchedEarnings?.today || totalTx,
+            this_week: fetchedEarnings?.this_week || totalTx,
+            this_month: fetchedEarnings?.this_month || totalTx,
+            total_revenue: fetchedEarnings?.total_revenue || totalTx,
+          }
+        }
       }
 
       if (fetchedEarnings) setEarnings(fetchedEarnings)
@@ -78,7 +89,7 @@ export default function EarningsPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900">Earnings</h1>

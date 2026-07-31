@@ -12,7 +12,7 @@ import { Badge } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { ArrowUpRight, Package } from 'lucide-react'
-import type { OrderListResponse } from '@/shared/types'
+import type { OrderListResponse } from '@/shared/interfaces'
 
 interface RecentOrdersListProps {
   recentOrders: OrderListResponse | null

@@ -1,4 +1,4 @@
-import { type ApiError as _ApiError } from '@/shared/types'
+import { type ApiError as _ApiError } from '@/shared/interfaces'
 import { notifySessionExpired } from '@/features/auth/lib/session-expired'
 import { refreshAccessToken } from '@/shared/api/token-refresh'
 
@@ -53,8 +53,12 @@ export async function apiClient<T = any>(
   }
 
   if (response.status === 401) {
+    // Attempt auto-refresh using the secure HttpOnly refresh token. All
+    // concurrent 401s share ONE refresh (see refreshAccessToken) to avoid
+    // racing the backend's single-use rotating refresh tokens.
     const refreshed = await refreshAccessToken()
     if (refreshed) {
+      // Retry the original request with the freshly rotated access cookie.
       const retryResponse = await fetch(url, { ...fetchOptions, headers })
       if (retryResponse.status === 401) {
         if (!silentAuth) notifySessionExpired()
@@ -84,24 +88,37 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
   if (!response.ok) {
     let message = `HTTP ${response.status}`
-    
-    if (data && typeof data === 'object') {
-      if (data.message && data.message !== 'Validation failed.') {
+
+    // Generic backend wrappers that carry no useful detail on their own. When the
+    // message is one of these, prefer the field-level errors in `data.data`.
+    const GENERIC_MESSAGES = new Set(['Validation failed.', 'An error occurred.'])
+
+    const fieldError = (obj: any): string | null => {
+      if (!obj || typeof obj !== 'object') return null
+      const key = Object.keys(obj)[0]
+      if (!key) return null
+      const val = obj[key]
+      if (Array.isArray(val)) return `${key}: ${val[0]}`
+      if (typeof val === 'string') return `${key}: ${val}`
+      return null
+    }
+
+    if (response.status === 502) {
+      message = 'Backend server is starting up or temporarily offline. Retrying connection...'
+    } else if (data && typeof data === 'object') {
+      // Field errors take priority over generic wrapper messages so the user sees
+      // the actual reason (e.g. "email: This field must be unique.").
+      const detail = fieldError(data.data) || fieldError(data)
+      if (data.message && !GENERIC_MESSAGES.has(data.message)) {
         message = data.message
+      } else if (detail) {
+        message = detail
       } else if (data.error) {
         message = typeof data.error === 'string' ? data.error : JSON.stringify(data.error)
       } else if (data.detail) {
         message = data.detail
-      } else if (data.data) {
-        const firstErrorKey = Object.keys(data.data)[0]
-        if (firstErrorKey && Array.isArray(data.data[firstErrorKey])) {
-          message = `${firstErrorKey}: ${data.data[firstErrorKey][0]}`
-        }
-      } else {
-        const firstErrorKey = Object.keys(data)[0]
-        if (firstErrorKey && Array.isArray(data[firstErrorKey])) {
-          message = `${firstErrorKey}: ${data[firstErrorKey][0]}`
-        }
+      } else if (data.message) {
+        message = data.message
       }
     }
 

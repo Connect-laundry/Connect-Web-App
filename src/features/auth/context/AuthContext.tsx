@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { User } from '@/shared/types'
+import { User } from '@/shared/interfaces'
 import { clearAuthCookies, getCurrentUser, logout as logoutUser } from '@/features/auth/api'
 import { isProtectedAppPath, isPublicPath } from '@/features/auth/lib/public-routes'
 import { resetSessionExpiryNotify, SESSION_EXPIRED_EVENT } from '@/features/auth/lib/session-expired'
@@ -81,7 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    hydrate()
+    const run = async () => {
+      await hydrate()
+    }
+    run()
   }, [])
 
   // Access JWT expires ~10m on backend; refresh before expiry to avoid 401 storms
