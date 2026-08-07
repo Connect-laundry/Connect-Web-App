@@ -66,7 +66,7 @@ export function useOrderDetailModal(
 
     const calculatedItemsTotal =
         order?.items?.reduce(
-            (acc, it) => acc + Number(it.quantity) * Number(it.unit_price),
+            (acc, it) => acc + Number(it.quantity) * Number(it.price ?? it.unit_price ?? 0),
             0
         ) || 0;
     const displayTotal =

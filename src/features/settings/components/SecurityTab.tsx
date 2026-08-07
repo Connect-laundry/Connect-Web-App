@@ -1,11 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { useAuth } from '@/features/auth/context/AuthContext'
-import {
-  requestPasswordReset,
-  revokeAllSessions,
-} from '@/features/account/api'
+import { useSecuritySettings } from '../hooks/useSecuritySettings'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
@@ -15,9 +10,7 @@ interface SecurityTabProps {
 }
 
 export const SecurityTab = ({ sessions }: SecurityTabProps) => {
-  const { user } = useAuth()
-  const [resetEmail, setResetEmail] = useState(user?.email ?? '')
-  const [resetSent, setResetSent] = useState(false)
+  const security = useSecuritySettings()
 
   return (
     <div className="space-y-6">
@@ -29,19 +22,16 @@ export const SecurityTab = ({ sessions }: SecurityTabProps) => {
         <CardContent className="space-y-3">
           <Input
             type="email"
-            value={resetEmail}
-            onChange={(e) => setResetEmail(e.target.value)}
+            value={security.resetEmail}
+            onChange={(e) => security.setResetEmail(e.target.value)}
             placeholder="Email"
           />
           <Button
-            onClick={async () => {
-              await requestPasswordReset(resetEmail)
-              setResetSent(true)
-            }}
+            onClick={security.sendReset}
           >
             Send reset link
           </Button>
-          {resetSent && (
+          {security.resetSent && (
             <p className="text-sm text-green-700">If that email exists, a reset link was sent.</p>
           )}
         </CardContent>
@@ -63,7 +53,7 @@ export const SecurityTab = ({ sessions }: SecurityTabProps) => {
               </div>
             ))
           )}
-          <Button variant="outline" onClick={() => revokeAllSessions()}>
+          <Button variant="outline" onClick={security.revokeSessions}>
             Sign out all other devices
           </Button>
         </CardContent>

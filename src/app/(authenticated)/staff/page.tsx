@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Spinner } from '@/shared/ui/spinner'
 import { AlertCircle } from 'lucide-react'
@@ -10,11 +10,14 @@ import { StaffStatsCard } from '@/features/staff/components/StaffStatsCard'
 import { StaffGuidanceBanner } from '@/features/staff/components/StaffGuidanceBanner'
 import { StaffTable } from '@/features/staff/components/StaffTable'
 import { StaffModal } from '@/features/staff/components/StaffModal'
+import { CreateDriverModal } from '@/features/staff/components/CreateDriverModal'
 
 function StaffPageContent() {
+  const [isCreateDriverOpen, setIsCreateDriverOpen] = useState(false)
   const {
     filteredAssignments,
     orders,
+    drivers,
     loading,
     error,
     searchQuery,
@@ -43,7 +46,8 @@ function StaffPageContent() {
       <StaffHeader
         loading={loading}
         onRefresh={fetchData}
-        onOpenModal={() => setIsModalOpen(true)}
+        onOpenAssignModal={() => setIsModalOpen(true)}
+        onOpenCreateDriverModal={() => setIsCreateDriverOpen(true)}
       />
 
       {error && (
@@ -73,7 +77,7 @@ function StaffPageContent() {
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
         orders={orders}
-        uniqueDrivers={uniqueDrivers}
+        drivers={drivers}
         selectedOrderId={selectedOrderId}
         setSelectedOrderId={setSelectedOrderId}
         driverId={driverId}
@@ -84,6 +88,12 @@ function StaffPageContent() {
         modalError={modalError}
         isOrderLocked={isOrderLocked}
         onSubmit={handleCreateAssignment}
+      />
+
+      <CreateDriverModal
+        isOpen={isCreateDriverOpen}
+        onOpenChange={setIsCreateDriverOpen}
+        onCreated={fetchData}
       />
     </div>
   )

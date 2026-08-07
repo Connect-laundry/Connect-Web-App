@@ -1,12 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { login } from '@/features/auth/api'
-import { useAuth } from '@/features/auth/context/AuthContext'
+import { useLogin } from '@/features/auth/hooks/useLogin'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import {
@@ -22,80 +16,8 @@ import { Alert, AlertDescription } from '@/shared/ui/alert'
 import Link from 'next/link'
 import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react'
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-})
-
-type LoginFormValues = z.infer<typeof loginSchema>
-
 export function LoginForm() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const { login: setUser } = useAuth()
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [resetSuccess, setResetSuccess] = useState(false)
-  const [sessionExpired, setSessionExpired] = useState(false)
-
-  useEffect(() => {
-    if (searchParams.get('reset') === 'success') {
-      setResetSuccess(true)
-    }
-    if (searchParams.get('session') === 'expired') {
-      setSessionExpired(true)
-      router.replace('/auth/login')
-    }
-  }, [searchParams, router])
-
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  })
-
-  async function onSubmit(values: LoginFormValues) {
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const response = await login(values)
-
-      if (response?.user) {
-        // Use the auth context login which now triggers laundry hydration
-        setUser(response.user)
-        
-        // Give a tiny moment for the laundry state to be initiated, 
-        // OR better yet, fetch it right here to decide the immediate redirect
-        try {
-          const { getLaundryProfile } = await import('@/features/business/api')
-          const laundry = await getLaundryProfile()
-          
-          const { hasPendingOnboardingApplication } = await import(
-            '@/features/onboarding/lib/storage'
-          )
-          if (!laundry && !hasPendingOnboardingApplication()) {
-            router.push('/onboarding/setup')
-          } else {
-            router.push('/dashboard')
-          }
-        } catch (_e) {
-          // If laundry fetch fails, default to dashboard and let ProtectedRoute handle it
-          router.push('/dashboard')
-        }
-      } else {
-        throw new Error('Invalid response from server')
-      }
-    } catch (err: any) {
-      setError(err.message || 'Failed to log in. Please check your credentials.')
-      console.warn('[login] failed', { status: err?.status, message: err?.message, data: err?.data })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const login = useLogin()
 
   return (
     <Card className="w-full surface-card border-0 shadow-[0_20px_50px_-12px_oklch(0.42_0.15_260/0.2)]">
@@ -106,30 +28,30 @@ export function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {resetSuccess && (
+        <Form {...login.form}>
+          <form onSubmit={login.form.handleSubmit(login.submit)} className="space-y-4">
+            {login.resetSuccess && (
               <Alert className="border-green-200 bg-green-50">
                 <AlertDescription className="text-green-800">
                   Password updated. You can sign in now.
                 </AlertDescription>
               </Alert>
             )}
-            {sessionExpired && (
+            {login.sessionExpired && (
               <Alert className="border-amber-200 bg-amber-50">
                 <AlertDescription className="text-amber-900">
                   Your session expired. Please sign in again.
                 </AlertDescription>
               </Alert>
             )}
-            {error && (
+            {login.error && (
               <Alert variant="destructive" className="animate-in fade-in zoom-in-95 duration-300">
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>{login.error}</AlertDescription>
               </Alert>
             )}
 
             <FormField
-              control={form.control}
+              control={login.form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
@@ -141,7 +63,7 @@ export function LoginForm() {
                         placeholder="owner@example.com"
                         type="email"
                         {...field}
-                        disabled={isLoading}
+                        disabled={login.isLoading}
                         className="pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus:bg-background transition-all"
                       />
                     </div>
@@ -152,7 +74,7 @@ export function LoginForm() {
             />
 
             <FormField
-              control={form.control}
+              control={login.form.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
@@ -170,18 +92,18 @@ export function LoginForm() {
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         placeholder="••••••••"
-                        type={showPassword ? 'text' : 'password'}
+                        type={login.showPassword ? 'text' : 'password'}
                         {...field}
-                        disabled={isLoading}
+                        disabled={login.isLoading}
                         className="pl-10 pr-10 h-11 bg-muted/30 border-muted-foreground/20 focus:bg-background transition-all"
                       />
                       <button
                         type="button"
-                        onClick={() => setShowPassword(!showPassword)}
+                        onClick={() => login.setShowPassword(!login.showPassword)}
                         className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
-                        disabled={isLoading}
+                        disabled={login.isLoading}
                       >
-                        {showPassword ? (
+                        {login.showPassword ? (
                           <EyeOff className="h-4 w-4" />
                         ) : (
                           <Eye className="h-4 w-4" />
@@ -197,9 +119,9 @@ export function LoginForm() {
             <Button 
               type="submit" 
               className="w-full h-11 text-base font-semibold transition-all active:scale-[0.98] disabled:opacity-70" 
-              disabled={isLoading}
+              disabled={login.isLoading}
             >
-              {isLoading ? (
+              {login.isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Logging in...

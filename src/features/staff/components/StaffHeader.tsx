@@ -7,10 +7,16 @@ import { cn } from '@/shared/lib/utils'
 interface StaffHeaderProps {
   loading: boolean
   onRefresh: () => void
-  onOpenModal: () => void
+  onOpenAssignModal: () => void
+  onOpenCreateDriverModal: () => void
 }
 
-export function StaffHeader({ loading, onRefresh, onOpenModal }: StaffHeaderProps) {
+export function StaffHeader({
+  loading,
+  onRefresh,
+  onOpenAssignModal,
+  onOpenCreateDriverModal,
+}: StaffHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
@@ -34,7 +40,16 @@ export function StaffHeader({ loading, onRefresh, onOpenModal }: StaffHeaderProp
         </Button>
 
         <Button
-          onClick={onOpenModal}
+          variant="outline"
+          onClick={onOpenCreateDriverModal}
+          className="gap-2 font-bold h-10 border-border/50"
+        >
+          <UserPlus className="w-4 h-4" />
+          Create Driver
+        </Button>
+
+        <Button
+          onClick={onOpenAssignModal}
           className="gap-2 font-bold shadow-md h-10 bg-primary hover:bg-primary/90"
         >
           <UserPlus className="w-4 h-4" />

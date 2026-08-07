@@ -1,23 +1,39 @@
 'use client'
 
-import { useState } from 'react'
-import {
-  markAllNotificationsRead,
-  markNotificationRead,
-  updateNotificationPreferences,
-} from '@/features/support/api'
+import { useNotificationSettings } from '../hooks/useNotificationSettings'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Switch } from '@/shared/ui/switch'
+import { Label } from '@/shared/ui/label'
 
 interface NotificationsTabProps {
   initialPrefs: any
   initialNotifications: any[]
 }
 
+const PREF_LABELS: Record<string, string> = {
+  push_enabled: 'Push notifications (master switch)',
+  order_updates: 'Order updates',
+  payment_updates: 'Payment updates',
+  promotions: 'Promotions',
+  campaigns: 'Marketing campaigns',
+  referrals: 'Referral rewards',
+  weekly_tips: 'Weekly tips',
+}
+
+const PUSH_PREF_KEYS = [
+  'push_enabled',
+  'order_updates',
+  'payment_updates',
+  'promotions',
+  'campaigns',
+  'referrals',
+  'weekly_tips',
+] as const
+
 export const NotificationsTab = ({ initialPrefs, initialNotifications }: NotificationsTabProps) => {
-  const [prefs, setPrefs] = useState<any>(initialPrefs)
-  const [notifications, setNotifications] = useState<any[]>(initialNotifications)
+  const { prefs, notifications, updatePreference, markRead, markAllRead } =
+    useNotificationSettings(initialPrefs, initialNotifications)
 
   return (
     <div className="space-y-6">
@@ -25,17 +41,18 @@ export const NotificationsTab = ({ initialPrefs, initialNotifications }: Notific
         <Card>
           <CardHeader>
             <CardTitle>Notification Preferences</CardTitle>
+            <CardDescription>Control which notifications you receive as push alerts.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {(['email_enabled', 'push_enabled', 'sms_enabled'] as const).map((key) => (
-              <div key={key} className="flex items-center justify-between">
-                <span className="text-sm capitalize">{key.replace('_enabled', '')}</span>
+            {PUSH_PREF_KEYS.map((key) => (
+              <div key={key} className="flex items-center justify-between gap-4">
+                <Label htmlFor={`pref-${key}`} className="text-sm cursor-pointer">
+                  {PREF_LABELS[key] ?? key}
+                </Label>
                 <Switch
+                  id={`pref-${key}`}
                   checked={!!prefs[key]}
-                  onCheckedChange={async (checked) => {
-                    const updated = await updateNotificationPreferences({ [key]: checked })
-                    setPrefs(updated)
-                  }}
+                  onCheckedChange={(checked) => updatePreference(key, checked)}
                 />
               </div>
             ))}
@@ -49,7 +66,7 @@ export const NotificationsTab = ({ initialPrefs, initialNotifications }: Notific
             <CardTitle>Inbox</CardTitle>
             <CardDescription>Recent notifications</CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={() => markAllNotificationsRead()}>
+          <Button variant="outline" size="sm" onClick={markAllRead}>
             Mark all read
           </Button>
         </CardHeader>
@@ -69,14 +86,7 @@ export const NotificationsTab = ({ initialPrefs, initialNotifications }: Notific
                     size="sm"
                     variant="ghost"
                     className="mt-2"
-                    onClick={async () => {
-                      await markNotificationRead(n.id)
-                      setNotifications((prev) =>
-                        prev.map((item) =>
-                          item.id === n.id ? { ...item, is_read: true } : item,
-                        ),
-                      )
-                    }}
+                    onClick={() => markRead(n.id)}
                   >
                     Mark read
                   </Button>

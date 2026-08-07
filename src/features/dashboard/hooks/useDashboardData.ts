@@ -59,13 +59,13 @@ export function useDashboardData() {
         : orders.filter((o) => o.status === 'PENDING').length
 
     const inProcessCount =
-      stats?.picked_up_count && stats.picked_up_count > 0
-        ? stats.picked_up_count
+      stats
+        ? (stats.in_process_count ?? 0) + (stats.picked_up_count ?? 0) + (stats.confirmed_count ?? 0)
         : orders.filter((o) => ['PICKED_UP', 'IN_PROCESS', 'CONFIRMED'].includes(o.status)).length
 
     const readyCount =
-      stats?.confirmed_count && stats.confirmed_count > 0
-        ? stats.confirmed_count
+      stats
+        ? stats.out_for_delivery_count ?? 0
         : orders.filter((o) => ['OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status)).length
 
     const ordersRevenue = orders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0)

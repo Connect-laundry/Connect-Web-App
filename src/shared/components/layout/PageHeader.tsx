@@ -10,6 +10,7 @@ interface PageHeaderAction {
   onClick?: () => void
   icon?: React.ReactNode
   variant?: 'default' | 'outline' | 'ghost'
+  disabled?: boolean
 }
 
 interface PageHeaderProps {
@@ -63,6 +64,7 @@ export function PageHeader({
               size="sm"
               className="gap-2"
               onClick={action.onClick}
+              disabled={action.disabled}
             >
               {action.icon}
               {action.label}
