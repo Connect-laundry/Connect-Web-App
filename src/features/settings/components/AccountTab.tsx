@@ -1,11 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { useAuth } from '@/features/auth/context/AuthContext'
-import { updateProfile } from '@/features/auth/api'
+import { useAccountSettings } from '../hooks/useAccountSettings'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
@@ -21,54 +16,9 @@ import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Spinner } from '@/shared/ui/spinner'
 import { CheckCircle, AlertCircle } from 'lucide-react'
 
-const profileSchema = z.object({
-  first_name: z.string().min(1, 'First name is required'),
-  last_name: z.string().min(1, 'Last name is required'),
-  phone: z.string().min(10, 'Enter a valid phone number'),
-})
-
-type ProfileFormValues = z.infer<typeof profileSchema>
-
 export const AccountTab = () => {
-  const { user, login, hydrate } = useAuth()
-  const [isSaving, setIsSaving] = useState(false)
-  const [success, setSuccess] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      first_name: '',
-      last_name: '',
-      phone: '',
-    },
-  })
-
-  useEffect(() => {
-    if (user) {
-      form.reset({
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        phone: user.phone || '',
-      })
-    }
-  }, [user, form])
-
-  const onSubmit = async (values: ProfileFormValues) => {
-    setIsSaving(true)
-    setError(null)
-    setSuccess(null)
-    try {
-      const updated = await updateProfile(values)
-      login(updated)
-      await hydrate()
-      setSuccess('Profile updated successfully')
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to update profile')
-    } finally {
-      setIsSaving(false)
-    }
-  }
+  const settings = useAccountSettings()
+  const { user, form, isSaving, success, error, submit } = settings
 
   return (
     <Card className="surface-card border-0">
@@ -95,7 +45,7 @@ export const AccountTab = () => {
         </p>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
             <FormField
               control={form.control}
               name="first_name"

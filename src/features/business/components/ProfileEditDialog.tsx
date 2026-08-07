@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Textarea } from '@/shared/ui/textarea'
@@ -17,95 +16,20 @@ import {
 } from '@/shared/ui/dialog'
 import { Pencil } from 'lucide-react'
 import type { Laundry } from '@/shared/interfaces'
-import { patchMyLaundry } from '../api'
+import { useProfileEditor } from '../hooks/useProfileEditor'
 
 interface ProfileEditDialogProps {
   laundry: Laundry
   onSaved: (updated: Laundry) => void
 }
 
-/** Editable subset of the laundry profile (approval-controlled fields excluded). */
-type ProfileDraft = {
-  name: string
-  description: string
-  phone_number: string
-  address: string
-  city: string
-  estimated_delivery_hours: string
-  service_radius_km: string
-  min_order: string
-  express_available: boolean
-  express_delivery_hours: string
-  express_surcharge_percent: string
-  is_eco_friendly: boolean
-  ironing_available: boolean
-}
-
-function toDraft(l: Laundry): ProfileDraft {
-  return {
-    name: l.name ?? '',
-    description: l.description ?? '',
-    phone_number: l.phone_number ?? '',
-    address: l.address ?? '',
-    city: l.city ?? '',
-    estimated_delivery_hours: String(l.estimated_delivery_hours ?? ''),
-    service_radius_km: String(l.service_radius_km ?? ''),
-    min_order: String(l.min_order ?? ''),
-    express_available: !!l.express_available,
-    express_delivery_hours: l.express_delivery_hours != null ? String(l.express_delivery_hours) : '',
-    express_surcharge_percent:
-      l.express_surcharge_percent != null ? String(l.express_surcharge_percent) : '',
-    is_eco_friendly: !!l.is_eco_friendly,
-    ironing_available: !!l.ironing_available,
-  }
-}
-
 export function ProfileEditDialog({ laundry, onSaved }: ProfileEditDialogProps) {
-  const [open, setOpen] = useState(false)
-  const [draft, setDraft] = useState<ProfileDraft>(() => toDraft(laundry))
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const set = (patch: Partial<ProfileDraft>) => setDraft((prev) => ({ ...prev, ...patch }))
-
-  const openDialog = () => {
-    setDraft(toDraft(laundry))
-    setError(null)
-    setOpen(true)
-  }
-
-  const save = async () => {
-    if (!draft.name.trim()) return setError('Business name is required.')
-    if (!draft.phone_number.trim()) return setError('Phone number is required.')
-    if (draft.express_available) {
-      if (!draft.express_delivery_hours || Number(draft.express_delivery_hours) <= 0) {
-        return setError('Enter the express turnaround in hours.')
-      }
-      if (!draft.express_surcharge_percent || Number(draft.express_surcharge_percent) <= 0) {
-        return setError('Enter the express extra charge as a percentage.')
-      }
-    }
-
-    setIsSaving(true)
-    setError(null)
-    try {
-      const updated = await patchMyLaundry(laundry.id, {
-        ...draft,
-        express_delivery_hours: draft.express_available ? draft.express_delivery_hours : null,
-        express_surcharge_percent: draft.express_available ? draft.express_surcharge_percent : null,
-      })
-      onSaved(updated)
-      setOpen(false)
-    } catch (err: any) {
-      setError(err?.message || 'Failed to save changes. Please try again.')
-    } finally {
-      setIsSaving(false)
-    }
-  }
+  const { open, setOpen, draft, updateDraft: set, isSaving, error, openEditor, save } =
+    useProfileEditor(laundry, onSaved)
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={openDialog}>
+      <Button variant="outline" size="sm" onClick={openEditor}>
         <Pencil className="mr-2 h-4 w-4" /> Edit
       </Button>
 

@@ -11,15 +11,15 @@ import {
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Spinner } from '@/shared/ui/spinner'
 import { Button } from '@/shared/ui/button'
-import { Input } from '@/shared/ui/input'
 import { AlertCircle } from 'lucide-react'
 import { Order } from '@/shared/interfaces'
+import type { DriverAccount } from '@/features/logistics/api'
 
 interface StaffModalProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   orders: Order[]
-  uniqueDrivers: Set<string>
+  drivers: DriverAccount[]
   selectedOrderId: string
   setSelectedOrderId: (id: string) => void
   driverId: string
@@ -36,7 +36,7 @@ export function StaffModal({
   isOpen,
   onOpenChange,
   orders,
-  uniqueDrivers,
+  drivers,
   selectedOrderId,
   setSelectedOrderId,
   driverId,
@@ -54,7 +54,7 @@ export function StaffModal({
         <DialogHeader>
           <DialogTitle className="text-lg font-black">Assign Driver to Order</DialogTitle>
           <DialogDescription className="text-xs">
-            Select an active customer order and enter the Driver Account ID or email to create a delivery task.
+            Select an active customer order and an available driver account to create a delivery task.
           </DialogDescription>
         </DialogHeader>
 
@@ -88,37 +88,30 @@ export function StaffModal({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Driver Account Email or UUID
+              Driver Account
             </label>
 
-            {Array.from(uniqueDrivers).length > 0 && (
-              <div className="mb-2">
-                <select
-                  onChange={(e) => {
-                    if (e.target.value) setDriverId(e.target.value)
-                  }}
-                  className="w-full h-9 rounded-lg border border-input bg-muted/40 px-3 text-xs font-medium mb-1.5"
-                >
-                  <option value="">-- Or pick from active couriers --</option>
-                  {Array.from(uniqueDrivers).map((driverStr) => (
-                    <option key={driverStr} value={driverStr}>
-                      {driverStr}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            <Input
-              placeholder="Enter driver email or UUID..."
+            <select
               value={driverId}
-              onChange={(e) => setDriverId(e.target.value)}
-              className="h-10 text-sm font-medium"
+              onChange={(event) => setDriverId(event.target.value)}
+              className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm font-medium focus:ring-2 focus:ring-primary"
               required
-            />
-            <p className="text-[10px] text-muted-foreground">
-              Driver accounts (<code className="px-1 bg-muted rounded">role: DRIVER</code>) are provisioned by system admins.
-            </p>
+            >
+              <option value="">-- Choose an active driver --</option>
+              {drivers.map((driver) => {
+                const name = `${driver.first_name} ${driver.last_name}`.trim()
+                return (
+                  <option key={driver.id} value={driver.id}>
+                    {name ? `${name} — ` : ''}{driver.email}
+                  </option>
+                )
+              })}
+            </select>
+            {drivers.length === 0 && (
+              <p className="text-[10px] text-amber-700">
+                No active driver accounts are available. A system administrator must provision a user with role DRIVER.
+              </p>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -145,7 +138,7 @@ export function StaffModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="font-bold text-xs">
+            <Button type="submit" disabled={isSubmitting || drivers.length === 0} className="font-bold text-xs">
               {isSubmitting ? <Spinner className="w-4 h-4 mr-2" /> : 'Confirm Assignment'}
             </Button>
           </DialogFooter>

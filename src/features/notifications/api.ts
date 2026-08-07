@@ -63,3 +63,10 @@ export async function markNotificationRead(id: string): Promise<void> {
 export async function markAllNotificationsRead(): Promise<void> {
   await apiPost('/support/notifications/mark-all-read/', {})
 }
+
+export async function trackNotification(
+  id: string,
+  event: 'opened' | 'clicked',
+): Promise<void> {
+  await apiPost(`/support/notifications/${id}/track/`, { event })
+}

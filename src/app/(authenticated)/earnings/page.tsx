@@ -1,10 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { useSilentPolling } from '@/shared/hooks/useSilentPolling'
-import { getDashboardEarnings } from '@/features/dashboard/api'
-import { getTransactionHistory, exportEarningsCSV } from '@/features/earnings/api'
-import { DashboardEarnings, Transaction } from '@/shared/interfaces'
+import { useEarnings } from '@/features/earnings/hooks/useEarnings'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { AlertCircle, TrendingUp, Download, Loader2 } from 'lucide-react'
@@ -13,80 +9,7 @@ import { formatCurrency } from '@/shared/lib/format'
 import { TransactionHistory } from '@/features/earnings/components/TransactionHistory'
 
 export default function EarningsPage() {
-  const [earnings, setEarnings] = useState<DashboardEarnings>({
-    today: 0,
-    this_week: 0,
-    this_month: 0,
-    total_revenue: 0
-  })
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  
-  const [isExporting, setIsExporting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchEarningsData = useCallback(async () => {
-    try {
-      setError(null)
-      let fetchedEarnings = null;
-      let fetchedTransactions: Transaction[] = [];
-      
-      try {
-        fetchedEarnings = await getDashboardEarnings()
-      } catch (err: any) {
-        console.warn('Earnings API Error:', err)
-        setError(err.message || 'Failed to sync recent earnings metrics')
-      }
-
-      try {
-        const txResponse = await getTransactionHistory({ limit: 50 });
-        fetchedTransactions = Array.isArray(txResponse) 
-          ? txResponse 
-          : (txResponse as any).results || (txResponse as any).data || [];
-      } catch (_err: any) {
-        console.warn('Transactions API endpoint not available yet (404). Falling back to empty state.')
-      }
-
-      // Fallback calculation from orders/transactions if backend stats are strictly filtering DELIVERED
-      const totalTx = fetchedTransactions.reduce((acc, tx) => acc + (Number(tx.amount) || 0), 0)
-      if (!fetchedEarnings || fetchedEarnings.total_revenue === 0 || fetchedEarnings.today === 0) {
-        if (totalTx > 0) {
-          fetchedEarnings = {
-            today: fetchedEarnings?.today || totalTx,
-            this_week: fetchedEarnings?.this_week || totalTx,
-            this_month: fetchedEarnings?.this_month || totalTx,
-            total_revenue: fetchedEarnings?.total_revenue || totalTx,
-          }
-        }
-      }
-
-      if (fetchedEarnings) setEarnings(fetchedEarnings)
-      if (fetchedTransactions) setTransactions(fetchedTransactions)
-      
-    } catch (err: any) {
-      console.error('Critical page error:', err)
-    }
-  }, [])
-
-  const { isInitialLoading } = useSilentPolling(fetchEarningsData, 30000)
-
-  const handleExport = async () => {
-    try {
-      setIsExporting(true)
-      const blob = await exportEarningsCSV()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `connect-earnings-${new Date().toISOString().split('T')[0]}.csv`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
-    } catch (err: any) {
-      alert('Failed to export report: ' + (err.message || 'Unknown error'))
-    } finally {
-      setIsExporting(false)
-    }
-  }
+  const { earnings, transactions, isExporting, error, isInitialLoading, exportReport } = useEarnings()
 
   return (
     <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
@@ -96,7 +19,7 @@ export default function EarningsPage() {
           <p className="text-muted-foreground mt-1 font-medium text-sm">Track your revenue and completed payouts</p>
         </div>
         <Button 
-          onClick={handleExport} 
+          onClick={exportReport} 
           disabled={isExporting || transactions.length === 0}
           className="gap-2 shadow-sm font-bold bg-primary hover:bg-primary/90 transition-all active:scale-95"
         >

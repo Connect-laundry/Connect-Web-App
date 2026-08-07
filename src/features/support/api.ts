@@ -11,9 +11,16 @@ export interface AppNotification {
 }
 
 export interface NotificationPreferences {
-  email_enabled: boolean
   push_enabled: boolean
-  sms_enabled: boolean
+  order_updates: boolean
+  payment_updates: boolean
+  promotions: boolean
+  campaigns: boolean
+  referrals: boolean
+  weekly_tips: boolean
+  quiet_hours_start: number | null
+  quiet_hours_end: number | null
+  updated_at?: string
 }
 
 export async function getNotifications(params?: { is_read?: boolean }) {

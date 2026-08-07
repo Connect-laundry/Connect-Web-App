@@ -6,16 +6,20 @@ import {
   getDeliveryAssignments,
   createDeliveryAssignment,
   deleteDeliveryAssignment,
+  getDriverAccounts,
   type DeliveryAssignment,
+  type DriverAccount,
 } from '@/features/logistics/api'
 import { getOrders, getOrderById } from '@/features/orders/api'
 import { Order } from '@/shared/interfaces'
+import { getAssignmentTypes } from '../lib/assignments'
 
 export function useStaffManagement() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [assignments, setAssignments] = useState<DeliveryAssignment[]>([])
   const [orders, setOrders] = useState<Order[]>([])
+  const [drivers, setDrivers] = useState<DriverAccount[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -33,12 +37,14 @@ export function useStaffManagement() {
     try {
       setLoading(true)
       setError(null)
-      const [assignmentData, orderData] = await Promise.all([
+      const [assignmentData, orderData, driverData] = await Promise.all([
         getDeliveryAssignments().catch(() => []),
         getOrders({ limit: 50 }).then((res) => res.results).catch(() => []),
+        getDriverAccounts().catch(() => []),
       ])
       setAssignments(assignmentData)
       setOrders(orderData)
+      setDrivers(driverData)
     } catch (err: any) {
       setError(err.message || 'Failed to sync staff and delivery assignments.')
     } finally {
@@ -51,11 +57,13 @@ export function useStaffManagement() {
     Promise.all([
       getDeliveryAssignments().catch(() => []),
       getOrders({ limit: 50 }).then((res) => res.results).catch(() => []),
+      getDriverAccounts().catch(() => []),
     ])
-      .then(([assignmentData, orderData]) => {
+      .then(([assignmentData, orderData, driverData]) => {
         if (!isCancelled) {
           setAssignments(assignmentData)
           setOrders(orderData)
+          setDrivers(driverData)
         }
       })
       .catch((err: any) => {
@@ -105,25 +113,30 @@ export function useStaffManagement() {
   const handleCreateAssignment = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedOrderId || !driverId) {
-      setModalError('Please select an order and provide a driver ID / UUID.')
+      setModalError('Please select an order and a driver account.')
       return
     }
 
     try {
       setIsSubmitting(true)
       setModalError(null)
-      await createDeliveryAssignment({
-        order: selectedOrderId,
-        driver: driverId,
-        assignment_type: assignmentType,
-      })
+      const assignmentTypes = getAssignmentTypes(assignmentType)
+      await Promise.all(
+        assignmentTypes.map((type) =>
+          createDeliveryAssignment({
+            order: selectedOrderId,
+            driver: driverId,
+            assignment_type: type,
+          }),
+        ),
+      )
       setIsModalOpen(false)
       setSelectedOrderId('')
       setDriverId('')
       setIsOrderLocked(false)
       fetchData()
     } catch (err: any) {
-      setModalError(err.message || 'Failed to create driver assignment. Verify driver UUID/account.')
+      setModalError(err.message || 'Failed to create driver assignment. Verify the selected driver account.')
     } finally {
       setIsSubmitting(false)
     }
@@ -169,6 +182,7 @@ export function useStaffManagement() {
     assignments,
     filteredAssignments,
     orders,
+    drivers,
     loading,
     error,
     searchQuery,

@@ -13,11 +13,20 @@ export interface Notification {
   id: string;
   title: string;
   body: string;
-  type: string;
+  type: "ORDER" | "SYSTEM" | "PROMO" | string;
+  audience?: "USER" | "ADMIN";
+  category?: string;
+  priority?: "LOW" | "NORMAL" | "HIGH" | "URGENT";
+  action_url?: string;
   is_read: boolean;
   created_at: string;
   read_at?: string | null;
   related_order?: string | null;
+  campaign?: string | null;
+  push_status?: string;
+  delivered_at?: string | null;
+  opened_at?: string | null;
+  clicked_at?: string | null;
 }
 
 export interface LoginRequest {
@@ -51,8 +60,18 @@ export interface DashboardStats {
   pending_count: number;
   confirmed_count: number;
   picked_up_count: number;
+  in_process_count: number;
+  out_for_delivery_count: number;
   delivered_count: number;
   total_orders: number;
+  revenue_today?: number;
+  revenue_this_month?: number;
+  average_order_value?: number;
+  most_popular_items?: Array<{ name: string; quantity: number }>;
+  repeat_customer_rate?: number;
+  pending_pickups?: number;
+  pending_deliveries?: number;
+  average_turnaround_time?: number;
 }
 
 export interface DashboardEarnings {
@@ -88,10 +107,17 @@ export interface OrderTimeline {
 
 export interface OrderItem {
   id: string;
-  item_name: string;
+  /** Backend returns 'name' (snapshot of item name at order time). */
+  name: string;
+  /** Legacy alias kept for any callers that used the old field name. */
+  item_name?: string;
   quantity: number;
-  unit_price: number;
-  service: string;
+  /** Backend returns 'price' (unit price at order time). */
+  price: number;
+  /** Legacy alias kept for any callers that used the old field name. */
+  unit_price?: number;
+  item?: string | null;
+  service_type?: string | null;
 }
 
 export interface Order {
@@ -104,6 +130,7 @@ export interface Order {
   delivery_address?: string;
   status: OrderStatus;
   status_display: string;
+  payment_status?: "UNPAID" | "PAID" | "REFUNDED";
   total_amount: number;
   pickup_date: string;
   delivery_date: string;
@@ -116,6 +143,7 @@ export interface Order {
   estimated_weight?: number;
   order_timeline?: OrderTimeline[];
   rejection_reason?: string;
+  cancellation_reason?: string;
   created_at: string;
   updated_at: string;
 }

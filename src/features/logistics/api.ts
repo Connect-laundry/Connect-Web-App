@@ -12,6 +12,23 @@ export interface DeliveryAssignment {
   status: string
 }
 
+export interface DriverAccount {
+  id: string
+  email: string
+  first_name: string
+  last_name: string
+  phone: string | null
+}
+
+export interface CreateDriverAccountRequest {
+  email: string
+  phone: string
+  first_name: string
+  last_name: string
+  password: string
+  password_confirm: string
+}
+
 export interface TrackingLog {
   id: string
   order: string
@@ -21,6 +38,19 @@ export interface TrackingLog {
   latitude: number | null
   longitude: number | null
   timestamp: string
+}
+
+export async function getDriverAccounts(search?: string): Promise<DriverAccount[]> {
+  const query = search ? `?search=${encodeURIComponent(search)}` : ''
+  const response = await apiGet<unknown>(`/logistics/drivers/${query}`)
+  return unwrapList<DriverAccount>(response)
+}
+
+export async function createDriverAccount(
+  data: CreateDriverAccountRequest,
+): Promise<DriverAccount> {
+  const response = await apiPost<unknown>('/logistics/drivers/', data)
+  return unwrap<DriverAccount>(response)
 }
 
 export async function getDeliveryAssignments(): Promise<DeliveryAssignment[]> {

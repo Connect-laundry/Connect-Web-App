@@ -13,7 +13,7 @@ export interface DashboardStatCardConfig {
   subtitle: string
   statKey: keyof Pick<
     DashboardStats,
-    'pending_count' | 'confirmed_count' | 'picked_up_count' | 'delivered_count'
+    'pending_count' | 'confirmed_count' | 'picked_up_count' | 'in_process_count' | 'out_for_delivery_count' | 'delivered_count'
   >
   totalOrdersLabel?: boolean
   color: 'amber' | 'blue' | 'indigo' | 'emerald'

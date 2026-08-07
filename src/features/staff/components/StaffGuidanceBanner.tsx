@@ -16,7 +16,7 @@ export function StaffGuidanceBanner() {
               How Driver & Dispatch Management Works
             </h3>
             <p className="text-xs text-muted-foreground font-medium max-w-2xl leading-relaxed">
-              Driver accounts (<code className="px-1 py-0.5 rounded bg-muted text-[10px]">role: DRIVER</code>) receive dispatched orders for pickup and final delivery. Use the <strong>Assign Driver to Order</strong> button above to delegate dispatch using the driver&apos;s email address or account UUID.
+              Driver accounts (<code className="px-1 py-0.5 rounded bg-muted text-[10px]">role: DRIVER</code>) receive dispatched orders for pickup and final delivery. Create the courier&apos;s login with <strong>Create Driver</strong>, then use <strong>Assign Driver to Order</strong> to delegate pickup or delivery work.
             </p>
           </div>
         </div>

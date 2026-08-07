@@ -1,69 +1,57 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import {
-  getNotifications,
-  markAllNotificationsRead,
-  markNotificationRead,
-} from '@/features/notifications/api'
-import { Notification } from '@/shared/interfaces'
+import { useNotifications } from '@/features/notifications/hooks/useNotifications'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Spinner } from '@/shared/ui/spinner'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
-import { AlertCircle, Bell } from 'lucide-react'
+import { Badge } from '@/shared/ui/badge'
+import { AlertCircle, Bell, ExternalLink, RefreshCw } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 import { PageShell } from '@/shared/components/layout/PageShell'
 import { PageHeader } from '@/shared/components/layout/PageHeader'
 
+const priorityStyles: Record<string, string> = {
+  LOW: 'bg-slate-100 text-slate-700',
+  NORMAL: 'bg-blue-50 text-blue-700',
+  HIGH: 'bg-amber-50 text-amber-800',
+  URGENT: 'bg-red-50 text-red-700',
+}
+
+function formatCategory(category?: string) {
+  if (!category) return 'System'
+  return category.toLowerCase().replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
+}
+
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [unreadCount, setUnreadCount] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const load = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-      const data = await getNotifications({ page_size: 50 })
-      setNotifications(data.results)
-      setUnreadCount(data.unread_count)
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to load notifications')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    load()
-  }, [load])
-
-  const handleMarkRead = async (id: string) => {
-    await markNotificationRead(id)
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
-    )
-    setUnreadCount((c) => Math.max(0, c - 1))
-  }
-
-  const handleMarkAllRead = async () => {
-    await markAllNotificationsRead()
-    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
-    setUnreadCount(0)
-  }
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    isRefreshing,
+    error,
+    reload,
+    markRead,
+    markAllRead,
+    openNotification,
+  } = useNotifications()
 
   return (
     <PageShell contentClassName="max-w-3xl">
       <PageHeader
         title="Notifications"
         description={unreadCount > 0 ? `${unreadCount} unread messages` : 'All caught up'}
-        actions={
-          unreadCount > 0
-            ? [{ label: 'Mark all read', onClick: handleMarkAllRead, variant: 'outline' }]
-            : undefined
-        }
+        actions={[
+          {
+            label: isRefreshing ? 'Refreshing...' : 'Refresh',
+            onClick: reload,
+            variant: 'outline',
+            disabled: isRefreshing,
+          },
+          ...(unreadCount > 0
+            ? [{ label: 'Mark all read', onClick: markAllRead, variant: 'outline' as const }]
+            : []),
+        ]}
       />
 
       {error && (
@@ -84,29 +72,48 @@ export default function NotificationsPage() {
               <Bell className="h-7 w-7 text-primary/60" />
             </div>
             <p className="font-semibold">No notifications yet</p>
+            <p className="mt-1 text-center text-sm">
+              New orders, customer messages, payments, campaigns, and system updates will appear here.
+            </p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
-          {notifications.map((n) => (
+          {notifications.map((notification) => (
             <Card
-              key={n.id}
+              key={notification.id}
               className={cn(
                 'surface-card border-0 transition-all hover:-translate-y-px',
-                !n.is_read && 'ring-2 ring-primary/20 bg-primary/[0.04]',
+                !notification.is_read && 'ring-2 ring-primary/20 bg-primary/[0.04]',
               )}
             >
               <CardHeader className="py-4">
                 <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-base">{n.title}</CardTitle>
-                    <CardDescription className="mt-1 text-sm">{n.body}</CardDescription>
+                  <button
+                    type="button"
+                    className="min-w-0 flex-1 text-left"
+                    onClick={() => openNotification(notification)}
+                  >
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <Badge variant="secondary">{formatCategory(notification.category || notification.type)}</Badge>
+                      {notification.priority && notification.priority !== 'NORMAL' && (
+                        <Badge className={priorityStyles[notification.priority] || priorityStyles.NORMAL}>
+                          {notification.priority}
+                        </Badge>
+                      )}
+                      {!notification.is_read && <span className="h-2 w-2 rounded-full bg-primary" />}
+                    </div>
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      {notification.title}
+                      {notification.action_url && <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />}
+                    </CardTitle>
+                    <CardDescription className="mt-1 text-sm">{notification.body}</CardDescription>
                     <p className="text-xs text-muted-foreground mt-2">
-                      {new Date(n.created_at).toLocaleString()}
+                      {new Date(notification.created_at).toLocaleString()}
                     </p>
-                  </div>
-                  {!n.is_read && (
-                    <Button size="sm" variant="ghost" onClick={() => handleMarkRead(n.id)}>
+                  </button>
+                  {!notification.is_read && (
+                    <Button size="sm" variant="ghost" onClick={() => markRead(notification.id)}>
                       Mark read
                     </Button>
                   )}
@@ -114,6 +121,13 @@ export default function NotificationsPage() {
               </CardHeader>
             </Card>
           ))}
+        </div>
+      )}
+
+      {isRefreshing && !isLoading && (
+        <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+          Checking for new notifications
         </div>
       )}
     </PageShell>
