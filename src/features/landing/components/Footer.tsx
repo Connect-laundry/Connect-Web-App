@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { WashingMachine, Phone, Mail, MapPin } from 'lucide-react'
+import { Phone, Mail, MapPin } from 'lucide-react'
 import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { useAuth } from '@/features/auth/context/AuthContext'
+import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 
 export function Footer() {
   const { isAuthenticated } = useAuth()
@@ -15,12 +16,7 @@ export function Footer() {
           <AnimateOnScroll animation="fade-up" delay={0} className="lg:col-span-1">
             <div className="space-y-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <WashingMachine className="w-5 h-5 text-primary" />
-                </div>
-                <span className="text-lg font-bold tracking-tight">
-                  Connect<span className="text-primary"> Laundry</span>
-                </span>
+                <SimameLogo variant="lockup" />
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Professional laundry and dry cleaning services with free pickup and delivery to your door.
@@ -62,7 +58,7 @@ export function Footer() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-primary" />
-                  info@connectlaundry.com
+                  info@simame.app
                 </li>
                 <li className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-primary mt-0.5" />
@@ -75,7 +71,7 @@ export function Footer() {
 
         <AnimateOnScroll animation="fade">
           <div className="mt-12 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} Connect Laundry. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} SIMAME. All rights reserved.</p>
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>

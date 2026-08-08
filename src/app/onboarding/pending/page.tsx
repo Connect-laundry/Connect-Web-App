@@ -68,7 +68,7 @@ export default function PendingPage() {
             </Button>
 
             <p className="text-xs text-muted-foreground">
-              Questions? support@connectlaundry.app
+              Questions? support@simame.app
             </p>
           </CardContent>
         </Card>

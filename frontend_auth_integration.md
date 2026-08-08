@@ -1,5 +1,5 @@
 Frontend API Integration Guide: Auth & Registration
-This document provides the necessary details for integrating the Connect Laundry backend authentication system into the laundry owner web app.
+This document provides the necessary details for integrating the SIMAME backend authentication system into the laundry owner web app.
 
 Base URL: https://connect-full-backend.onrender.com/api/v1/ Auth Pattern: JWT (JSON Web Token) via Bearer Header.
 

@@ -1,4 +1,4 @@
-# User Story: Connect Laundry Owner Web Application
+# User Story: SIMAME Owner Web Application
 
 ## Persona
 
@@ -14,7 +14,7 @@
 
 ### Registration & Vendor Onboarding
 
-Kofi begins his journey by registering on the Connect Laundry platform. He enters his essential business details: email, phone number, and name.
+Kofi begins his journey by registering on the SIMAME platform. He enters his essential business details: email, phone number, and name.
 
 - **Unique Identity**: Behind the scenes, the system assigns a UUID (Universally Unique Identifier) to Kofi, ensuring his data remains secure and portable throughout the platform's lifecycle.
 - **Onboarding Wizard**: Upon registration, Kofi is guided through a multi-step setup to define his business profile, requiring administrative vetting (e.g., business license verification) before he can "Go Live."
@@ -75,7 +75,7 @@ Kofi registers his physical laundry machines to monitor the shop floor’s pulse
 
 ### The Pricing Architecture
 
-Connect Laundry offers a flexible pricing engine which Kofi manages:
+SIMAME offers a flexible pricing engine which Kofi manages:
 
 - **Pricing Method Toggle**: Kofi chooses between **Per-Item** (fixed prices per shirt/suit) or **Per-Kg** (weight-based pricing).
 - **Service Catalog**: He maps global items (e.g., "Duvet") to his shop with custom price snapshots and estimated durations (e.g., "Ready in 48 hours").

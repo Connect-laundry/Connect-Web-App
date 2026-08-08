@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Eye, EyeOff } from 'lucide-react'
 import { createDriverAccount } from '@/features/logistics/api'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Button } from '@/shared/ui/button'
@@ -29,6 +29,48 @@ const EMPTY_FORM = {
   phone: '',
   password: '',
   password_confirm: '',
+}
+
+function PasswordInput({
+  id,
+  value,
+  onChange,
+  autoComplete,
+  disabled,
+  required,
+}: {
+  id: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  autoComplete?: string
+  disabled?: boolean
+  required?: boolean
+}) {
+  const [show, setShow] = useState(false)
+  return (
+    <div className="relative">
+      <Input
+        id={id}
+        type={show ? 'text' : 'password'}
+        value={value}
+        onChange={onChange}
+        autoComplete={autoComplete}
+        minLength={8}
+        disabled={disabled}
+        required={required}
+        className="pr-10"
+      />
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => setShow((s) => !s)}
+        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+        aria-label={show ? 'Hide password' : 'Show password'}
+      >
+        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  )
 }
 
 export function CreateDriverModal({
@@ -106,7 +148,7 @@ export function CreateDriverModal({
               <Input
                 id="driver-first-name"
                 value={form.first_name}
-                onChange={(event) => updateField('first_name', event.target.value)}
+                onChange={(e) => updateField('first_name', e.target.value)}
                 autoComplete="given-name"
                 disabled={isSubmitting}
                 required
@@ -119,7 +161,7 @@ export function CreateDriverModal({
               <Input
                 id="driver-last-name"
                 value={form.last_name}
-                onChange={(event) => updateField('last_name', event.target.value)}
+                onChange={(e) => updateField('last_name', e.target.value)}
                 autoComplete="family-name"
                 disabled={isSubmitting}
                 required
@@ -135,7 +177,7 @@ export function CreateDriverModal({
               id="driver-email"
               type="email"
               value={form.email}
-              onChange={(event) => updateField('email', event.target.value)}
+              onChange={(e) => updateField('email', e.target.value)}
               autoComplete="email"
               disabled={isSubmitting}
               required
@@ -150,7 +192,7 @@ export function CreateDriverModal({
               id="driver-phone"
               type="tel"
               value={form.phone}
-              onChange={(event) => updateField('phone', event.target.value)}
+              onChange={(e) => updateField('phone', e.target.value)}
               autoComplete="tel"
               placeholder="e.g. 233241234567"
               disabled={isSubmitting}
@@ -163,13 +205,11 @@ export function CreateDriverModal({
               <label htmlFor="driver-password" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Temporary Password
               </label>
-              <Input
+              <PasswordInput
                 id="driver-password"
-                type="password"
                 value={form.password}
-                onChange={(event) => updateField('password', event.target.value)}
+                onChange={(e) => updateField('password', e.target.value)}
                 autoComplete="new-password"
-                minLength={8}
                 disabled={isSubmitting}
                 required
               />
@@ -178,13 +218,11 @@ export function CreateDriverModal({
               <label htmlFor="driver-password-confirm" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Confirm Password
               </label>
-              <Input
+              <PasswordInput
                 id="driver-password-confirm"
-                type="password"
                 value={form.password_confirm}
-                onChange={(event) => updateField('password_confirm', event.target.value)}
+                onChange={(e) => updateField('password_confirm', e.target.value)}
                 autoComplete="new-password"
-                minLength={8}
                 disabled={isSubmitting}
                 required
               />

@@ -1,8 +1,8 @@
-# Connect Laundry Owner API Setup
+# SIMAME Owner API Setup
 
 ## Overview
 
-The Connect Laundry Owner web app comes with a **built-in mock API** that allows you to develop and test the frontend without needing the external backend server.
+The SIMAME Owner web app comes with a **built-in mock API** that allows you to develop and test the frontend without needing the external backend server.
 
 ## Mock API Endpoints
 
@@ -159,7 +159,7 @@ curl -X GET http://localhost:3000/api/dashboard/orders?status=COMPLETED \
 
 ## Switching to External Backend
 
-To use the real Connect Laundry backend instead of the mock API:
+To use the real SIMAME backend instead of the mock API:
 
 1. Update `.env.local`:
    ```

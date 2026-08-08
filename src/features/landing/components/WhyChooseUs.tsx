@@ -35,13 +35,13 @@ export function WhyChooseUs() {
           {/* Right - Content */}
           <div>
             <AnimateOnScroll animation="fade-left">
-              <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Why Connect Laundry</p>
+              <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Why SIMAME</p>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-6">
                 We Don&apos;t Just Clean Clothes.{' '}
                 <span className="text-primary">We Care for Them.</span>
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-                With years of experience and thousands of happy customers, Connect Laundry brings
+                With years of experience and thousands of happy customers, SIMAME brings
                 professional-grade cleaning to your doorstep with unmatched convenience.
               </p>
             </AnimateOnScroll>
@@ -63,7 +63,7 @@ export function WhyChooseUs() {
             <AnimateOnScroll animation="fade-up" delay={400}>
               <Button size="lg" asChild className="h-12 px-6 font-semibold group">
                 <Link href={isAuthenticated ? '/dashboard' : '/auth/register'}>
-                  {isAuthenticated ? 'Go to Dashboard' : 'Join Connect Laundry'}
+                  {isAuthenticated ? 'Go to Dashboard' : 'Join SIMAME'}
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>

@@ -1,4 +1,4 @@
-# Connect Laundry Owner Dashboard
+# SIMAME Owner Dashboard
 
 A comprehensive web application for laundry business owners to manage their operations, track orders, and monitor earnings. Built with Next.js 16, TypeScript, Tailwind CSS, and shadcn/ui components.
 
@@ -91,14 +91,14 @@ A comprehensive web application for laundry business owners to manage their oper
 
 ### Prerequisites
 - Node.js 18+ with pnpm package manager
-- API access to Connect Laundry backend
+- API access to SIMAME backend
 
 ### Installation
 
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd connect-laundry-owner
+cd simame-owner
 ```
 
 2. Install dependencies:
@@ -114,7 +114,7 @@ cp .env.local.example .env.local
 4. Update `.env.local` with your API configuration:
 ```
 NEXT_PUBLIC_API_BASE_URL=https://connect-full-backend.onrender.com/api/v1
-NEXT_PUBLIC_APP_NAME=Connect Laundry Owner
+NEXT_PUBLIC_APP_NAME=SIMAME Owner
 ```
 
 ### Running the Development Server
@@ -133,7 +133,7 @@ Use your owner account credentials to log in:
 
 ## API Integration
 
-The app communicates with the Connect Laundry backend using SimpleJWT authentication.
+The app communicates with the SIMAME backend using SimpleJWT authentication.
 
 ### Key Endpoints
 
@@ -242,4 +242,4 @@ For issues or questions:
 
 ## License
 
-This project is part of the Connect Laundry platform.
+This project is part of the SIMAME platform.

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildProfilePayload, toProfileDraft, validateProfileDraft, type ProfileDraft } from './profile-edit'
 
 const validDraft: ProfileDraft = {
-  name: 'Connect Laundry',
+  name: 'Simame',
   description: '',
   phone_number: '0200000000',
   address: '',

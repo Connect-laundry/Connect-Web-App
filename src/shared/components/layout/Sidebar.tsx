@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/shared/lib/utils'
+import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 import {
   LayoutDashboard,
   Package,
@@ -12,7 +13,6 @@ import {
   Users,
   Settings,
   LogOut,
-  WashingMachine,
   ChevronLeft,
   ChevronRight,
   X,
@@ -169,17 +169,10 @@ function SidebarContent({
           onClick={onLinkClick}
           className="flex items-center gap-3 group overflow-hidden"
         >
-          <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-105">
-            <WashingMachine className="w-6 h-6 text-primary" />
-          </div>
+          <SimameLogo variant={collapsed ? 'icon' : 'lockup'} className="group-hover:scale-[1.02] transition-transform duration-300" />
           {!collapsed && (
             <div className="flex flex-col truncate">
-              <span className="text-lg font-extrabold tracking-tight leading-none text-foreground">
-                Connect<span className="text-primary font-black">.</span>
-              </span>
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-1">
-                Management
-              </span>
+              <span className="sr-only">SIMAME Management</span>
             </div>
           )}
         </Link>
