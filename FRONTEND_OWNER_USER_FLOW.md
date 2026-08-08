@@ -1,7 +1,7 @@
-# Connect Laundry - Owner Web App: End-to-End Frontend Flow & Implementation Guide
+# SIMAME - Owner Web App: End-to-End Frontend Flow & Implementation Guide
 
 **Target Audience:** Frontend/Web Developer (Next.js/React preferred)
-**Objective:** Provide a pixel-perfect roadmap of the user journey, state management rules, routing logic, and API integrations for the Connect Laundry Owner Dashboard.
+**Objective:** Provide a pixel-perfect roadmap of the user journey, state management rules, routing logic, and API integrations for the SIMAME Owner Dashboard.
 
 ---
 

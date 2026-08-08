@@ -21,7 +21,7 @@ export function MarketingWhyChooseUs() {
           </AnimateOnScroll>
           <div>
             <AnimateOnScroll animation="fade-left">
-              <SectionLabel>Why Connect</SectionLabel>
+              <SectionLabel>Why SIMAME</SectionLabel>
               <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-6">Built for customers. <span className="text-primary">Powered for owners.</span></h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-8 font-medium">Local laundries get a real dashboard to manage orders and revenue. Customers get pickup, pro cleaning, and delivery — one connected experience.</p>
             </AnimateOnScroll>

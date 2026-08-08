@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { LoginForm } from '@/features/auth/components/LoginForm'
 import { Spinner } from '@/shared/ui/spinner'
-import { WashingMachine } from 'lucide-react'
+import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 
 export default function LoginPage() {
   return (
@@ -14,13 +14,10 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md z-10">
         <div className="mb-10 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-primary to-primary/80 shadow-glow-sm mb-1">
-            <WashingMachine className="w-8 h-8 text-primary-foreground animate-bounce-subtle" />
+          <div className="flex justify-center mb-1">
+            <SimameLogo variant="brand" className="animate-bounce-subtle mx-auto" />
           </div>
           <div className="space-y-1">
-            <h1 className="text-4xl font-black tracking-tight text-gradient-brand">
-              Connect Laundry
-            </h1>
             <p className="text-muted-foreground font-bold text-xs uppercase tracking-[0.25em]">
               Owner dashboard
             </p>

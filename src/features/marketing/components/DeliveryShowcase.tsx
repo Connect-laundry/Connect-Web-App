@@ -7,7 +7,7 @@ export function DeliveryShowcase({ className = '' }: { className?: string }) {
     <div className={`relative overflow-hidden rounded-2xl ${className}`}>
       <Image
         src={marketingImages.deliveryCourier}
-        alt="Connect delivery partner on the way with your order"
+        alt="SIMAME delivery partner on the way with your order"
         width={1200}
         height={400}
         className="w-full h-48 sm:h-56 object-cover object-[center_30%]"

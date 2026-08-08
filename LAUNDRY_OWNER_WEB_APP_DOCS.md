@@ -1,4 +1,4 @@
-# Connect Laundry — Laundry Owner Web App: Complete API Reference
+# SIMAME — Laundry Owner Web App: Complete API Reference
 
 > **Base URL**: `https://connect-full-backend.onrender.com/api/v1`
 >

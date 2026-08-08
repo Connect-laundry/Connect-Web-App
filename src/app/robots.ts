@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://connectlaundry.app'
+  const baseUrl = 'https://simame.app'
 
   return {
     rules: {

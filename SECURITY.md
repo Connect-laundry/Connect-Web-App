@@ -11,7 +11,7 @@ Currently, only the latest version of the `Connect Web App` is supported for sec
 
 ## Reporting a Vulnerability
 
-We take the security of the Connect Laundry platform seriously. If you identify a potential security vulnerability, please do NOT report it via public GitHub issues.
+We take the security of the SIMAME platform seriously. If you identify a potential security vulnerability, please do NOT report it via public GitHub issues.
 
 Instead, please report security vulnerabilities by emailing: **security@your-domain.example.com** (replace with your primary email).
 

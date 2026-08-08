@@ -15,7 +15,7 @@ export function MarketingHero() {
           <div className="space-y-8">
             <AnimateOnScroll><SectionLabel>Laundry & dry cleaning</SectionLabel></AnimateOnScroll>
             <AnimateOnScroll delay={100}><h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-black tracking-tight leading-[1.08] text-foreground">We&apos;ll take the laundry. <span className="text-primary">You take the time.</span></h1></AnimateOnScroll>
-            <AnimateOnScroll delay={200}><p className="text-lg text-muted-foreground max-w-lg leading-relaxed font-medium">Connect picks up, cleans, and delivers — with local partners you can trust and an owner dashboard to run your shop.</p></AnimateOnScroll>
+            <AnimateOnScroll delay={200}><p className="text-lg text-muted-foreground max-w-lg leading-relaxed font-medium">SIMAME picks up, cleans, and delivers — with local partners you can trust and an owner dashboard to run your shop.</p></AnimateOnScroll>
             <AnimateOnScroll delay={300}><PickupBar /></AnimateOnScroll>
             <AnimateOnScroll delay={400}>
               <div className="flex flex-wrap items-center gap-3">

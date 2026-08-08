@@ -1,9 +1,9 @@
-const CACHE_NAME = 'connect-web-v1'
+const CACHE_NAME = 'simame-web-v1'
 const OFFLINE_URL = '/dashboard'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll([OFFLINE_URL, '/icon.svg'])),
+    caches.open(CACHE_NAME).then((cache) => cache.addAll([OFFLINE_URL, '/pwa-icon-192x192.png'])),
   )
   self.skipWaiting()
 })

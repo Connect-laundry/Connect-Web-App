@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const UA = 'ConnectLaundry/1.0 (owner onboarding geocoder)'
+const UA = 'Simame/1.0 (owner onboarding geocoder)'
 // Ghana's approximate geographic centre — biases ranking toward local results.
 const GH_BIAS = '&lat=7.9465&lon=-1.0232'
 

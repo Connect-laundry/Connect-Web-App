@@ -20,14 +20,14 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Connect Laundry — Professional Laundry & Dry Cleaning Services',
+  title: 'SIMAME — Professional Laundry & Dry Cleaning Services',
   description: 'Premium laundry, dry cleaning, and garment care with free pickup and delivery. Fresh, clean clothes delivered to your door.',
-  generator: 'connectlaundry.app',
-  applicationName: 'Connect Laundry',
+  generator: 'simame.app',
+  applicationName: 'SIMAME',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Connect',
+    title: 'SIMAME',
   },
   icons: {
     icon: [
@@ -40,8 +40,14 @@ export const metadata: Metadata = {
         media: '(prefers-color-scheme: dark)',
       },
       {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: '/pwa-icon-192x192.png',
+        type: 'image/png',
+        sizes: '192x192',
+      },
+      {
+        url: '/pwa-icon-512x512.png',
+        type: 'image/png',
+        sizes: '512x512',
       },
     ],
     apple: '/apple-icon.png',

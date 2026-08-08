@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { WashingMachine, Menu, X, ArrowRight } from 'lucide-react'
+import { Menu, X, ArrowRight } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { useAuth } from '@/features/auth/context/AuthContext'
 import { NAV_LINKS } from '../data/landingData'
+import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 
 export function Navbar() {
   const { isAuthenticated } = useAuth()
@@ -29,12 +30,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-105">
-              <WashingMachine className="w-5 h-5 text-primary" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">
-              Connect<span className="text-primary"> Laundry</span>
-            </span>
+            <SimameLogo variant="lockup" className="transition-transform duration-300 group-hover:scale-[1.02]" />
           </Link>
 
           <div className="hidden md:flex items-center gap-1">
