@@ -20,10 +20,10 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Connect Laundry — Professional Laundry & Dry Cleaning Services',
+  title: 'Simame — Professional Laundry & Dry Cleaning Services',
   description: 'Premium laundry, dry cleaning, and garment care with free pickup and delivery. Fresh, clean clothes delivered to your door.',
   generator: 'connectlaundry.app',
-  applicationName: 'Connect Laundry',
+  applicationName: 'Simame',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

@@ -3,7 +3,12 @@
 import { useState, useCallback } from 'react'
 import { useSilentPolling } from '@/shared/hooks/useSilentPolling'
 import { getDashboardEarnings } from '@/features/dashboard/api'
-import { getTransactionHistory, exportEarningsCSV } from '@/features/earnings/api'
+import {
+  exportEarningsCSV,
+  getPayoutOverview,
+  getTransactionHistory,
+  type PayoutOverview,
+} from '@/features/earnings/api'
 import { DashboardEarnings, Transaction } from '@/shared/interfaces'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
@@ -20,6 +25,7 @@ export default function EarningsPage() {
     total_revenue: 0
   })
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [payoutOverview, setPayoutOverview] = useState<PayoutOverview | null>(null)
   
   const [isExporting, setIsExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,6 +41,13 @@ export default function EarningsPage() {
       } catch (err: any) {
         console.warn('Earnings API Error:', err)
         setError(err.message || 'Failed to sync recent earnings metrics')
+      }
+
+      try {
+        setPayoutOverview(await getPayoutOverview())
+      } catch (err: any) {
+        console.warn('Payouts API Error:', err)
+        setError(err.message || 'Failed to load payout balances')
       }
 
       try {
@@ -120,12 +133,96 @@ export default function EarningsPage() {
         <StatCard title="Total Revenue" value={earnings.total_revenue} highlight />
       </div>
 
+      <PayoutOverviewPanel overview={payoutOverview} isLoading={isInitialLoading} />
+
       {/* Transaction History Table */}
       <TransactionHistory transactions={transactions} isLoading={isInitialLoading} />
     </div>
   )
 }
 
+function PayoutOverviewPanel({ overview, isLoading }: { overview: PayoutOverview | null; isLoading: boolean }) {
+  return (
+    <Card className="mb-8 border-border/50 shadow-sm">
+      <CardHeader>
+        <CardTitle>Payout position</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Customer funds held, available for payout, and already paid.
+        </p>
+      </CardHeader>
+      <CardContent>
+        {isLoading && !overview ? (
+          <div className="h-20 animate-pulse bg-muted/40" />
+        ) : overview ? (
+          <>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <PayoutMetric label="Held" value={overview.summary.held} />
+              <PayoutMetric label="Available" value={overview.summary.available} />
+              <PayoutMetric label="Paid" value={overview.summary.paid} />
+            </div>
+            <div className="mt-6 border-t pt-4">
+              <h2 className="text-sm font-bold">Recent settlements</h2>
+              {overview.settlements.length ? (
+                <div className="mt-3 divide-y">
+                  {overview.settlements.map((settlement) => (
+                    <div key={`${settlement.order_no}-${settlement.created_at}`} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
+                      <div>
+                        <p className="font-semibold">{settlement.order_no || 'Settlement'}</p>
+                        <p className="text-muted-foreground">
+                          Gross {formatCurrency(Number(settlement.gross))} · Commission {formatCurrency(Number(settlement.commission))}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-black">{formatCurrency(Number(settlement.net))}</p>
+                        <p className="text-xs font-semibold uppercase text-muted-foreground">{settlement.status} · {settlement.route}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-muted-foreground">No settlement records are available yet.</p>
+              )}
+            </div>
+            <div className="mt-6 border-t pt-4">
+              <h2 className="text-sm font-bold">Recent payouts</h2>
+              {overview.payouts.length ? (
+                <div className="mt-3 divide-y">
+                  {overview.payouts.map((payout) => (
+                    <div key={payout.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
+                      <div>
+                        <p className="font-semibold">{payout.reference || 'Payout'}</p>
+                        <p className="text-muted-foreground">
+                          {payout.method} · {new Date(payout.paid_at || payout.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-black">{formatCurrency(Number(payout.amount))}</p>
+                        <p className="text-xs font-semibold uppercase text-muted-foreground">{payout.status}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-muted-foreground">No payouts have been recorded yet.</p>
+              )}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">Payout balances are currently unavailable.</p>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function PayoutMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border-l-4 border-primary px-4 py-2">
+      <p className="text-xs font-bold uppercase text-muted-foreground">{label}</p>
+      <p className="mt-1 text-2xl font-black">{formatCurrency(Number(value))}</p>
+    </div>
+  )
+}
 function StatCard({ title, value, description, highlight }: { title: string, value: number, description?: string, highlight?: boolean }) {
   return (
     <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">

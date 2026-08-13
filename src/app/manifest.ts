@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Connect Laundry — Owner Dashboard',
+    name: 'Simame — Owner Dashboard',
     short_name: 'Connect',
     description: 'Manage laundry orders, pricing, and business operations from your phone.',
     start_url: '/dashboard',

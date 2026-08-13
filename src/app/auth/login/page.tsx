@@ -19,7 +19,7 @@ export default function LoginPage() {
           </div>
           <div className="space-y-1">
             <h1 className="text-4xl font-black tracking-tight text-gradient-brand">
-              Connect Laundry
+              Simame
             </h1>
             <p className="text-muted-foreground font-bold text-xs uppercase tracking-[0.25em]">
               Owner dashboard

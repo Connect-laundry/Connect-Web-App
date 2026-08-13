@@ -43,7 +43,7 @@ export function Hero() {
 
             <AnimateOnScroll animation="fade-up" delay={300}>
               <p className="text-lg sm:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                Connect Laundry offers premium laundry and dry cleaning services with free pickup and delivery.
+                Simame offers premium laundry and dry cleaning services with free pickup and delivery.
                 Let us handle the dirty work while you focus on what matters.
               </p>
             </AnimateOnScroll>

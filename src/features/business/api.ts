@@ -267,10 +267,10 @@ export async function confirmPriceImport(
   return unwrap<{ created: string[]; skipped: string[]; job: PriceImportJob }>(response)
 }
 
-/** GET hours template defaults. */
-export async function getHoursTemplate() {
-  const response = await apiGet<any>('/laundries/dashboard/my-laundry/hours/template/')
-  return unwrap<any>(response)
+/** Apply the backend's default operating-hours template. */
+export async function applyHoursTemplate(): Promise<Laundry> {
+  const response = await apiPost<any>('/laundries/dashboard/my-laundry/hours/template/')
+  return unwrap<Laundry>(response)
 }
 
 /** Copy Monday hours to Tue–Fri. */

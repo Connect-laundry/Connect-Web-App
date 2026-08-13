@@ -29,7 +29,7 @@ async function lifecycleAction(
   body?: Record<string, unknown>,
 ): Promise<Partial<Order>> {
   const response = await apiPatch<any>(
-    `/booking/lifecycle/${orderId}/${action}/`,
+    `/orders/lifecycle/${orderId}/${action}/`,
     body,
   );
   return unwrap<Partial<Order>>(response);
@@ -68,7 +68,7 @@ export async function markDelivered(orderId: string): Promise<Partial<Order>> {
 }
 
 export const getOrderTimeline = async (orderId: string) => {
-  const response = await apiGet<any>(`/booking/lifecycle/${orderId}/timeline/`);
+  const response = await apiGet<any>(`/orders/lifecycle/${orderId}/timeline/`);
   return unwrap<OrderTimeline[]>(response);
 };
 
@@ -81,7 +81,7 @@ export async function cancelOrder(orderId: string, reason?: string): Promise<Par
 }
 
 export async function getOrderPriceBreakdown(orderId: string) {
-  const response = await apiGet<any>(`/booking/${orderId}/price-breakdown/`);
+  const response = await apiGet<any>(`/orders/${orderId}/price-breakdown/`);
   return unwrap<Record<string, unknown>>(response);
 }
 

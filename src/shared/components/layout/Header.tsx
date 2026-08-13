@@ -67,7 +67,7 @@ export function Header({
   // Match current path to page title
   const currentTitleInfo = pageTitles[pathname] || {
     title: 'Management Portal',
-    description: 'Connect Laundry Operations',
+    description: 'Simame Operations',
   }
 
   const userInitial = user?.first_name ? user.first_name[0].toUpperCase() : 'U'

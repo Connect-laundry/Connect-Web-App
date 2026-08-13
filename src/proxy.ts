@@ -2,7 +2,17 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Routes that require authentication
-const protectedRoutes = ['/dashboard', '/orders', '/earnings', '/settings', '/staff', '/onboarding']
+const protectedRoutes = [
+  '/dashboard',
+  '/orders',
+  '/notifications',
+  '/business',
+  '/machines',
+  '/earnings',
+  '/settings',
+  '/staff',
+  '/onboarding',
+]
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl

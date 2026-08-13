@@ -5,9 +5,9 @@ import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Switch } from '@/shared/ui/switch'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
-import { Moon, Pencil, X } from 'lucide-react'
+import { Clock3, Moon, Pencil, X } from 'lucide-react'
 import type { Laundry, OperatingHour } from '@/shared/interfaces'
-import { patchMyLaundry, copyMondayHours } from '../api'
+import { applyHoursTemplate, patchMyLaundry, copyMondayHours } from '../api'
 
 const DAY_NAMES = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
@@ -48,6 +48,7 @@ export function HoursEditor({ laundry, onSaved }: HoursEditorProps) {
   const [editing, setEditing] = useState(false)
   const [drafts, setDrafts] = useState<DayDraft[]>([])
   const [isSaving, setIsSaving] = useState(false)
+  const [isApplyingDefaults, setIsApplyingDefaults] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const startEditing = () => {
@@ -95,6 +96,26 @@ export function HoursEditor({ laundry, onSaved }: HoursEditorProps) {
     return (
       <div className="space-y-3">
         <div className="flex flex-wrap justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isApplyingDefaults}
+            onClick={async () => {
+              setIsApplyingDefaults(true)
+              setError(null)
+              try {
+                const updated = await applyHoursTemplate()
+                onSaved(updated)
+              } catch (err: any) {
+                setError(err?.message || 'Could not apply default hours.')
+              } finally {
+                setIsApplyingDefaults(false)
+              }
+            }}
+          >
+            <Clock3 className="mr-2 h-4 w-4" />
+            {isApplyingDefaults ? 'Applying...' : 'Apply defaults'}
+          </Button>
           <Button
             variant="outline"
             size="sm"

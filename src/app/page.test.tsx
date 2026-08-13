@@ -43,7 +43,7 @@ describe('HomePage', () => {
       /Fresh, Clean & Delivered to Your Door/i,
     )
     expect(
-      screen.getByText(/Connect Laundry offers premium laundry and dry cleaning services/i),
+      screen.getByText(/Simame offers premium laundry and dry cleaning services/i),
     ).toBeInTheDocument()
   })
 

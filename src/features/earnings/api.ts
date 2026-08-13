@@ -3,6 +3,34 @@ import { unwrap } from '@/shared/api/unwrap'
 import { EarningsResponse, Transaction } from '@/shared/interfaces'
 import { getPaymentOwnerStats } from '@/features/payments/api'
 
+export interface PayoutOverview {
+  summary: { held: string; available: string; paid: string; currency: string }
+  settles_directly: boolean
+  settlements: Array<{
+    order_no: string | null
+    gross: string
+    commission: string
+    net: string
+    status: string
+    route: string
+    created_at: string
+  }>
+  payouts: Array<{
+    id: string
+    amount: string
+    status: string
+    method: string
+    reference: string
+    paid_at: string | null
+    created_at: string
+  }>
+}
+
+export async function getPayoutOverview(): Promise<PayoutOverview> {
+  const response = await apiGet<any>('/laundries/dashboard/payouts/')
+  return unwrap<PayoutOverview>(response)
+}
+
 /**
  * Get earnings overview
  */
@@ -38,39 +66,31 @@ export async function getTransactionHistory(params?: {
   end_date?: string
 }): Promise<{ count: number; results: Transaction[] }> {
   try {
-    const ordersRes = await getDashboardOrders({ limit: 50 })
-    const results: Transaction[] = (ordersRes.results || []).map((o) => ({
-      id: o.id,
-      order_id: o.id,
-      order_no: o.order_no,
-      customer_name: o.customer_name || 'Customer',
-      amount: Number(o.total_amount) || 0,
-      status: o.status === 'CANCELLED' || o.status === 'REJECTED' ? 'COMPLETED' : 'COMPLETED',
-      date: o.created_at || new Date().toISOString(),
-    }))
+    const ordersRes = await getDashboardOrders({
+      limit: params?.limit ?? 50,
+      offset: params?.offset,
+      status: params?.status,
+    })
+    const results: Transaction[] = (ordersRes.results || [])
+      .filter((o) => o.status === 'DELIVERED' || o.status === 'COMPLETED')
+      .map((o) => ({
+        id: o.id,
+        order_id: o.id,
+        order_no: o.order_no,
+        customer_name: o.customer_name || 'Customer',
+        amount: Number(o.total_amount) || 0,
+        status: o.status as Transaction['status'],
+        date: o.created_at || new Date().toISOString(),
+      }))
 
     if (results.length > 0) {
       return { count: results.length, results }
     }
   } catch (_e) {
-    /* fallback to payment stats if orders fetch fails */
+    /* The payout endpoint is authoritative; do not fabricate history on failure. */
   }
 
-  const stats = await getPaymentOwnerStats()
-  const results: Transaction[] = (stats.method_breakdown ?? []).map((row, index) => ({
-    id: `${row.payment_method}-${index}`,
-    order_id: row.payment_method,
-    order_no: row.payment_method,
-    customer_name: `${row.payment_method.replace('_', ' ')} Payment`,
-    amount: Number(row.total_amount),
-    status: 'COMPLETED' as const,
-    date: new Date().toISOString(),
-  }))
-
-  return {
-    count: results.length,
-    results: results.slice(params?.offset ?? 0, (params?.offset ?? 0) + (params?.limit ?? 50)),
-  }
+  return { count: 0, results: [] }
 }
 
 /**
