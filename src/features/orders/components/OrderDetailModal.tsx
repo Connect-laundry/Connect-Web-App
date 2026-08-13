@@ -29,6 +29,8 @@ export function OrderDetailModal({
     availableActions,
     currentStepIndex,
     handleAction,
+    canCollectCash,
+    handleCollectCash,
     displayTotal,
   } = useOrderDetailModal(order, onOrderUpdated, onOpenChange);
 
@@ -118,6 +120,9 @@ export function OrderDetailModal({
           availableActions={availableActions}
           isLoading={isLoading}
           onAction={handleAction}
+          canCollectCash={canCollectCash}
+          cashAmount={Number(order.amount_due ?? order.total_amount)}
+          onCollectCash={handleCollectCash}
         />
       </DialogContent>
     </Dialog>

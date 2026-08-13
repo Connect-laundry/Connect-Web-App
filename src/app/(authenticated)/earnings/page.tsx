@@ -147,7 +147,7 @@ function PayoutOverviewPanel({ overview, isLoading }: { overview: PayoutOverview
       <CardHeader>
         <CardTitle>Payout position</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Customer funds held, available for payout, and already paid.
+          Customer funds held, available for payout, and already paid. Cash collected is separate because it never enters payout balances.
         </p>
       </CardHeader>
       <CardContent>
@@ -155,10 +155,11 @@ function PayoutOverviewPanel({ overview, isLoading }: { overview: PayoutOverview
           <div className="h-20 animate-pulse bg-muted/40" />
         ) : overview ? (
           <>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <PayoutMetric label="Held" value={overview.summary.held} />
               <PayoutMetric label="Available" value={overview.summary.available} />
               <PayoutMetric label="Paid" value={overview.summary.paid} />
+              <PayoutMetric label="Cash collected directly" value={overview.summary.cash_collected || "0"} />
             </div>
             <div className="mt-6 border-t pt-4">
               <h2 className="text-sm font-bold">Recent settlements</h2>

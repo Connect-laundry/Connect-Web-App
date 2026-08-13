@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Order, OrderTimeline as OrderTimelineType } from "@/shared/interfaces";
 import {
+    canCollectCash as canCollectCashForOrder,
+    collectCash,
     executeOrderAction,
     getAvailableActions,
     getOrderPriceBreakdown,
@@ -38,7 +40,7 @@ export function useOrderDetailModal(
         };
     }, [order?.id, order?.actual_weight]);
 
-    const availableActions = order ? getAvailableActions(order.status) : [];
+    const availableActions = order ? getAvailableActions(order) : [];
     const currentStepIndex = order
         ? LIFECYCLE_STEPS.findIndex((s) => s.id === order.status)
         : -1;
@@ -64,6 +66,26 @@ export function useOrderDetailModal(
         }
     };
 
+    const canCollectCash = order ? canCollectCashForOrder(order) : false;
+
+    const handleCollectCash = async () => {
+        if (!order || !canCollectCash || isLoading) return;
+        setIsLoading(true);
+        setError(null);
+        setSuccessMessage(null);
+        try {
+            const updatedOrder = await collectCash(
+                order.id,
+                Number(order.amount_due ?? order.total_amount),
+            );
+            setSuccessMessage('Cash collection confirmed');
+            onOrderUpdated?.({ ...order, ...updatedOrder });
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Failed to confirm cash collection');
+        } finally {
+            setIsLoading(false);
+        }
+    };
     const calculatedItemsTotal =
         order?.items?.reduce(
             (acc, it) => acc + Number(it.quantity) * Number(it.unit_price),
@@ -85,6 +107,8 @@ export function useOrderDetailModal(
         availableActions,
         currentStepIndex,
         handleAction,
+        canCollectCash,
+        handleCollectCash,
         displayTotal,
     };
 }

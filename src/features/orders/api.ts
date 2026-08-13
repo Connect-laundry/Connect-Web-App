@@ -1,4 +1,4 @@
-import { apiGet, apiPatch } from "@/shared/api/client";
+import { apiGet, apiPatch, apiPost } from "@/shared/api/client";
 import { unwrap } from "@/shared/api/unwrap";
 import { Order, OrderListResponse, OrderTimeline } from "@/shared/interfaces";
 import { getDashboardOrders } from "@/features/dashboard/api";
@@ -76,6 +76,14 @@ export async function completeOrder(orderId: string): Promise<Partial<Order>> {
   return lifecycleAction(orderId, "complete");
 }
 
+export async function collectCash(orderId: string, amount: number): Promise<Order> {
+  const response = await apiPost<unknown>(
+    '/orders/lifecycle/' + orderId + '/collect-cash/',
+    { amount: amount.toFixed(2) },
+  );
+  return unwrap<Order>(response);
+}
+
 export async function cancelOrder(orderId: string, reason?: string): Promise<Partial<Order>> {
   return lifecycleAction(orderId, "cancel", reason ? { reason } : undefined);
 }
@@ -85,7 +93,17 @@ export async function getOrderPriceBreakdown(orderId: string) {
   return unwrap<Record<string, unknown>>(response);
 }
 
-export function getAvailableActions(status: string): string[] {
+export function canCollectCash(order: Order): boolean {
+  return (
+    order.payment_method === 'CASH' &&
+    order.payment_status !== 'PAID' &&
+    ['OUT_FOR_DELIVERY', 'DELIVERED', 'COMPLETED'].includes(order.status) &&
+    Number(order.amount_due ?? order.total_amount) > 0
+  );
+}
+
+export function getAvailableActions(orderOrStatus: Order | string): string[] {
+  const status = typeof orderOrStatus === 'string' ? orderOrStatus : orderOrStatus.status;
   const actions: Record<string, string[]> = {
     PENDING: ["accept", "reject", "cancel"],
     CONFIRMED: ["markPickedUp", "cancel"],
@@ -98,7 +116,13 @@ export function getAvailableActions(status: string): string[] {
     CANCELLED: [],
   };
 
-  return actions[status] || [];
+  const available = actions[status] || [];
+  if (typeof orderOrStatus === 'string' || status !== 'PENDING') return available;
+  const acceptsBeforePayment =
+    orderOrStatus.payment_method === 'CASH' ||
+    orderOrStatus.pricing_mode === 'CUSTOM_QUOTE' ||
+    orderOrStatus.payment_status === 'PAID';
+  return acceptsBeforePayment ? available : available.filter((action) => action !== 'accept');
 }
 
 const STATUS_DISPLAY: Record<string, string> = {

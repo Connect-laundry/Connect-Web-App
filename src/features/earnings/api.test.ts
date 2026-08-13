@@ -13,7 +13,7 @@ describe('owner earnings API', () => {
 
   it('loads the authoritative payout overview', async () => {
     const overview = {
-      summary: { held: '10.00', available: '20.00', paid: '30.00', currency: 'GHS' },
+      summary: { held: '10.00', available: '20.00', paid: '30.00', cash_collected: '40.00', currency: 'GHS' },
       settles_directly: false,
       settlements: [],
       payouts: [],
@@ -28,7 +28,7 @@ describe('owner earnings API', () => {
     vi.mocked(getDashboardOrders).mockResolvedValue({
       count: 3,
       results: [
-        { id: '1', order_no: 'SIM-1', status: 'COMPLETED', total_amount: '12.00', created_at: '2026-08-13T00:00:00Z' },
+        { id: '1', order_no: 'SIM-1', status: 'COMPLETED', payment_status: 'PAID', total_amount: '12.00', created_at: '2026-08-13T00:00:00Z' },
         { id: '2', order_no: 'SIM-2', status: 'CANCELLED', total_amount: '15.00', created_at: '2026-08-13T00:00:00Z' },
         { id: '3', order_no: 'SIM-3', status: 'REJECTED', total_amount: '18.00', created_at: '2026-08-13T00:00:00Z' },
       ],

@@ -13,6 +13,9 @@ export interface OrderModalFooterProps {
     availableActions: string[];
     isLoading: boolean;
     onAction: (action: string) => void;
+    canCollectCash: boolean;
+    cashAmount: number;
+    onCollectCash: () => void;
 }
 
 export interface OrdersFiltersProps {

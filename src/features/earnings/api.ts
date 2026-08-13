@@ -4,7 +4,7 @@ import { EarningsResponse, Transaction } from '@/shared/interfaces'
 import { getPaymentOwnerStats } from '@/features/payments/api'
 
 export interface PayoutOverview {
-  summary: { held: string; available: string; paid: string; currency: string }
+  summary: { held: string; available: string; paid: string; cash_collected: string; currency: string }
   settles_directly: boolean
   settlements: Array<{
     order_no: string | null
@@ -72,7 +72,10 @@ export async function getTransactionHistory(params?: {
       status: params?.status,
     })
     const results: Transaction[] = (ordersRes.results || [])
-      .filter((o) => o.status === 'DELIVERED' || o.status === 'COMPLETED')
+      .filter((o) =>
+        (o.status === 'DELIVERED' || o.status === 'COMPLETED') &&
+        o.payment_status === 'PAID'
+      )
       .map((o) => ({
         id: o.id,
         order_id: o.id,

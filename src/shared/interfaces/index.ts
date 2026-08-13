@@ -118,6 +118,13 @@ export interface Order {
   rejection_reason?: string;
   created_at: string;
   updated_at: string;
+  pricing_mode?: 'BY_ITEM' | 'BY_WEIGHT' | 'CUSTOM_QUOTE';
+  payment_method?: 'CARD' | 'BANK_TRANSFER' | 'CASH';
+  payment_status?: 'PAID' | 'UNPAID' | 'REFUNDED';
+  payment_state?: string;
+  amount_due?: string | number;
+  amount_collected?: string | number;
+  cash_collected_at?: string | null;
 }
 
 export interface OrderListResponse {

@@ -1,8 +1,22 @@
-import { User, Phone, Calendar, FileText, MapPin } from "lucide-react";
+import { User, Phone, Calendar, FileText, MapPin, Banknote } from "lucide-react";
 import { formatDate } from "@/shared/lib/format";
 import { Order } from "@/shared/interfaces";
 
 export function OrderInfoGrids({ order }: { order: Order }) {
+    const isCash = order.payment_method === 'CASH';
+    const paymentMethodLabel = isCash
+        ? 'Cash on Delivery'
+        : order.payment_method === 'BANK_TRANSFER'
+          ? 'Bank Transfer'
+          : 'Paystack';
+    const displayedAmount = isCash
+        ? Number(
+            order.payment_status === 'PAID'
+                ? (order.amount_collected ?? order.total_amount)
+                : (order.amount_due ?? order.total_amount)
+          )
+        : Number(order.total_amount);
+
     return (
         <>
             {/* Customer & Address Grid */}
@@ -48,6 +62,44 @@ export function OrderInfoGrids({ order }: { order: Order }) {
                 </div>
             </div>
 
+            <div className="p-4 rounded-xl border border-border/40 bg-card shadow-xs space-y-3">
+                <div className="flex items-center gap-2 text-sm font-bold text-foreground pb-2 border-b border-border/30">
+                    <Banknote className="w-4 h-4 text-primary" />
+                    <span>Payment</span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                    <div>
+                        <span className="text-muted-foreground font-medium block">Method</span>
+                        <span className="font-bold">
+                            {paymentMethodLabel}
+                        </span>
+                    </div>
+                    <div>
+                        <span className="text-muted-foreground font-medium block">Status</span>
+                        <span className="font-bold">
+                            {order.payment_state === "CASH_COLLECTED" ? "Paid in cash" :
+                             order.payment_state === "CASH_DUE" ? "Cash due" :
+                             order.payment_status || "Unpaid"}
+                        </span>
+                    </div>
+                    <div>
+                        <span className="text-muted-foreground font-medium block">
+                            {isCash ? (order.payment_status === "PAID" ? "Collected" : "Due") : "Order Total"}
+                        </span>
+                        <span className="font-bold">
+                            GHS {displayedAmount.toFixed(2)}
+                        </span>
+                    </div>
+                    <div>
+                        <span className="text-muted-foreground font-medium block">{isCash ? "Collected At" : "Provider"}</span>
+                        <span className="font-bold">
+                            {isCash
+                                ? (order.cash_collected_at ? formatDate(order.cash_collected_at) : 'Not collected')
+                                : paymentMethodLabel}
+                        </span>
+                    </div>
+                </div>
+            </div>
             {/* Service Details & Addresses */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl border border-border/40 bg-card shadow-xs space-y-3">
