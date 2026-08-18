@@ -25,14 +25,14 @@ interface AnimateOnScrollProps {
   threshold?: number
 }
 
-export function AnimateOnScroll({
+export const AnimateOnScroll = ({
   children,
   animation = 'fade-up',
   delay = 0,
   duration = 700,
   className = '',
   threshold = 0.1,
-}: AnimateOnScrollProps) {
+}: AnimateOnScrollProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
 

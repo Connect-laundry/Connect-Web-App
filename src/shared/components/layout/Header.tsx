@@ -56,11 +56,11 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   },
 }
 
-export function Header({
+export const Header = ({
   sidebarOpen,
   setSidebarOpen,
   setMobileOpen,
-}: HeaderProps) {
+}: HeaderProps) => {
   const pathname = usePathname()
   const { user, laundry, logout } = useAuth()
 

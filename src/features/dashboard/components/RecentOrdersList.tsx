@@ -12,14 +12,14 @@ import { Badge } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { ArrowUpRight, Package } from 'lucide-react'
-import type { OrderListResponse } from '@/shared/interfaces'
+import type { OrderListResponse } from '@/shared/types'
 
 interface RecentOrdersListProps {
   recentOrders: OrderListResponse | null
   onOrderUpdated: (order: Order) => void
 }
 
-export function RecentOrdersList({ recentOrders, onOrderUpdated }: RecentOrdersListProps) {
+export const RecentOrdersList = ({ recentOrders, onOrderUpdated }: RecentOrdersListProps) => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [detailModalOpen, setDetailModalOpen] = useState(false)
 

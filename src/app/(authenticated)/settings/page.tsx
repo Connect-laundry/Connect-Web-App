@@ -15,7 +15,7 @@ import { AccountTab } from '@/features/settings/components/AccountTab'
 import { SecurityTab } from '@/features/settings/components/SecurityTab'
 import { NotificationsTab } from '@/features/settings/components/NotificationsTab'
 
-export default function SettingsPage() {
+const SettingsPage = () => {
   const [sessions, setSessions] = useState<any[]>([])
   const [notifications, setNotifications] = useState<any[]>([])
   const [prefs, setPrefs] = useState<any>(null)
@@ -83,3 +83,5 @@ export default function SettingsPage() {
     </PageShell>
   )
 }
+
+export default SettingsPage

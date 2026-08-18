@@ -29,7 +29,7 @@ const pricingModelLabels: Record<string, string> = {
   HYBRID: 'Hybrid (item + weight)',
 }
 
-export function ReviewStep({ hours, priceItems = [], weightTiers = [], express = {} }: ReviewStepProps) {
+export const ReviewStep = ({ hours, priceItems = [], weightTiers = [], express = {} }: ReviewStepProps) => {
   const form = useFormContext()
 
   const selectedPrice = priceRanges.find((p) => p.value === form.watch('price_range'))

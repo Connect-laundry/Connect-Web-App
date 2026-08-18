@@ -19,7 +19,7 @@ interface BusinessInfoStepProps {
   setSelectedFile: (file: File | null) => void
 }
 
-export function BusinessInfoStep({ selectedFile, setSelectedFile }: BusinessInfoStepProps) {
+export const BusinessInfoStep = ({ selectedFile, setSelectedFile }: BusinessInfoStepProps) => {
   const form = useFormContext()
 
   return (

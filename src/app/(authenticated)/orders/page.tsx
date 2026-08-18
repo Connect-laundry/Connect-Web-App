@@ -8,7 +8,7 @@ import { Spinner } from '@/shared/ui/spinner'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
-export default function OrdersPage() {
+const OrdersPage = () => {
   const {
     orders,
     isLoading,
@@ -85,3 +85,5 @@ export default function OrdersPage() {
     </div>
   )
 }
+
+export default OrdersPage

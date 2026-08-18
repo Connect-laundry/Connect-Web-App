@@ -12,7 +12,7 @@ import { BusinessProfileCard } from '@/features/business/components/BusinessProf
 import { HoursEditor } from '@/features/business/components/HoursEditor'
 import { ServicesPricingTab } from '@/features/business/components/ServicesPricingTab'
 
-export default function BusinessPage() {
+const BusinessPage = () => {
   const {
     laundry,
     setLaundry,
@@ -95,3 +95,5 @@ export default function BusinessPage() {
     </div>
   )
 }
+
+export default BusinessPage

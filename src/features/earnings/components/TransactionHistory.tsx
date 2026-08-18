@@ -1,4 +1,4 @@
-import { Transaction } from '@/shared/interfaces'
+import { Transaction } from '@/shared/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table'
 import { Badge } from '@/shared/ui/badge'
@@ -11,7 +11,7 @@ interface TransactionHistoryProps {
   isLoading?: boolean
 }
 
-export function TransactionHistory({ transactions, isLoading }: TransactionHistoryProps) {
+export const TransactionHistory = ({ transactions, isLoading }: TransactionHistoryProps) => {
   return (
     <Card className="border-border/50 shadow-sm overflow-hidden">
       <CardHeader className="bg-muted/10 border-b border-border/50">

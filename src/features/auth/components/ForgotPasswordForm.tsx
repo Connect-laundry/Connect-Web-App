@@ -26,7 +26,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-export function ForgotPasswordForm() {
+export const ForgotPasswordForm = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [sent, setSent] = useState(false)

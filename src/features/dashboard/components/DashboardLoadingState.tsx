@@ -1,7 +1,7 @@
 import { PageShell } from '@/shared/components/layout/PageShell'
 import { Spinner } from '@/shared/ui/spinner'
 
-export function DashboardLoadingState() {
+export const DashboardLoadingState = () => {
   return (
     <PageShell>
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">

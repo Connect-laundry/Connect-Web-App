@@ -8,7 +8,7 @@ import { WhyChooseUs } from './WhyChooseUs'
 import { CTABanner } from './CTABanner'
 import { Footer } from './Footer'
 
-export function LandingPage() {
+export const LandingPage = () => {
   return (
     <main className="min-h-screen">
       <Navbar />

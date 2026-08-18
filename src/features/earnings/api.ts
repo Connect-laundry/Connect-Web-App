@@ -1,6 +1,6 @@
 import { apiGet } from '@/shared/api/client'
 import { unwrap } from '@/shared/api/unwrap'
-import { EarningsResponse, Transaction } from '@/shared/interfaces'
+import { EarningsResponse, Transaction } from '@/shared/types'
 import { getPaymentOwnerStats } from '@/features/payments/api'
 
 /**

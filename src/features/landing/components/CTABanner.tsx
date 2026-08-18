@@ -8,7 +8,7 @@ const AnimatedDots = dynamic(() => import('./AnimatedDots').then(m => m.Animated
   ssr: false,
 })
 
-export function CTABanner() {
+export const CTABanner = () => {
 
   return (
     <section className="py-24 sm:py-32">

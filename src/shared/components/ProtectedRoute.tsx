@@ -16,7 +16,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const router = useRouter()
   const { isAuthenticated, isLoading, user, laundry, isLaundryLoading, logout } = useAuth()
 

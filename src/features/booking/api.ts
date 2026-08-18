@@ -1,6 +1,6 @@
 import { apiGet, apiPost } from '@/shared/api/client'
 import { unwrap, unwrapList, unwrapPaginated } from '@/shared/api/unwrap'
-import { OrderListResponse } from '@/shared/interfaces'
+import { OrderListResponse } from '@/shared/types'
 
 export async function getCatalogServices() {
   const response = await apiGet<any>('/booking/services/')

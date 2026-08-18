@@ -23,7 +23,7 @@ function formatCategory(category?: string) {
   return category.toLowerCase().replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
-export default function NotificationsPage() {
+const NotificationsPage = () => {
   const {
     notifications,
     unreadCount,
@@ -133,3 +133,5 @@ export default function NotificationsPage() {
     </PageShell>
   )
 }
+
+export default NotificationsPage

@@ -17,7 +17,7 @@ export interface StatCardProps {
   index: number
 }
 
-export function StatCard({
+export const StatCard = ({
   title,
   value,
   subtitle,
@@ -26,7 +26,7 @@ export function StatCard({
   trend,
   trendIsUp,
   index,
-}: StatCardProps) {
+}: StatCardProps) => {
   const colorMap: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-950/40 dark:text-blue-400',
     indigo: 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-400',

@@ -1,40 +1,13 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { cn } from '@/shared/lib/utils'
 import { Pencil, Plus, Trash2, X } from 'lucide-react'
-import type { PricingItem } from '@/shared/interfaces'
-import { createPricingItem, updatePricingItem, deletePricingItem } from '../api'
-
-/** Service categories — must match the onboarding Price List step. */
-const SERVICE_CATEGORIES = [
-  { value: 'Wash Only', label: 'Wash only' },
-  { value: 'Wash & Iron', label: 'Wash + ironing' },
-  { value: 'Iron Only', label: 'Ironing only' },
-] as const
-
-type ItemDraft = {
-  id: string | null // null = new, unsaved row
-  item_name: string
-  category: string
-  unit_price: string
-  is_active: boolean
-  display_order: number
-}
-
-function toDraft(item: PricingItem): ItemDraft {
-  return {
-    id: item.id,
-    item_name: item.item_name,
-    category: item.category,
-    unit_price: item.unit_price,
-    is_active: item.is_active,
-    display_order: item.display_order,
-  }
-}
+import type { PricingItem } from '@/shared/types'
+import { usePriceItemsEditor } from '../hooks/usePriceItemsEditor'
+import { SERVICE_CATEGORIES } from '../lib/price-items'
 
 interface PriceItemsEditorProps {
   items: PricingItem[]
@@ -45,82 +18,9 @@ interface PriceItemsEditorProps {
  * Read-only price list table with an Edit mode that allows adding, editing,
  * and deleting items. Saves via the pricing-items CRUD endpoints.
  */
-export function PriceItemsEditor({ items, onSaved }: PriceItemsEditorProps) {
-  const [editing, setEditing] = useState(false)
-  const [drafts, setDrafts] = useState<ItemDraft[]>([])
-  const [deletedIds, setDeletedIds] = useState<string[]>([])
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const startEditing = () => {
-    setDrafts(items.map(toDraft))
-    setDeletedIds([])
-    setError(null)
-    setEditing(true)
-  }
-
-  const update = (index: number, patch: Partial<ItemDraft>) =>
-    setDrafts((prev) => prev.map((d, i) => (i === index ? { ...d, ...patch } : d)))
-
-  const addRow = () =>
-    setDrafts((prev) => [
-      ...prev,
-      {
-        id: null,
-        item_name: '',
-        category: '',
-        unit_price: '',
-        is_active: true,
-        display_order: prev.length,
-      },
-    ])
-
-  const removeRow = (index: number) => {
-    const row = drafts[index]
-    if (row.id) setDeletedIds((prev) => [...prev, row.id!])
-    setDrafts((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const save = async () => {
-    const nonEmpty = drafts.filter((d) => d.item_name.trim() || d.unit_price !== '')
-    for (const d of nonEmpty) {
-      if (!d.item_name.trim()) return setError('Every item needs a name.')
-      if (!d.unit_price || Number(d.unit_price) <= 0) {
-        return setError(`“${d.item_name.trim()}”: enter a price greater than 0.`)
-      }
-      if (!d.category) {
-        return setError(`“${d.item_name.trim()}”: select a service type.`)
-      }
-    }
-
-    setIsSaving(true)
-    setError(null)
-    try {
-      for (const id of deletedIds) await deletePricingItem(id)
-      const saved: PricingItem[] = []
-      for (let i = 0; i < nonEmpty.length; i++) {
-        const d = nonEmpty[i]
-        const payload = {
-          item_name: d.item_name.trim(),
-          category: d.category,
-          unit_price: d.unit_price,
-          is_active: d.is_active,
-          display_order: i,
-        }
-        saved.push(
-          d.id
-            ? await updatePricingItem(d.id, payload)
-            : await createPricingItem(payload),
-        )
-      }
-      onSaved(saved)
-      setEditing(false)
-    } catch (err: any) {
-      setError(err?.message || 'Failed to save the price list. Please try again.')
-    } finally {
-      setIsSaving(false)
-    }
-  }
+export const PriceItemsEditor = ({ items, onSaved }: PriceItemsEditorProps) => {
+  const { editing, setEditing, drafts, isSaving, error, startEditing, update, addRow, removeRow, save } =
+    usePriceItemsEditor(items, onSaved)
 
   // ------------------------------------------------------------- read mode
   if (!editing) {

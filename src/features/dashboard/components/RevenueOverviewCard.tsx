@@ -1,13 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { formatCurrency } from '@/shared/lib/format'
-import type { DashboardEarnings } from '@/shared/interfaces'
+import type { DashboardEarnings } from '@/shared/types'
 import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 
 interface RevenueOverviewCardProps {
   earnings: DashboardEarnings | null
 }
 
-export function RevenueOverviewCard({ earnings }: RevenueOverviewCardProps) {
+export const RevenueOverviewCard = ({ earnings }: RevenueOverviewCardProps) => {
   return (
     <AnimateOnScroll animation="slide-up" delay={200} className="lg:col-span-2">
       <Card className="surface-card border-0 py-0 gap-0 overflow-hidden">

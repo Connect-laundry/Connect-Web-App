@@ -12,7 +12,7 @@ import { PerformanceSummaryCard } from '@/features/dashboard/components/Performa
 import { QuickActionsCard } from '@/features/dashboard/components/QuickActionsCard'
 import { RecentOrdersCard } from '@/features/dashboard/components/RecentOrdersCard'
 
-export default function DashboardPage() {
+const DashboardPage = () => {
   const {
     isInitialLoading,
     error,
@@ -90,3 +90,5 @@ export default function DashboardPage() {
     </div>
   )
 }
+
+export default DashboardPage

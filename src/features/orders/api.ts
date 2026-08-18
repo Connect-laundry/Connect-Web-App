@@ -1,6 +1,6 @@
 import { apiGet, apiPatch } from "@/shared/api/client";
 import { unwrap } from "@/shared/api/unwrap";
-import { Order, OrderListResponse, OrderTimeline } from "@/shared/interfaces";
+import { Order, OrderListResponse, OrderTimeline } from "@/shared/types";
 import { getDashboardOrders } from "@/features/dashboard/api";
 
 /**

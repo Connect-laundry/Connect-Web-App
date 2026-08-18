@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { User } from '@/shared/interfaces'
+import { User } from '@/shared/types'
 import { clearAuthCookies, getCurrentUser, logout as logoutUser } from '@/features/auth/api'
 import { isProtectedAppPath, isPublicPath } from '@/features/auth/lib/public-routes'
 import { resetSessionExpiryNotify, SESSION_EXPIRED_EVENT } from '@/features/auth/lib/session-expired'
@@ -25,7 +25,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [laundry, setLaundry] = useState<any | null>(null)

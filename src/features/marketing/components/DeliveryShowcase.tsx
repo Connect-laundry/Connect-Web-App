@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { marketingImages } from '@/features/marketing/constants/images'
 
 /** Wide banner for How it works — delivery moment */
-export function DeliveryShowcase({ className = '' }: { className?: string }) {
+export const DeliveryShowcase = ({ className = '' }: { className?: string }) => {
   return (
     <div className={`relative overflow-hidden rounded-2xl ${className}`}>
       <Image

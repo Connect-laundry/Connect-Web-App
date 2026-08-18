@@ -2,7 +2,7 @@
 
 import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 
-export default function Loading() {
+const Loading = () => {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-md">
       <div className="relative">
@@ -16,3 +16,5 @@ export default function Loading() {
     </div>
   )
 }
+
+export default Loading

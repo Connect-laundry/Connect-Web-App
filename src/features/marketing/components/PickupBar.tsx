@@ -3,7 +3,7 @@ import { MapPin, Calendar, ArrowRight } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 
 /** Rinse/Press-style scheduling bar — links to register. */
-export function PickupBar() {
+export const PickupBar = () => {
   return (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 rounded-2xl bg-card border border-border/80 shadow-[0_4px_24px_-4px_oklch(0.42_0.15_260/0.12)] max-w-xl">
       <div className="flex flex-1 items-center gap-3 px-4 py-3 rounded-xl bg-muted/40 min-w-0">

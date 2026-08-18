@@ -30,14 +30,14 @@ interface RadioCardGroupProps {
 }
 
 /** A radio group rendered as selectable cards, bound to react-hook-form. */
-export function RadioCardGroup({
+export const RadioCardGroup = ({
   name,
   label,
   options,
   gridClassName = 'grid grid-cols-3 gap-3',
   compact = false,
   className,
-}: RadioCardGroupProps) {
+}: RadioCardGroupProps) => {
   const form = useFormContext()
   return (
     <FormField

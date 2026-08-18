@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { Notification } from '@/shared/interfaces'
+import type { Notification } from '@/shared/types'
 import {
   getNotifications,
   markAllNotificationsRead,

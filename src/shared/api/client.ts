@@ -1,4 +1,4 @@
-import { type ApiError as _ApiError } from '@/shared/interfaces'
+import { type ApiError as _ApiError } from '@/shared/types'
 import { notifySessionExpired } from '@/features/auth/lib/session-expired'
 import { refreshAccessToken } from '@/shared/api/token-refresh'
 

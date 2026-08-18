@@ -1,6 +1,6 @@
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/shared/api/client'
 import { unwrap, unwrapList } from '@/shared/api/unwrap'
-import type { PricingItem, WeightPricing } from '@/shared/interfaces'
+import type { PricingItem, WeightPricing } from '@/shared/types'
 
 export async function getPricingItems(): Promise<PricingItem[]> {
   try {

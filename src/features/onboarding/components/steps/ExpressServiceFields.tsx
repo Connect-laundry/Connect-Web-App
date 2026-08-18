@@ -22,12 +22,12 @@ interface ExpressServiceFieldsProps {
  * Each service (wash only / wash + ironing / ironing only, or the weight
  * tariff) carries its own toggle, hours, and surcharge.
  */
-export function ExpressServiceFields({
+export const ExpressServiceFields = ({
   serviceKey,
   serviceLabel,
   express,
   setExpress,
-}: ExpressServiceFieldsProps) {
+}: ExpressServiceFieldsProps) => {
   const setting: ExpressSetting = express[serviceKey] ?? emptyExpressSetting()
 
   const update = (patch: Partial<ExpressSetting>) =>

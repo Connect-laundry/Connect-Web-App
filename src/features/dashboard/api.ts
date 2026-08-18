@@ -1,6 +1,6 @@
 import { apiGet } from '@/shared/api/client'
 import { unwrap, unwrapPaginated } from '@/shared/api/unwrap'
-import { DashboardStats, DashboardEarnings, OrderListResponse } from '@/shared/interfaces'
+import { DashboardStats, DashboardEarnings, OrderListResponse } from '@/shared/types'
 
 /**
  * Get dashboard statistics

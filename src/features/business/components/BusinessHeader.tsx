@@ -2,7 +2,7 @@
 
 import { Button } from '@/shared/ui/button'
 import { Palmtree } from 'lucide-react'
-import { Laundry } from '@/shared/interfaces'
+import { Laundry } from '@/shared/types'
 
 interface BusinessHeaderProps {
   laundry: Laundry | null
@@ -10,11 +10,11 @@ interface BusinessHeaderProps {
   onVacationToggle: () => void
 }
 
-export function BusinessHeader({
+export const BusinessHeader = ({
   laundry,
   isTogglingVacation,
   onVacationToggle,
-}: BusinessHeaderProps) {
+}: BusinessHeaderProps) => {
   return (
     <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
       <div>

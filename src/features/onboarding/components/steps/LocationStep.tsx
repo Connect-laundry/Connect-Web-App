@@ -19,7 +19,7 @@ const MODE_OPTIONS: { id: LocationMode; label: string; icon: typeof Search; hint
   { id: 'search', label: 'Search address/area', icon: Search, hint: 'Not at shop' },
 ]
 
-export function LocationStep() {
+export const LocationStep = () => {
   const form = useFormContext()
   const loc = useLocationCapture()
 

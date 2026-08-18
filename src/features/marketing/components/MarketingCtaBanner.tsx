@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { Button } from '@/shared/ui/button'
 
-export function MarketingCtaBanner() {
+export const MarketingCtaBanner = () => {
   return (
     <section className="py-24 sm:py-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

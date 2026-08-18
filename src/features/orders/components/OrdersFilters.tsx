@@ -10,18 +10,18 @@ import {
   SelectValue,
 } from '@/shared/ui/select'
 import { ORDER_STATUSES } from '../data'
-import { OrdersFiltersProps } from '../interfaces'
+import { OrdersFiltersProps } from '../types'
 
 
 
 
 
-export function OrdersFilters({
+export const OrdersFilters = ({
   searchQuery,
   onSearchChange,
   statusFilter,
   onStatusChange,
-}: OrdersFiltersProps) {
+}: OrdersFiltersProps) => {
   return (
     <Card className="mb-6">
       <CardHeader>

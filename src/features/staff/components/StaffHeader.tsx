@@ -11,12 +11,12 @@ interface StaffHeaderProps {
   onOpenCreateDriverModal: () => void
 }
 
-export function StaffHeader({
+export const StaffHeader = ({
   loading,
   onRefresh,
   onOpenAssignModal,
   onOpenCreateDriverModal,
-}: StaffHeaderProps) {
+}: StaffHeaderProps) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>

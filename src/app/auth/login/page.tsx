@@ -3,7 +3,7 @@ import { LoginForm } from '@/features/auth/components/LoginForm'
 import { Spinner } from '@/shared/ui/spinner'
 import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 
-export default function LoginPage() {
+const LoginPage = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden bg-background">
       <div className="absolute inset-0 mesh-bg" aria-hidden />
@@ -48,3 +48,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
+export default LoginPage

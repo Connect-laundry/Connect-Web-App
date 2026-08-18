@@ -1,9 +1,9 @@
 'use client'
 
-import { Order } from '@/shared/interfaces'
+import { Order } from '@/shared/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
-import { OrdersTableProps } from '../interfaces'
+import { OrdersTableProps } from '../types'
 
 
 const getStatusColor = (status: string) => {
@@ -19,13 +19,13 @@ const getStatusColor = (status: string) => {
   return colors[status] || 'bg-gray-100 text-gray-800'
 }
 
-export function OrdersTable({
+export const OrdersTable = ({
   orders,
   ordersPerPage,
   currentPage,
   onPageChange,
   onSelectOrder,
-}: OrdersTableProps) {
+}: OrdersTableProps) => {
   return (
     <Card>
       <CardHeader>

@@ -28,12 +28,12 @@ const wordmarkSizes: Record<SimameLogoVariant, string> = {
   brand: 'text-2xl sm:text-3xl',
 }
 
-export function SimameLogo({
+export const SimameLogo = ({
   variant = 'lockup',
   className,
   imageClassName,
   iconOnly = false,
-}: SimameLogoProps) {
+}: SimameLogoProps) => {
   const showWordmark = !iconOnly && variant !== 'icon'
 
   return (

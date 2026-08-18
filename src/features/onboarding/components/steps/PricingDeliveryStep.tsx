@@ -34,12 +34,12 @@ interface PricingDeliveryStepProps {
   setExpress: (updater: (prev: ExpressByService) => ExpressByService) => void
 }
 
-export function PricingDeliveryStep({
+export const PricingDeliveryStep = ({
   weightTiers,
   setWeightTiers,
   express,
   setExpress,
-}: PricingDeliveryStepProps) {
+}: PricingDeliveryStepProps) => {
   const form = useFormContext()
   const pricingModel = form.watch('pricing_model')
 

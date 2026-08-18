@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { marketingImages } from '@/features/marketing/constants/images'
 
 /** Hero: doorstep delivery + laundry detail inset */
-export function HeroPhoto({ className = '' }: { className?: string }) {
+export const HeroPhoto = ({ className = '' }: { className?: string }) => {
   return (
     <div className={`relative ${className}`}>
       <div className="relative overflow-hidden rounded-3xl shadow-2xl ring-1 ring-black/5">

@@ -8,7 +8,7 @@ import { Button } from '@/shared/ui/button'
 import { formatCurrency } from '@/shared/lib/format'
 import { TransactionHistory } from '@/features/earnings/components/TransactionHistory'
 
-export default function EarningsPage() {
+const EarningsPage = () => {
   const { earnings, transactions, isExporting, error, isInitialLoading, exportReport } = useEarnings()
 
   return (
@@ -49,7 +49,7 @@ export default function EarningsPage() {
   )
 }
 
-function StatCard({ title, value, description, highlight }: { title: string, value: number, description?: string, highlight?: boolean }) {
+const StatCard = ({ title, value, description, highlight }: { title: string, value: number, description?: string, highlight?: boolean }) => {
   return (
     <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
       {/* Decorative gradient blob */}
@@ -70,3 +70,5 @@ function StatCard({ title, value, description, highlight }: { title: string, val
     </Card>
   )
 }
+
+export default EarningsPage

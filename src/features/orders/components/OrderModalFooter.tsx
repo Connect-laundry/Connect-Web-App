@@ -4,10 +4,10 @@ import { Spinner } from "@/shared/ui/spinner";
 import { DialogFooter } from "@/shared/ui/dialog";
 import { User } from "lucide-react";
 import { ACTION_LABELS } from "../data";
-import { OrderModalFooterProps } from "../interfaces";
+import { OrderModalFooterProps } from "../types";
 
 
-export function OrderModalFooter({ orderId, onClose, availableActions, isLoading, onAction }: OrderModalFooterProps) {
+export const OrderModalFooter = ({ orderId, onClose, availableActions, isLoading, onAction }: OrderModalFooterProps) => {
     return (
         <DialogFooter className="px-6 py-4 border-t border-border/40 bg-muted/20 flex flex-col sm:flex-row gap-2 justify-between items-center">
             <div className="flex gap-2 items-center">

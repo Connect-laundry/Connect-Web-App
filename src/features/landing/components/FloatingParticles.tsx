@@ -1,6 +1,6 @@
 'use client'
 
-export function FloatingParticles() {
+export const FloatingParticles = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
       {[...Array(6)].map((_, i) => (

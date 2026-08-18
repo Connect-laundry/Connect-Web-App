@@ -2,7 +2,7 @@
 
 import { Toaster } from 'sonner'
 
-export function AppToaster() {
+export const AppToaster = () => {
   return (
     <Toaster
       position="top-right"

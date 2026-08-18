@@ -6,17 +6,10 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/shared/lib/utils'
 import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 import {
-  LayoutDashboard,
-  Package,
-  Store,
-  TrendingUp,
-  Users,
-  Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
   X,
-  Bell,
 } from 'lucide-react'
 import { useAuth } from '@/features/auth/context/AuthContext'
 import { Button } from '@/shared/ui/button'
@@ -26,51 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/shared/ui/tooltip'
-
-const navigationItems = [
-  {
-    name: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-    section: 'overview',
-  },
-  {
-    name: 'Orders',
-    href: '/orders',
-    icon: Package,
-    section: 'overview',
-  },
-  {
-    name: 'Notifications',
-    href: '/notifications',
-    icon: Bell,
-    section: 'overview',
-  },
-  {
-    name: 'Business',
-    href: '/business',
-    icon: Store,
-    section: 'business',
-  },
-  {
-    name: 'Earnings',
-    href: '/earnings',
-    icon: TrendingUp,
-    section: 'business',
-  },
-  {
-    name: 'Staff',
-    href: '/staff',
-    icon: Users,
-    section: 'business',
-  },
-  {
-    name: 'Settings',
-    href: '/settings',
-    icon: Settings,
-    section: 'system',
-  },
-]
+import { navigationItems, type NavItem } from './nav-items'
 
 interface SidebarProps {
   isCollapsed?: boolean
@@ -89,7 +38,7 @@ interface SidebarContentProps {
   onMobileClose?: () => void
 }
 
-function SidebarContent({
+const SidebarContent = ({
   pathname,
   logout,
   collapsed = false,
@@ -97,14 +46,14 @@ function SidebarContent({
   onLinkClick,
   onToggleCollapse,
   onMobileClose,
-}: SidebarContentProps) {
+}: SidebarContentProps) => {
   const overviewItems = navigationItems.filter((i) => i.section === 'overview')
   const businessItems = navigationItems.filter((i) => i.section === 'business')
   const systemItems = navigationItems.filter((i) => i.section === 'system')
 
   const renderNavGroup = (
     title: string,
-    items: typeof navigationItems
+    items: NavItem[]
   ) => (
     <div className="mb-4">
       {!collapsed && (
@@ -246,12 +195,12 @@ function SidebarContent({
   )
 }
 
-export function Sidebar({
+export const Sidebar = ({
   isCollapsed = false,
   onToggleCollapse,
   mobileOpen = false,
   onMobileClose,
-}: SidebarProps) {
+}: SidebarProps) => {
   const pathname = usePathname()
   const { logout } = useAuth()
 

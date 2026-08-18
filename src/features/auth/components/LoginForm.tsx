@@ -16,7 +16,7 @@ import { Alert, AlertDescription } from '@/shared/ui/alert'
 import Link from 'next/link'
 import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react'
 
-export function LoginForm() {
+export const LoginForm = () => {
   const login = useLogin()
 
   return (

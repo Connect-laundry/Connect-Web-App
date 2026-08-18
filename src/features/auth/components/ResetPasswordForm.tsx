@@ -33,7 +33,7 @@ const schema = z
 
 type FormValues = z.infer<typeof schema>
 
-export function ResetPasswordForm() {
+export const ResetPasswordForm = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get('token') || ''

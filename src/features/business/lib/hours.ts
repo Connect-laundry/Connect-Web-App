@@ -1,4 +1,4 @@
-import type { OperatingHour } from '@/shared/interfaces'
+import type { OperatingHour } from '@/shared/types'
 
 export const DAY_NAMES = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 

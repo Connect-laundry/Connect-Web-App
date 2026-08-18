@@ -1,5 +1,5 @@
 /** Custom hero illustration — not a stock placeholder. */
-export function LaundryHeroVisual({ className = '' }: { className?: string }) {
+export const LaundryHeroVisual = ({ className = '' }: { className?: string }) => {
   return (
     <svg
       viewBox="0 0 520 420"

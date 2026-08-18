@@ -6,7 +6,7 @@ import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { useAuth } from '@/features/auth/context/AuthContext'
 import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 
-export function Footer() {
+export const Footer = () => {
   const { isAuthenticated } = useAuth()
   
   return (

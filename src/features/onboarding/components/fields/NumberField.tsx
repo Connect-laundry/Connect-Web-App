@@ -21,7 +21,7 @@ interface NumberFieldProps {
 }
 
 /** A react-hook-form numeric input with label, description and validation message. */
-export function NumberField({
+export const NumberField = ({
   name,
   label,
   description,
@@ -30,7 +30,7 @@ export function NumberField({
   placeholder,
   readOnly = false,
   className,
-}: NumberFieldProps) {
+}: NumberFieldProps) => {
   const form = useFormContext()
   return (
     <FormField

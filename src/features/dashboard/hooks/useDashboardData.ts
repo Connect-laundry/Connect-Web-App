@@ -6,7 +6,7 @@ import { DASHBOARD_POLL_INTERVAL_MS } from '@/features/dashboard/constants/stat-
 import { getUnreadNotificationCount } from '@/features/notifications/api'
 import { SessionExpiredError } from '@/shared/api/client'
 import { useSilentPolling } from '@/shared/hooks/useSilentPolling'
-import type { DashboardEarnings, DashboardStats, Order, OrderListResponse } from '@/shared/interfaces'
+import type { DashboardEarnings, DashboardStats, Order, OrderListResponse } from '@/shared/types'
 
 export function useDashboardData() {
   const [stats, setStats] = useState<DashboardStats | null>(null)

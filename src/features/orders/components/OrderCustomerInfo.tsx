@@ -1,11 +1,11 @@
-import { Order } from "@/shared/interfaces";
+import { Order } from "@/shared/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 
 interface OrderCustomerInfoProps {
   order: Order;
 }
 
-export function OrderCustomerInfo({ order }: OrderCustomerInfoProps) {
+export const OrderCustomerInfo = ({ order }: OrderCustomerInfoProps) => {
   return (
     <Card>
       <CardHeader>

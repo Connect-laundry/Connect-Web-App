@@ -3,9 +3,9 @@ import { Badge } from "@/shared/ui/badge";
 import { formatCurrency, formatDate } from "@/shared/lib/format";
 import { cn } from "@/shared/lib/utils";
 import { STATUS_BADGE_STYLE } from "../data";
-import { Order } from "@/shared/interfaces";
+import { Order } from "@/shared/types";
 
-export function OrderModalHeader({ order, displayTotal }: { order: Order; displayTotal: number }) {
+export const OrderModalHeader = ({ order, displayTotal }: { order: Order; displayTotal: number }) => {
     return (
         <div className="px-6 py-5 pr-14 border-b border-border/40 bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>

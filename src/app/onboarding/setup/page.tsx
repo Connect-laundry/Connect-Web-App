@@ -1,7 +1,7 @@
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute'
 import { OnboardingWizard } from '@/features/onboarding/components/OnboardingWizard'
 
-export default function SetupPage() {
+const SetupPage = () => {
   return (
     <ProtectedRoute>
       <div className="min-h-screen landing-mesh">
@@ -12,3 +12,5 @@ export default function SetupPage() {
     </ProtectedRoute>
   )
 }
+
+export default SetupPage

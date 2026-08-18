@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { getDashboardEarnings } from '@/features/dashboard/api'
 import { useSilentPolling } from '@/shared/hooks/useSilentPolling'
-import type { DashboardEarnings, Transaction } from '@/shared/interfaces'
+import type { DashboardEarnings, Transaction } from '@/shared/types'
 import { exportEarningsCSV, getTransactionHistory } from '../api'
 
 const emptyEarnings: DashboardEarnings = { today: 0, this_week: 0, this_month: 0, total_revenue: 0 }

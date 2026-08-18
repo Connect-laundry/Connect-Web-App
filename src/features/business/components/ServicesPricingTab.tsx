@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
-import { WeightPricing, PricingItem } from '@/shared/interfaces'
+import { WeightPricing, PricingItem } from '@/shared/types'
 import { WeightPricingEditor } from './WeightPricingEditor'
 import { PriceItemsEditor } from './PriceItemsEditor'
 import { PriceImportPanel } from './PriceImportPanel'
@@ -17,7 +17,7 @@ interface ServicesPricingTabProps {
   getPricingItems: () => Promise<PricingItem[]>
 }
 
-export function ServicesPricingTab({
+export const ServicesPricingTab = ({
   usesWeight,
   usesItems,
   weightPricing,
@@ -25,7 +25,7 @@ export function ServicesPricingTab({
   pricingItems,
   setPricingItems,
   getPricingItems,
-}: ServicesPricingTabProps) {
+}: ServicesPricingTabProps) => {
   return (
     <div className="space-y-6">
       {/* Weight-based Tariff (when applicable) */}

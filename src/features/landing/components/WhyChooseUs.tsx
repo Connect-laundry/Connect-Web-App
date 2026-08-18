@@ -8,7 +8,7 @@ import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { useAuth } from '@/features/auth/context/AuthContext'
 import { WHY_CHOOSE_US_REASONS } from '../data/landingData'
 
-export function WhyChooseUs() {
+export const WhyChooseUs = () => {
   const { isAuthenticated } = useAuth()
 
   return (

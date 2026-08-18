@@ -5,7 +5,7 @@ import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { FloatingParticles } from './FloatingParticles'
 import { SERVICES } from '../data/landingData'
 
-export function Services() {
+export const Services = () => {
   return (
     <section id="services" className="py-24 sm:py-32 relative">
       <FloatingParticles />

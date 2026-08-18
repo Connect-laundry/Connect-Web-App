@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 
-export function PwaRegister() {
+export const PwaRegister = () => {
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return
 

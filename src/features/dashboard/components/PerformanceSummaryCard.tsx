@@ -11,11 +11,11 @@ interface PerformanceSummaryCardProps {
   monthlyRevenue: number
 }
 
-export function PerformanceSummaryCard({
+export const PerformanceSummaryCard = ({
   totalRevenue,
   weeklyRevenue,
   monthlyRevenue,
-}: PerformanceSummaryCardProps) {
+}: PerformanceSummaryCardProps) => {
   const formatCurrency = (val: number) =>
     `GH₵${val.toLocaleString(undefined, {
       minimumFractionDigits: 2,

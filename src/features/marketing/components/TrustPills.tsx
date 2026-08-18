@@ -6,7 +6,7 @@ const items = [
   { icon: CheckCircle2, label: 'Owner dashboard included' },
 ]
 
-export function TrustPills() {
+export const TrustPills = () => {
   return (
     <div className="flex flex-wrap items-center gap-3 pt-2">
       {items.map((item) => (

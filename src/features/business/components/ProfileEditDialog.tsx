@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from '@/shared/ui/dialog'
 import { Pencil } from 'lucide-react'
-import type { Laundry } from '@/shared/interfaces'
+import type { Laundry } from '@/shared/types'
 import { useProfileEditor } from '../hooks/useProfileEditor'
 
 interface ProfileEditDialogProps {
@@ -23,7 +23,7 @@ interface ProfileEditDialogProps {
   onSaved: (updated: Laundry) => void
 }
 
-export function ProfileEditDialog({ laundry, onSaved }: ProfileEditDialogProps) {
+export const ProfileEditDialog = ({ laundry, onSaved }: ProfileEditDialogProps) => {
   const { open, setOpen, draft, updateDraft: set, isSaving, error, openEditor, save } =
     useProfileEditor(laundry, onSaved)
 

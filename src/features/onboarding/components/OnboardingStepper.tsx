@@ -7,7 +7,7 @@ interface OnboardingStepperProps {
 }
 
 /** Horizontal progress indicator for the onboarding wizard. */
-export function OnboardingStepper({ steps, currentStep }: OnboardingStepperProps) {
+export const OnboardingStepper = ({ steps, currentStep }: OnboardingStepperProps) => {
   return (
     <div className="flex items-center justify-between mb-8">
       {steps.map((step, idx) => {

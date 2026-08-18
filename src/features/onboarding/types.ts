@@ -1,6 +1,6 @@
 /** Shared domain types for the owner onboarding flow. */
 
-export type DayHours = {
+export interface DayHours {
   day: number
   label: string
   is_closed: boolean
@@ -9,19 +9,19 @@ export type DayHours = {
 }
 
 /** A single garment + price row within a category. */
-export type PriceRow = {
+export interface PriceRow {
   item_name: string
   unit_price: string
 }
 
 /** A service category (e.g. "Ironing") with the garment rows priced under it. */
-export type CategoryGroup = {
+export interface CategoryGroup {
   category: string
   items: PriceRow[]
 }
 
 /** Flat shape persisted to the backend (one LaundryPricingItem per row). */
-export type PriceItem = {
+export interface PriceItem {
   item_name: string
   category: string
   unit_price: string
@@ -30,7 +30,7 @@ export type PriceItem = {
 }
 
 /** A weight bracket priced as a bundle (e.g. 20 kg → GH₵ 160). */
-export type WeightTier = {
+export interface WeightTier {
   weight_kg: string
   price: string
 }
@@ -46,7 +46,7 @@ export const emptyPriceItem = (): PriceItem => ({
 export const emptyWeightTier = (): WeightTier => ({ weight_kg: '', price: '' })
 
 /** Express settings for one service type (or the weight tariff). */
-export type ExpressSetting = {
+export interface ExpressSetting {
   enabled: boolean
   hours: string
   surcharge_percent: string

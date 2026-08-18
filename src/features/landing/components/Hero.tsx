@@ -8,7 +8,7 @@ import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { useAuth } from '@/features/auth/context/AuthContext'
 import { FloatingParticles } from './FloatingParticles'
 
-export function Hero() {
+export const Hero = () => {
   const { isAuthenticated } = useAuth()
 
   return (

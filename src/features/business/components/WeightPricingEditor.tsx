@@ -1,73 +1,25 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Label } from '@/shared/ui/label'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Pencil, X } from 'lucide-react'
-import { WeightPricing } from '@/shared/interfaces'
-import { upsertWeightPricing } from '../api'
+import { WeightPricing } from '@/shared/types'
+import { useWeightPricingEditor } from '../hooks/useWeightPricingEditor'
 
 interface WeightPricingEditorProps {
   pricing: WeightPricing | null
   onSaved: (updated: WeightPricing) => void
 }
 
-type Draft = {
-  base_price_per_kg: string
-  minimum_charge: string
-  minimum_order_weight_kg: string
-}
-
-function toDraft(p: WeightPricing | null): Draft {
-  return {
-    base_price_per_kg: p?.base_price_per_kg ?? '',
-    minimum_charge: p?.minimum_charge ?? '0',
-    minimum_order_weight_kg: p?.minimum_order_weight_kg ?? '',
-  }
-}
-
 /**
  * Read-only weight tariff panel with an inline edit mode. PATCHes the
  * weight-pricing singleton (creates it if the owner has none yet).
  */
-export function WeightPricingEditor({ pricing, onSaved }: WeightPricingEditorProps) {
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState<Draft>(() => toDraft(pricing))
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const set = (patch: Partial<Draft>) => setDraft((prev) => ({ ...prev, ...patch }))
-
-  const startEditing = () => {
-    setDraft(toDraft(pricing))
-    setError(null)
-    setEditing(true)
-  }
-
-  const save = async () => {
-    if (!draft.base_price_per_kg || Number(draft.base_price_per_kg) <= 0) {
-      return setError('Enter a price per kg greater than 0.')
-    }
-
-    setIsSaving(true)
-    setError(null)
-    try {
-      const updated = await upsertWeightPricing({
-        base_price_per_kg: draft.base_price_per_kg,
-        minimum_charge: draft.minimum_charge || '0',
-        minimum_order_weight_kg: draft.minimum_order_weight_kg || null,
-        is_active: true,
-      })
-      onSaved(updated)
-      setEditing(false)
-    } catch (err: any) {
-      setError(err?.message || 'Failed to save weight pricing. Please try again.')
-    } finally {
-      setIsSaving(false)
-    }
-  }
+export const WeightPricingEditor = ({ pricing, onSaved }: WeightPricingEditorProps) => {
+  const { editing, setEditing, draft, set, isSaving, error, startEditing, save } =
+    useWeightPricingEditor(pricing, onSaved)
 
   const money = (v: string | null | undefined) => {
     const n = v == null ? NaN : parseFloat(v)

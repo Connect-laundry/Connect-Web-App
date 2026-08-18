@@ -17,7 +17,7 @@ interface SwitchFieldProps {
 }
 
 /** A labelled on/off toggle bound to react-hook-form. */
-export function SwitchField({ name, label, description, icon: Icon }: SwitchFieldProps) {
+export const SwitchField = ({ name, label, description, icon: Icon }: SwitchFieldProps) => {
   const form = useFormContext()
   return (
     <FormField
