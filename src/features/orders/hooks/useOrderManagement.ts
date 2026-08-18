@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { getDashboardOrders } from '@/features/dashboard/api'
-import { OrderListResponse, Order } from '@/shared/interfaces'
+import { OrderListResponse, Order } from '@/shared/types'
 
 export function useOrderManagement() {
   const [orders, setOrders] = useState<OrderListResponse | null>(null)

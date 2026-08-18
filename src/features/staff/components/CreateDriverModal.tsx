@@ -31,7 +31,7 @@ const EMPTY_FORM = {
   password_confirm: '',
 }
 
-function PasswordInput({
+const PasswordInput = ({
   id,
   value,
   onChange,
@@ -45,7 +45,7 @@ function PasswordInput({
   autoComplete?: string
   disabled?: boolean
   required?: boolean
-}) {
+}) => {
   const [show, setShow] = useState(false)
   return (
     <div className="relative">
@@ -73,11 +73,11 @@ function PasswordInput({
   )
 }
 
-export function CreateDriverModal({
+export const CreateDriverModal = ({
   isOpen,
   onOpenChange,
   onCreated,
-}: CreateDriverModalProps) {
+}: CreateDriverModalProps) => {
   const [form, setForm] = useState(EMPTY_FORM)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)

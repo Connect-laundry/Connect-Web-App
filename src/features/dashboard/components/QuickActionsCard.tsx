@@ -7,7 +7,7 @@ import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { Users, Settings, Store } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 
-export function QuickActionsCard() {
+export const QuickActionsCard = () => {
   const actions = [
     { label: 'Register & Assign Staff', icon: Users, color: 'blue', href: '/staff' },
     { label: 'Update Service Fees', icon: Settings, color: 'gray', href: '/business' },

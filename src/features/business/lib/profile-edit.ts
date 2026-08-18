@@ -1,4 +1,4 @@
-import type { Laundry } from '@/shared/interfaces'
+import type { Laundry } from '@/shared/types'
 
 export interface ProfileDraft {
   name: string

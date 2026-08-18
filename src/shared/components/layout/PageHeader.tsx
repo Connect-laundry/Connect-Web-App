@@ -22,14 +22,14 @@ interface PageHeaderProps {
   className?: string
 }
 
-export function PageHeader({
+export const PageHeader = ({
   title,
   description,
   badge,
   actions,
   children,
   className,
-}: PageHeaderProps) {
+}: PageHeaderProps) => {
   return (
     <div
       className={cn(

@@ -11,7 +11,7 @@ const SHORTCUT_ICONS: Record<string, LucideIcon> = {
   settings: Settings,
 }
 
-export function DashboardShortcutsCard() {
+export const DashboardShortcutsCard = () => {
   return (
     <AnimateOnScroll animation="slide-up" delay={280}>
       <Card className="surface-card border-0 h-full">

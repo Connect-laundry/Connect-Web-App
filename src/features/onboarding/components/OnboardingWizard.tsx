@@ -15,7 +15,7 @@ import { PricingDeliveryStep } from './steps/PricingDeliveryStep'
 import { ReviewStep } from './steps/ReviewStep'
 import { WorkingHoursStep } from './steps/WorkingHoursStep'
 
-export function OnboardingWizard() {
+export const OnboardingWizard = () => {
   const wizard = useOnboardingWizard()
 
   return (

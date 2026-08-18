@@ -6,7 +6,7 @@ import { Input } from '@/shared/ui/input'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Spinner } from '@/shared/ui/spinner'
 import { Camera, CheckCircle, Upload } from 'lucide-react'
-import { PricingItem } from '@/shared/interfaces'
+import { PricingItem } from '@/shared/types'
 import { usePriceImport } from '../hooks/usePriceImport'
 
 interface PriceImportPanelProps {
@@ -14,7 +14,7 @@ interface PriceImportPanelProps {
   reloadItems: () => Promise<PricingItem[]>
 }
 
-export function PriceImportPanel({ onImported, reloadItems }: PriceImportPanelProps) {
+export const PriceImportPanel = ({ onImported, reloadItems }: PriceImportPanelProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const workflow = usePriceImport({ onImported, reloadItems })
 

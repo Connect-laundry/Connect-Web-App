@@ -10,12 +10,12 @@ interface DashboardStatsGridProps {
   dailyRevenue: number
 }
 
-export function DashboardStatsGrid({
+export const DashboardStatsGrid = ({
   pendingCount,
   inProcessCount,
   readyCount,
   dailyRevenue,
-}: DashboardStatsGridProps) {
+}: DashboardStatsGridProps) => {
   const formattedDailyRevenue = `GH₵${dailyRevenue.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

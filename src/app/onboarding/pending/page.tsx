@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { Loader2, Clock, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-export default function PendingPage() {
+const PendingPage = () => {
   const { laundry, refreshLaundry, isLaundryLoading } = useAuth()
   const router = useRouter()
    const [applicationName] = useState<string | null>(() => getOnboardingApplication()?.name ?? null)
@@ -76,3 +76,5 @@ export default function PendingPage() {
     </ProtectedRoute>
   )
 }
+
+export default PendingPage

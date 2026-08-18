@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import Link from 'next/link'
 
-export function RegisterForm() {
+export const RegisterForm = () => {
   const { form, isLoading, error, submit } = useRegistration()
 
   return (

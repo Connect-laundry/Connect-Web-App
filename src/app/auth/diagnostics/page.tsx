@@ -14,7 +14,7 @@ interface TestResult {
   message?: string
 }
 
-export default function DiagnosticsPage() {
+const DiagnosticsPage = () => {
   const [results, setResults] = useState<TestResult[]>([])
   const [isTesting, setIsTesting] = useState(false)
 
@@ -170,3 +170,5 @@ export default function DiagnosticsPage() {
     </div>
   )
 }
+
+export default DiagnosticsPage

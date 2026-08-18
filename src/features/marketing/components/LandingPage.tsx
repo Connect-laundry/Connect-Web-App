@@ -6,7 +6,7 @@ import { MarketingNavbar } from './MarketingNavbar'
 import { MarketingServices } from './MarketingServices'
 import { MarketingWhyChooseUs } from './MarketingWhyChooseUs'
 
-export function LandingPage() {
+export const LandingPage = () => {
   return (
     <main className="min-h-screen font-sans antialiased">
       <MarketingNavbar />

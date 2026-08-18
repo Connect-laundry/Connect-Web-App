@@ -1,7 +1,7 @@
 // AnimatedDots.tsx
 'use client'
 
-export function AnimatedDots() {
+export const AnimatedDots = () => {
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {[...Array(20)].map((_, i) => (

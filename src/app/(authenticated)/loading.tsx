@@ -1,7 +1,7 @@
 import { Spinner } from '@/shared/ui/spinner'
 
 /** Instant feedback while a hub route loads (avoids blank wait on slow API). */
-export default function AuthenticatedLoading() {
+const AuthenticatedLoading = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3 p-8">
       <Spinner className="w-8 h-8 text-primary" />
@@ -9,3 +9,5 @@ export default function AuthenticatedLoading() {
     </div>
   )
 }
+
+export default AuthenticatedLoading

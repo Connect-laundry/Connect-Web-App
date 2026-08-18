@@ -18,7 +18,7 @@ interface WeightPricingFieldsProps {
  * the laundry is created (per-kg rate derived from the smallest tier until the
  * backend supports tiers natively).
  */
-export function WeightPricingFields({ tiers, setTiers, isHybrid }: WeightPricingFieldsProps) {
+export const WeightPricingFields = ({ tiers, setTiers, isHybrid }: WeightPricingFieldsProps) => {
   const updateTier = (index: number, patch: Partial<WeightTier>) =>
     setTiers((prev) => prev.map((t, i) => (i === index ? { ...t, ...patch } : t)))
 

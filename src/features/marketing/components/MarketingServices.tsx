@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/shared/ui/card'
 import { services } from '../data/landingContent'
 import { SectionLabel } from './SectionLabel'
 
-export function MarketingServices() {
+export const MarketingServices = () => {
   return (
     <section id="services" className="py-24 sm:py-28 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

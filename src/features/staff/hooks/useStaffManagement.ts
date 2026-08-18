@@ -11,7 +11,7 @@ import {
   type DriverAccount,
 } from '@/features/logistics/api'
 import { getOrders, getOrderById } from '@/features/orders/api'
-import { Order } from '@/shared/interfaces'
+import { Order } from '@/shared/types'
 import { getAssignmentTypes } from '../lib/assignments'
 
 export function useStaffManagement() {

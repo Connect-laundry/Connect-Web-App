@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Spinner } from '@/shared/ui/spinner'
 import { Button } from '@/shared/ui/button'
 import { AlertCircle } from 'lucide-react'
-import { Order } from '@/shared/interfaces'
+import { Order } from '@/shared/types'
 import type { DriverAccount } from '@/features/logistics/api'
 
 interface StaffModalProps {
@@ -32,7 +32,7 @@ interface StaffModalProps {
   onSubmit: (e: React.FormEvent) => void
 }
 
-export function StaffModal({
+export const StaffModal = ({
   isOpen,
   onOpenChange,
   orders,
@@ -47,7 +47,7 @@ export function StaffModal({
   modalError,
   isOrderLocked = false,
   onSubmit,
-}: StaffModalProps) {
+}: StaffModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">

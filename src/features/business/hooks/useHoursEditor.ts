@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Laundry } from '@/shared/interfaces'
+import type { Laundry } from '@/shared/types'
 import { copyMondayHours, patchMyLaundry } from '../api'
 import { buildOperatingHours, toHoursDrafts, validateHoursDrafts, type DayDraft } from '../lib/hours'
 

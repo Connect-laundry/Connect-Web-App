@@ -9,15 +9,15 @@ import { OrderModalHeader } from "./OrderModalHeader";
 import { OrderLifecycleStepper } from "./OrderLifecycleStepper";
 import { OrderInfoGrids } from "./OrderInfoGrid";
 import { OrderModalFooter } from "./OrderModalFooter";
-import { OrderDetailModalProps } from "../interfaces";
+import { OrderDetailModalProps } from "../types";
 import { formatDate } from "@/shared/lib/format"
 
-export function OrderDetailModal({
+export const OrderDetailModal = ({
   order,
   open,
   onOpenChange,
   onOrderUpdated,
-}: OrderDetailModalProps) {
+}: OrderDetailModalProps) => {
   const {
     isLoading,
     error,

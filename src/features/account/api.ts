@@ -1,6 +1,6 @@
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/shared/api/client'
 import { unwrap, unwrapList } from '@/shared/api/unwrap'
-import { User } from '@/shared/interfaces'
+import { User } from '@/shared/types'
 
 export interface ActiveSession {
   id: string

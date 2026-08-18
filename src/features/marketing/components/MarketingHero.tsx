@@ -7,7 +7,7 @@ import { PickupBar } from './PickupBar'
 import { SectionLabel } from './SectionLabel'
 import { TrustPills } from './TrustPills'
 
-export function MarketingHero() {
+export const MarketingHero = () => {
   return (
     <section className="relative min-h-[92vh] flex items-center overflow-hidden pt-20 landing-mesh">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 lg:py-16">

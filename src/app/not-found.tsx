@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { WashingMachine, ArrowLeft, Home } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 
-export default function NotFound() {
+const NotFound = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
       <div className="relative mb-8">
@@ -45,3 +45,5 @@ export default function NotFound() {
     </div>
   )
 }
+
+export default NotFound

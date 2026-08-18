@@ -8,7 +8,7 @@ interface WorkingHoursStepProps {
   updateDay: (day: number, patch: Partial<DayHours>) => void
 }
 
-export function WorkingHoursStep({ hours, updateDay }: WorkingHoursStepProps) {
+export const WorkingHoursStep = ({ hours, updateDay }: WorkingHoursStepProps) => {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">

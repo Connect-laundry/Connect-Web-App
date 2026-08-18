@@ -9,11 +9,11 @@ interface StaffStatsCardProps {
   completedCount: number
 }
 
-export function StaffStatsCard({
+export const StaffStatsCard = ({
   driverCount,
   activeCount,
   completedCount,
-}: StaffStatsCardProps) {
+}: StaffStatsCardProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card className="border-border/50 shadow-sm">

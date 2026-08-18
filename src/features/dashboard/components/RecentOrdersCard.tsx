@@ -7,14 +7,14 @@ import { Badge } from '@/shared/ui/badge'
 import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { Package, ArrowUpRight } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
-import { OrderListResponse, Order } from '@/shared/interfaces'
+import { OrderListResponse, Order } from '@/shared/types'
 
 interface RecentOrdersCardProps {
   recentOrders: OrderListResponse | null
   onSelectOrder: (order: Order) => void
 }
 
-export function RecentOrdersCard({ recentOrders, onSelectOrder }: RecentOrdersCardProps) {
+export const RecentOrdersCard = ({ recentOrders, onSelectOrder }: RecentOrdersCardProps) => {
   return (
     <AnimateOnScroll animation="slide-up" delay={600}>
       <Card className="border-border/50 shadow-sm overflow-hidden">

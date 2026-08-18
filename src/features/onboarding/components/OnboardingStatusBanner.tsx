@@ -10,7 +10,7 @@ import {
   hasPendingOnboardingApplication,
 } from '@/features/onboarding/lib/storage'
 
-export function OnboardingStatusBanner() {
+export const OnboardingStatusBanner = () => {
   const { laundry } = useAuth()
   const localPending = hasPendingOnboardingApplication()
   const localApp = getOnboardingApplication()

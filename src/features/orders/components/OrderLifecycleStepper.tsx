@@ -1,7 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { LIFECYCLE_STEPS } from "../data";
 
-export function OrderLifecycleStepper({ currentStepIndex }: { currentStepIndex: number }) {
+export const OrderLifecycleStepper = ({ currentStepIndex }: { currentStepIndex: number }) => {
     return (
         <div className="p-4 rounded-xl bg-muted/30 border border-border/40">
             <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">

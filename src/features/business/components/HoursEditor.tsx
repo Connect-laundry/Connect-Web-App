@@ -5,7 +5,7 @@ import { Input } from '@/shared/ui/input'
 import { Switch } from '@/shared/ui/switch'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Moon, Pencil, X } from 'lucide-react'
-import type { Laundry } from '@/shared/interfaces'
+import type { Laundry } from '@/shared/types'
 import { useHoursEditor } from '../hooks/useHoursEditor'
 import { DAY_NAMES, toInputTime } from '../lib/hours'
 
@@ -18,7 +18,7 @@ interface HoursEditorProps {
  * Weekly operating hours: read-only list with an Edit toggle that switches to
  * inline per-day editing (PATCHes the full list to my-laundry/<id>/).
  */
-export function HoursEditor({ laundry, onSaved }: HoursEditorProps) {
+export const HoursEditor = ({ laundry, onSaved }: HoursEditorProps) => {
   const editor = useHoursEditor(laundry, onSaved)
 
   // ------------------------------------------------------------- read mode

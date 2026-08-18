@@ -4,7 +4,7 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
 import { CheckCircle2, XCircle } from 'lucide-react'
-import { Laundry } from '@/shared/interfaces'
+import { Laundry } from '@/shared/types'
 import { ProfileEditDialog } from './ProfileEditDialog'
 
 const PRICING_MODEL_LABEL: Record<string, string> = {
@@ -26,7 +26,7 @@ function money(value: string | number | null | undefined): string {
   return `GH₵${n.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => {
   return (
     <div className="space-y-1">
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
@@ -35,7 +35,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-function BoolBadge({ value }: { value: boolean }) {
+const BoolBadge = ({ value }: { value: boolean }) => {
   return value ? (
     <span className="inline-flex items-center gap-1 text-green-700">
       <CheckCircle2 className="h-4 w-4" /> Yes
@@ -52,7 +52,7 @@ interface BusinessProfileCardProps {
   onSaved: (updated: Laundry) => void
 }
 
-export function BusinessProfileCard({ laundry, onSaved }: BusinessProfileCardProps) {
+export const BusinessProfileCard = ({ laundry, onSaved }: BusinessProfileCardProps) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-start justify-between">

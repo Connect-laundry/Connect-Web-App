@@ -1,50 +1,12 @@
 import { useState } from 'react'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
-import { Plus, Trash2, Tag, WashingMachine, Sparkles, Layers } from 'lucide-react'
+import { Plus, Trash2, Tag } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 import { ExpressServiceFields } from './ExpressServiceFields'
+import { OnboardingPriceImportPanel } from './OnboardingPriceImportPanel'
 import { type ExpressByService, type PriceItem } from '../../types'
-
-/**
- * Service categories — each is a tab holding its own item list. An item's
- * service type is stored in the free-form `category` field on
- * LaundryPricingItem, so the same garment can be priced per service
- * (e.g. Shirt: wash-only GH₵8, wash+iron GH₵12).
- */
-export const SERVICE_CATEGORIES = [
-  { value: 'Wash Only', label: 'Wash only', icon: WashingMachine },
-  { value: 'Wash & Iron', label: 'Wash + ironing', icon: Layers },
-  { value: 'Iron Only', label: 'Ironing only', icon: Sparkles },
-] as const
-
-/** Common garments offered in the picker so owners don't type each name. */
-export const COMMON_ITEMS = [
-  'Shirt',
-  'T-Shirt',
-  'Trousers',
-  'Jeans',
-  'Shorts',
-  'Dress',
-  'Skirt',
-  'Suit (2-piece)',
-  'Suit (3-piece)',
-  'Kaba & Slit',
-  'Smock',
-  'Jacket',
-  'Sweater',
-  'Bedsheet',
-  'Duvet',
-  'Pillowcase',
-  'Blanket',
-  'Curtains',
-  'Towel',
-  'Underwear',
-  'Socks',
-  'Sneakers',
-] as const
-
-const OTHER = '__other__'
+import { SERVICE_CATEGORIES, COMMON_ITEMS, OTHER, ONBOARDING_PRICE_IMPORT_ENABLED } from '../../constants'
 
 interface PriceListStepProps {
   items: PriceItem[]
@@ -54,13 +16,13 @@ interface PriceListStepProps {
   isHybrid: boolean
 }
 
-export function PriceListStep({
+export const PriceListStep = ({
   items,
   setItems,
   express,
   setExpress,
   isHybrid,
-}: PriceListStepProps) {
+}: PriceListStepProps) => {
   const [activeCategory, setActiveCategory] = useState<string>(SERVICE_CATEGORIES[0].value)
   const activeMeta = SERVICE_CATEGORIES.find((c) => c.value === activeCategory)!
 
@@ -80,6 +42,10 @@ export function PriceListStep({
     setItems((prev) => [...prev, { item_name: '', category: activeCategory, unit_price: '' }])
 
   const removeItem = (index: number) => setItems((prev) => prev.filter((_, i) => i !== index))
+
+  /** Append photo-import results as new rows under the active service tab. */
+  const appendImportedItems = (imported: PriceItem[]) =>
+    setItems((prev) => [...prev, ...imported])
 
   /** Names already used in the active tab (a garment appears once per service). */
   const usedNames = new Set(
@@ -148,6 +114,15 @@ export function PriceListStep({
           )
         })}
       </div>
+
+      {/* --------------------------------- optional: AI photo price-import */}
+      {ONBOARDING_PRICE_IMPORT_ENABLED && (
+        <OnboardingPriceImportPanel
+          serviceCategory={activeCategory}
+          serviceLabel={activeMeta.label.toLowerCase()}
+          onAdd={appendImportedItems}
+        />
+      )}
 
       {/* ---------------------------------------- items for the active tab */}
       <div className="space-y-3">

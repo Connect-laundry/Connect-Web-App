@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Service } from '@/shared/interfaces'
+import { Service } from '@/shared/types'
 import { createService, updateService } from '@/features/business/api'
 import {
   Dialog,
@@ -26,12 +26,12 @@ interface ServiceModalProps {
   onServiceSaved: (service: Service) => void
 }
 
-export function ServiceModal({
+export const ServiceModal = ({
   service,
   open,
   onOpenChange,
   onServiceSaved,
-}: ServiceModalProps) {
+}: ServiceModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   

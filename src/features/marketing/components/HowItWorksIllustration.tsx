@@ -1,4 +1,4 @@
-export function HowItWorksIllustration({ className = '' }: { className?: string }) {
+export const HowItWorksIllustration = ({ className = '' }: { className?: string }) => {
   return (
     <svg
       viewBox="0 0 800 200"

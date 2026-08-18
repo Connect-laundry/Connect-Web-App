@@ -13,7 +13,7 @@ import { PageShell } from '@/shared/components/layout/PageShell'
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { AlertCircle, Bell, Package } from 'lucide-react'
 
-export function DashboardView() {
+export const DashboardView = () => {
   const { user } = useAuth()
   const {
     metrics,

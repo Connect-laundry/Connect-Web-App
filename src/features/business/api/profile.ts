@@ -1,6 +1,6 @@
 import { apiGet, apiPatch, apiPost } from '@/shared/api/client'
 import { unwrap } from '@/shared/api/unwrap'
-import type { BusinessHours, Laundry } from '@/shared/interfaces'
+import type { BusinessHours, Laundry } from '@/shared/types'
 
 export async function getLaundryProfile(): Promise<Laundry | null> {
   try {

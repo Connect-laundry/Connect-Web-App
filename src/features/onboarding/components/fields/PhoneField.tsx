@@ -4,7 +4,7 @@ import { countryCodes } from "@/shared/utils/countryCodes";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-export function PhoneField({ name = 'phone_number' }: { name?: string }) {
+export const PhoneField = ({ name = 'phone_number' }: { name?: string }) => {
   const form = useFormContext()
 
   const parseInitialPhone = (): { code: string; phone: string } => {

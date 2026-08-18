@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone } from 'lucide-react'
 import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 
-export function MarketingFooter() {
+export const MarketingFooter = () => {
   return (
     <footer id="contact" className="bg-muted/40 border-t border-border/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

@@ -8,7 +8,7 @@ import { Button } from '@/shared/ui/button'
 import { navigationLinks } from '../data/landingContent'
 import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 
-export function MarketingNavbar() {
+export const MarketingNavbar = () => {
   const { isAuthenticated } = useAuth()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)

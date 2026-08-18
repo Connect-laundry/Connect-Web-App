@@ -7,7 +7,7 @@ interface PageShellProps {
 }
 
 /** Consistent page wrapper with mesh background visible through padding. */
-export function PageShell({ children, className, contentClassName }: PageShellProps) {
+export const PageShell = ({ children, className, contentClassName }: PageShellProps) => {
   return (
     <div className={cn('relative min-h-full', className)}>
       <div className="pointer-events-none absolute inset-0 mesh-bg opacity-80" aria-hidden />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import { Laundry, PricingItem, WeightPricing } from '@/shared/interfaces'
+import { Laundry, PricingItem, WeightPricing } from '@/shared/types'
 import {
   getLaundryProfile,
   getPricingItems,

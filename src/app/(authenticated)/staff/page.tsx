@@ -12,7 +12,7 @@ import { StaffTable } from '@/features/staff/components/StaffTable'
 import { StaffModal } from '@/features/staff/components/StaffModal'
 import { CreateDriverModal } from '@/features/staff/components/CreateDriverModal'
 
-function StaffPageContent() {
+const StaffPageContent = () => {
   const [isCreateDriverOpen, setIsCreateDriverOpen] = useState(false)
   const {
     filteredAssignments,
@@ -99,7 +99,7 @@ function StaffPageContent() {
   )
 }
 
-export default function StaffPage() {
+const StaffPage = () => {
   return (
     <Suspense
       fallback={
@@ -112,3 +112,5 @@ export default function StaffPage() {
     </Suspense>
   )
 }
+
+export default StaffPage

@@ -8,7 +8,7 @@ import { useAuth } from '@/features/auth/context/AuthContext'
 import { NAV_LINKS } from '../data/landingData'
 import { SimameLogo } from '@/shared/components/branding/SimameLogo'
 
-export function Navbar() {
+export const Navbar = () => {
   const { isAuthenticated } = useAuth()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)

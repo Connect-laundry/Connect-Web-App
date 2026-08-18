@@ -1,5 +1,5 @@
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/shared/api/client'
-import type { Service } from '@/shared/interfaces'
+import type { Service } from '@/shared/types'
 
 /**
  * @deprecated The `/laundries/services/` endpoint is not exposed by the backend.

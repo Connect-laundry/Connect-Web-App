@@ -12,7 +12,7 @@ const money = (value: string | number) => {
   return Number.isFinite(amount) ? `GH₵${amount.toFixed(2)}` : '—'
 }
 
-export function AdvancedPricingPanel() {
+export const AdvancedPricingPanel = () => {
   const pricing = useAdvancedPricing()
   if (pricing.loading) return <div className="flex justify-center py-8"><Spinner /></div>
 

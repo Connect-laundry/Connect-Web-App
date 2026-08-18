@@ -1,4 +1,4 @@
-import { Order, OrderListResponse } from "@/shared/interfaces";
+import { Order, OrderListResponse } from "@/shared/types";
 
 export interface OrderDetailModalProps {
     order: Order | null;

@@ -6,13 +6,13 @@ import Link from 'next/link'
 import * as Sentry from '@sentry/nextjs'
 import { Button } from '@/shared/ui/button'
 
-export default function Error({
+const Error = ({
   error,
   reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
-}) {
+}) => {
   useEffect(() => {
     // Log the error to an error reporting service
     Sentry.captureException(error)
@@ -62,3 +62,5 @@ export default function Error({
     </div>
   )
 }
+
+export default Error

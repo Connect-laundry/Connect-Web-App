@@ -7,7 +7,7 @@ import { marketingImages } from '../constants/images'
 import { reasons } from '../data/landingContent'
 import { SectionLabel } from './SectionLabel'
 
-export function MarketingWhyChooseUs() {
+export const MarketingWhyChooseUs = () => {
   return (
     <section id="why-us" className="py-24 sm:py-28 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

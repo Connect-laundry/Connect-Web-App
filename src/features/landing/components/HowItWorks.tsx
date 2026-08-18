@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { AnimateOnScroll } from '@/shared/components/AnimateOnScroll'
 import { HOW_IT_WORKS_STEPS } from '../data/landingData'
 
-export function HowItWorks() {
+export const HowItWorks = () => {
   return (
     <section id="how-it-works" className="py-24 sm:py-32 bg-muted/30 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

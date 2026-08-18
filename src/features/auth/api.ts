@@ -1,5 +1,5 @@
 import { apiPost, apiGet, apiPatch } from '@/shared/api/client'
-import { User, LoginRequest, LoginResponse, RegisterRequest } from '@/shared/interfaces'
+import { User, LoginRequest, LoginResponse, RegisterRequest } from '@/shared/types'
 
 /**
  * Login with email and password via Secure Next.js API

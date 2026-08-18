@@ -3,7 +3,7 @@
 import { Card, CardContent } from '@/shared/ui/card'
 import { Truck } from 'lucide-react'
 
-export function StaffGuidanceBanner() {
+export const StaffGuidanceBanner = () => {
   return (
     <Card className="border-primary/20 bg-primary/5 shadow-xs overflow-hidden">
       <CardContent className="p-5 flex flex-col md:flex-row md:items-center gap-4">

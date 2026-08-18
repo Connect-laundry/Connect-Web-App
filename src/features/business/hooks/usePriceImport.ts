@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { PricingItem } from '@/shared/interfaces'
+import type { PricingItem } from '@/shared/types'
 import { confirmPriceImport, getPriceImportJob, uploadPriceImport } from '../api'
 import {
   PRICE_IMPORT_TERMINAL_STATUSES,

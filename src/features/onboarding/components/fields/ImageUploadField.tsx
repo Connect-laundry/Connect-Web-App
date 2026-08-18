@@ -10,11 +10,11 @@ interface ImageUploadFieldProps {
 }
 
 /** Click-to-upload image dropzone with a live preview. */
-export function ImageUploadField({
+export const ImageUploadField = ({
   selectedFile,
   setSelectedFile,
   inputId = 'image-upload',
-}: ImageUploadFieldProps) {
+}: ImageUploadFieldProps) => {
   const [preview, setPreview] = useState<string | null>(null)
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Order, OrderTimeline as OrderTimelineType } from "@/shared/interfaces";
+import { Order, OrderTimeline as OrderTimelineType } from "@/shared/types";
 import {
     executeOrderAction,
     getAvailableActions,

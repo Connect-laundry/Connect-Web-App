@@ -6,11 +6,11 @@ import { Sidebar } from '@/shared/components/layout/Sidebar'
 import { Header } from '@/shared/components/layout/Header'
 import { OnboardingStatusBanner } from '@/features/onboarding/components/OnboardingStatusBanner'
 
-export default function AuthenticatedLayout({
+const AuthenticatedLayout = ({
   children,
 }: {
   children: React.ReactNode
-}) {
+}) => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -47,3 +47,5 @@ export default function AuthenticatedLayout({
     </ProtectedRoute>
   )
 }
+
+export default AuthenticatedLayout

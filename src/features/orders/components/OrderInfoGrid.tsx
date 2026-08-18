@@ -1,8 +1,8 @@
 import { User, Phone, Calendar, FileText, MapPin } from "lucide-react";
 import { formatDate } from "@/shared/lib/format";
-import { Order } from "@/shared/interfaces";
+import { Order } from "@/shared/types";
 
-export function OrderInfoGrids({ order }: { order: Order }) {
+export const OrderInfoGrids = ({ order }: { order: Order }) => {
     return (
         <>
             {/* Customer & Address Grid */}

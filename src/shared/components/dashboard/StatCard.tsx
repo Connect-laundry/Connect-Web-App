@@ -47,14 +47,14 @@ interface StatCardProps {
   index?: number
 }
 
-export function StatCard({
+export const StatCard = ({
   title,
   value,
   subtitle,
   icon: Icon,
   color,
   index = 0,
-}: StatCardProps) {
+}: StatCardProps) => {
   const s = styles[color]
 
   return (

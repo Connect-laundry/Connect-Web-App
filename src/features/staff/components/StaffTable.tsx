@@ -18,13 +18,13 @@ interface StaffTableProps {
   onDeleteAssignment: (id: string) => void
 }
 
-export function StaffTable({
+export const StaffTable = ({
   loading,
   searchQuery,
   onSearchChange,
   assignments,
   onDeleteAssignment,
-}: StaffTableProps) {
+}: StaffTableProps) => {
   return (
     <Card className="border-border/50 shadow-sm overflow-hidden">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/20 border-b border-border/40 pb-4">
