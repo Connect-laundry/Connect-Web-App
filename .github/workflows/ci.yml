@@ -2,11 +2,38 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
+  # Gatekeeper: production (main) may only receive merges from `develop`
+  # (normal releases) or a `hotfix/*` branch (emergency production fixes).
+  # This job always reports a status so it can safely be a required check —
+  # it only *fails* on a disallowed PR into main.
+  enforce-merge-source:
+    name: Enforce Merge Source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restrict who can merge into main
+        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+        shell: bash
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+          echo "Pull request opened from '${HEAD_BRANCH}' into 'main'."
+          if [[ "${HEAD_BRANCH}" == "develop" || "${HEAD_BRANCH}" == hotfix/* ]]; then
+            echo "✅ '${HEAD_BRANCH}' is allowed to merge into main."
+          else
+            echo "::error::Only 'develop' or a 'hotfix/*' branch may be merged into 'main'. This PR is from '${HEAD_BRANCH}'. Open it against 'develop' instead."
+            exit 1
+          fi
+
+      - name: Nothing to enforce
+        if: ${{ !(github.event_name == 'pull_request' && github.base_ref == 'main') }}
+        shell: bash
+        run: echo "No merge-source restriction applies to this event."
+
   validate:
     name: Validate Codebase
     runs-on: ubuntu-latest
