@@ -8,10 +8,10 @@ This document defines the branching strategy, environment pipeline, hotfix proto
 
 | Environment | Git Branch | Domain URL | Trigger / Deployment | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| **Production** | `main` | `https://simame.me` | Push / PR Merge to `main` | Production live application used by customers. |
-| **Staging** | `develop` | `https://staging.simame.me` | Push / PR Merge to `develop` | Integration and QA testing environment. |
+| **Production** | `main` | `https://simame.tech` | Push / PR Merge to `main` | Production live application used by customers. |
+| **Staging** | `develop` | `https://staging.simame.tech` | Push / PR Merge to `develop` | Integration and QA testing environment. |
 | **Feature / Fix** | `feature/*`, `fix/*` | Ephemeral Preview | PR targeting `develop` | Active development of new features or non-critical bugs. |
-| **Emergency Hotfix** | `hotfix/*` | `https://simame.me` (post-merge) | PR targeting `main` (then back-merged to `develop`) | Critical production bugs requiring immediate deployment. |
+| **Emergency Hotfix** | `hotfix/*` | `https://simame.tech` (post-merge) | PR targeting `main` (then back-merged to `develop`) | Critical production bugs requiring immediate deployment. |
 
 ---
 
