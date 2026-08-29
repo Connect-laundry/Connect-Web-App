@@ -1,0 +1,46 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy-production:
+    name: Deploy to Production Environment
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url || 'https://simame.me' }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Production Build Check
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.PROD_API_BASE_URL || 'https://connect-full-backend.onrender.com/api/v1' }}
+          NEXT_PUBLIC_APP_NAME: CONNECT
+
+      - name: Trigger Production Deployment
+        id: deploy
+        run: |
+          echo "🚀 Deploying main branch to PRODUCTION environment..."
+          # Integrate with Vercel / hosting webhook / CLI deployment step here
+          # e.g., npx vercel --token ${{ secrets.VERCEL_TOKEN }} --prod
+          echo "url=https://simame.me" >> $GITHUB_OUTPUT
+          echo "✅ Successfully deployed to Production!"

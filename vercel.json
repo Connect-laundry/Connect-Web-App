@@ -1,6 +1,8 @@
 {
   "github": {
-    "silent": false
+    "silent": false,
+    "autoJobCancelation": true,
+    "enabled": true
   },
   "cleanUrls": true,
   "trailingSlash": false,
