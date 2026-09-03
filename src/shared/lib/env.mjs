@@ -7,7 +7,7 @@ import { z } from "zod";
  */
 const envSchema = z.object({
   // Backend API Configuration
-  NEXT_PUBLIC_API_BASE_URL: z.string().url(),
+  NEXT_PUBLIC_API_BASE_URL: z.string().url().default("https://connect-full-backend-production.onrender.com/api/v1"),
   NEXT_PUBLIC_APP_NAME: z.string().min(1).default("SIMAME Owner"),
   
   // Sentry Configuration (Optional/Placeholder for now)
