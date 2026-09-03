@@ -27,6 +27,8 @@ export interface ContactDetails {
   company: string
   privacyEmail: string
   supportEmail: string
+  officialEmail?: string
   phone: string
+  phones?: string[]
   location: string
 }

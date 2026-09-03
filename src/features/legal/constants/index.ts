@@ -10,10 +10,12 @@ export const LEGAL_NAV_LINKS: LegalNavPathLink[] = [
 ]
 
 export const SIMAME_CONTACT_DETAILS: ContactDetails = {
-  company: 'SIMAME / CONNECT Platform',
-  privacyEmail: 'privacy@simame.app',
-  supportEmail: 'info@simame.app',
-  phone: '+233 XX XXX XXXX',
+  company: 'Simame LaundryConnect',
+  privacyEmail: 'privacy@simame.tech',
+  supportEmail: 'info@simame.tech',
+  officialEmail: 'simameapp.official@gmail.com',
+  phone: '+233-200-9098-97 / +233-551-0571-39',
+  phones: ['+233-200-9098-97', '+233-551-0571-39'],
   location: 'Accra, Ghana',
 }
 

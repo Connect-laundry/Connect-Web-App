@@ -52,13 +52,13 @@ export const Footer = () => {
             <div>
               <h4 className="font-semibold mb-4">Contact Us</h4>
               <ul className="space-y-3 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-primary" />
-                  +233 XX XXX XXXX
+                <li className="flex items-start gap-2">
+                  <Phone className="h-4 w-4 text-primary mt-0.5" />
+                  <span>+233 20 090 9897 / +233 55 105 7139</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-primary" />
-                  info@simame.app
+                  <a href="mailto:info@simame.tech" className="hover:text-foreground transition-colors">info@simame.tech</a>
                 </li>
                 <li className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-primary mt-0.5" />

@@ -128,8 +128,9 @@ export const PrivacyPolicyContent: React.FC = () => {
           </p>
           <div className="bg-muted/50 p-4 rounded-lg text-sm space-y-1">
             <p className="font-semibold text-foreground">{SIMAME_CONTACT_DETAILS.company} Privacy Office</p>
-            <p className="text-muted-foreground">Email: <a href={`mailto:${SIMAME_CONTACT_DETAILS.privacyEmail}`} className="text-primary hover:underline">{SIMAME_CONTACT_DETAILS.privacyEmail}</a></p>
-            <p className="text-muted-foreground">Support: <a href={`mailto:${SIMAME_CONTACT_DETAILS.supportEmail}`} className="text-primary hover:underline">{SIMAME_CONTACT_DETAILS.supportEmail}</a></p>
+            <p className="text-muted-foreground">Privacy Email: <a href={`mailto:${SIMAME_CONTACT_DETAILS.privacyEmail}`} className="text-primary hover:underline">{SIMAME_CONTACT_DETAILS.privacyEmail}</a></p>
+            <p className="text-muted-foreground">Support Email: <a href={`mailto:${SIMAME_CONTACT_DETAILS.supportEmail}`} className="text-primary hover:underline">{SIMAME_CONTACT_DETAILS.supportEmail}</a> ({SIMAME_CONTACT_DETAILS.officialEmail})</p>
+            <p className="text-muted-foreground">Phone: {SIMAME_CONTACT_DETAILS.phone}</p>
             <p className="text-muted-foreground">Location: {SIMAME_CONTACT_DETAILS.location}</p>
           </div>
         </CardContent>

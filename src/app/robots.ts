@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://simame.app'
+  const baseUrl = 'https://simame.tech'
 
   return {
     rules: {
