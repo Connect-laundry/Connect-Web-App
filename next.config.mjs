@@ -3,6 +3,15 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const disableIndexing =
+  process.env.NEXT_PUBLIC_DISABLE_INDEXING === "true" ||
+  process.env.DISABLE_INDEXING === "true" ||
+  process.env.NEXT_PUBLIC_SITE_URL?.includes("staging.simame.tech") ||
+  process.env.SITE_URL?.includes("staging.simame.tech") ||
+  process.env.VERCEL_ENV === "preview" ||
+  process.env.VERCEL_TARGET_ENV === "preview" ||
+  process.env.VERCEL_TARGET_ENV === "staging" ||
+  process.env.VERCEL_GIT_COMMIT_REF === "develop";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,36 +24,74 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  async headers() {
+  async redirects() {
     return [
       {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(self)',
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://connect-full-backend.onrender.com https://va.vercel-scripts.com https://*.sentry.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://connect-full-backend.onrender.com https://va.vercel-scripts.com https://*.sentry.io;",
-          },
-        ],
+        source: "/privacy-policy",
+        destination: "/privacy",
+        permanent: true,
       },
-    ]
+      {
+        source: "/terms-of-service",
+        destination: "/terms",
+        permanent: true,
+      },
+      {
+        source: "/delete-account",
+        destination: "/account-deletion",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.simame.tech" }],
+        destination: "https://simame.tech/:path*",
+        permanent: true,
+      },
+    ];
   },
-}
+  async headers() {
+    const backendOrigin = disableIndexing
+      ? "https://connect-full-backend.onrender.com"
+      : "https://connect-full-backend-production.onrender.com";
+
+    const securityHeaders = [
+      {
+        key: "X-Frame-Options",
+        value: "DENY",
+      },
+      {
+        key: "X-Content-Type-Options",
+        value: "nosniff",
+      },
+      {
+        key: "Referrer-Policy",
+        value: "strict-origin-when-cross-origin",
+      },
+      {
+        key: "Permissions-Policy",
+        value: "camera=(), microphone=(), geolocation=(self)",
+      },
+      {
+        key: "Content-Security-Policy",
+        value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' ${backendOrigin} https://va.vercel-scripts.com https://*.sentry.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' ${backendOrigin} https://va.vercel-scripts.com https://*.sentry.io;`,
+      },
+    ];
+
+    if (disableIndexing) {
+      securityHeaders.push({
+        key: "X-Robots-Tag",
+        value: "noindex, nofollow",
+      });
+    }
+
+    return [
+      {
+        source: "/(.*)",
+        headers: securityHeaders,
+      },
+    ];
+  },
+};
 
 export default withSentryConfig(nextConfig, {
   // For all available options, see:

@@ -1,14 +1,25 @@
 import { MetadataRoute } from 'next'
+import { SITE_URL } from '@/shared/lib/seo'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://simame.tech'
-
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard/', '/api/'], // Disallow crawling private or API routes
+      disallow: [
+        '/api/',
+        '/auth/',
+        '/dashboard/',
+        '/orders/',
+        '/business/',
+        '/notifications/',
+        '/earnings/',
+        '/staff/',
+        '/settings/',
+        '/onboarding/',
+      ],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   }
 }

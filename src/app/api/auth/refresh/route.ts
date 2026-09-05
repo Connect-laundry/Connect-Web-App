@@ -1,18 +1,19 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import type { NextRequest } from 'next/server'
+import { resolveBackendBaseUrl } from '@/shared/lib/backend-url'
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://connect-full-backend-production.onrender.com/api/v1'
-
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
     const cookieStore = await cookies()
     const currentRefreshToken = cookieStore.get('refresh_token')?.value
+    const backendUrl = resolveBackendBaseUrl(req.headers.get('host'))
 
     if (!currentRefreshToken) {
       return NextResponse.json({ error: 'No refresh token available' }, { status: 401 })
     }
 
-    const res = await fetch(`${BACKEND_URL}/auth/token/refresh/`, {
+    const res = await fetch(`${backendUrl}/auth/token/refresh/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -24,10 +25,6 @@ export async function POST() {
     const data = rawData.data || rawData
 
     if (!res.ok) {
-      // Only a definitive auth rejection means the refresh token is truly dead
-      // (expired, invalid, or already rotated). Transient upstream failures —
-      // Render free-tier cold-start 5xx or timeouts — must NOT clear the session,
-      // otherwise a slow backend silently logs the user out.
       if (res.status === 401 || res.status === 403) {
         cookieStore.delete('access_token')
         cookieStore.delete('refresh_token')
@@ -44,26 +41,26 @@ export async function POST() {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 60 * 60 * 24, // 1 day
+        maxAge: 60 * 60 * 24,
       })
     }
-    
-    // Some backends rotate refresh tokens as well
+
     if (newRefreshToken) {
       cookieStore.set('refresh_token', newRefreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        maxAge: 60 * 60 * 24 * 7,
       })
     }
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unexpected refresh error'
     return NextResponse.json(
-      { error: 'Internal Server Error', message: error.message },
-      { status: 500 }
+      { error: 'Internal Server Error', message },
+      { status: 500 },
     )
   }
 }
