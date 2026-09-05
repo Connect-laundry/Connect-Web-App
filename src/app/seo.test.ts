@@ -186,6 +186,55 @@ describe('entity and content governance', () => {
       /Ghana'?s first|number one|#1|1000\+|1,000\+|4\.9\/5|nationwide|all Ghana|all campuses|free pickup|free delivery|100% happiness|same-day service/i,
     )
   })
+
+  it('never includes Simami in any schema, alternateName, sameAs, or metadata', () => {
+    const seoFiles = [
+      'src/app/page.tsx',
+      'src/app/about/page.tsx',
+      'src/app/app/page.tsx',
+      'src/app/press/page.tsx',
+      'src/shared/lib/seo.ts',
+      'src/shared/lib/social.ts',
+      'src/shared/lib/seo-content.ts',
+    ]
+    const combined = seoFiles
+      .map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
+      .join('\n')
+
+    // 'Simami' must NEVER appear as a brand alias, schema value, sameAs URL, or keyword target
+    expect(combined).not.toMatch(/Simami/)
+  })
+
+  it('has a server-rendered entity answer block on the homepage', () => {
+    const homepageSource = readFileSync(join(process.cwd(), 'src/app/page.tsx'), 'utf8')
+    expect(homepageSource).toMatch(/sr-only/)
+    expect(homepageSource).toMatch(/What is Simame\?/)
+    expect(homepageSource).toMatch(/Ghanaian digital laundry marketplace/i)
+    expect(homepageSource).toMatch(/S-I-M-A-M-E/)
+  })
+
+  it('has FAQPage schema on the About page answering key brand questions', () => {
+    const aboutSource = readFileSync(join(process.cwd(), 'src/app/about/page.tsx'), 'utf8')
+    expect(aboutSource).toMatch(/FAQPage/)
+    expect(aboutSource).toMatch(/How is Simame spelled\?/)
+    expect(aboutSource).toMatch(/What was Connect Laundry\?/)
+    expect(aboutSource).toMatch(/S-I-M-A-M-E/)
+  })
+
+  it('has FAQPage schema on the App page for download-intent queries', () => {
+    const appSource = readFileSync(join(process.cwd(), 'src/app/app/page.tsx'), 'utf8')
+    expect(appSource).toMatch(/FAQPage/)
+    expect(appSource).toMatch(/Where can I download the Simame app\?/)
+    expect(appSource).toMatch(/Simame – Laundry Connect/)
+  })
+
+  it('has the brand spelling card on the press page', () => {
+    const pressSource = readFileSync(join(process.cwd(), 'src/app/press/page.tsx'), 'utf8')
+    expect(pressSource).toMatch(/S-I-M-A-M-E/)
+    expect(pressSource).toMatch(/Official name/i)
+    expect(pressSource).toMatch(/ENTITY_DESCRIPTIONS/)
+    expect(pressSource).not.toMatch(/Simami/)
+  })
 })
 
 describe('growth acceleration, IndexNow, and commercial SEO', () => {
