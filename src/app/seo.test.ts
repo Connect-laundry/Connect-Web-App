@@ -187,3 +187,38 @@ describe('entity and content governance', () => {
     )
   })
 })
+
+describe('growth acceleration, IndexNow, and commercial SEO', () => {
+  it('hosts valid IndexNow key and endpoint for search engine submission', () => {
+    const keyFile = readFileSync(join(process.cwd(), 'public/4f89d3a7e6b241c890f5a7e1c3b5d2e4.txt'), 'utf8').trim()
+    expect(keyFile).toBe('4f89d3a7e6b241c890f5a7e1c3b5d2e4')
+
+    const indexNowRoute = readFileSync(join(process.cwd(), 'src/app/api/indexnow/route.ts'), 'utf8')
+    expect(indexNowRoute).toContain('4f89d3a7e6b241c890f5a7e1c3b5d2e4')
+    expect(indexNowRoute).toContain('https://api.indexnow.org/indexnow')
+  })
+
+  it('embeds FAQPage structured data and commercial categories on the services page', () => {
+    const servicesSource = readFileSync(join(process.cwd(), 'src/app/services/page.tsx'), 'utf8')
+    expect(servicesSource).toContain('FAQPage')
+    expect(servicesSource).toContain('Laundry Pickup & Delivery')
+    expect(servicesSource).toContain('Professional Dry Cleaning')
+    expect(servicesSource).toContain('Wash and Fold')
+    expect(servicesSource).toContain('Campus & Student Laundry')
+  })
+
+  it('provides official partner badge embed snippet on the for-laundries page', () => {
+    const forLaundriesSource = readFileSync(join(process.cwd(), 'src/app/for-laundries/page.tsx'), 'utf8')
+    expect(forLaundriesSource).toContain('Partner Link &amp; Badge Program')
+    expect(forLaundriesSource).toContain('Book on Simame')
+    expect(forLaundriesSource).toContain('simame.tech/for-laundries')
+  })
+
+  it('enforces strict gating on dynamic provider profile pages', () => {
+    const providerSource = readFileSync(join(process.cwd(), 'src/app/laundries/[slug]/page.tsx'), 'utf8')
+    expect(providerSource).toContain('notFound()')
+    expect(providerSource).toContain('DryCleaningOrLaundry')
+    expect(providerSource).toContain('isVerified')
+    expect(providerSource).toContain('APPROVED')
+  })
+})
