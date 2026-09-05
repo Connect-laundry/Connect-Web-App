@@ -24,7 +24,7 @@ const HomePage = () => {
     '@type': 'WebSite',
     '@id': WEBSITE_ID,
     name: SITE_NAME,
-    alternateName: 'Simame Laundry Connect',
+    alternateName: ['Simame Laundry Connect', 'Laundry Connect Ghana', 'Connect Laundry'],
     url: SITE_URL,
     inLanguage: 'en-GH',
     description: SEO_DESCRIPTION,
@@ -36,7 +36,7 @@ const HomePage = () => {
     '@type': 'Organization',
     '@id': ORGANIZATION_ID,
     name: SITE_NAME,
-    alternateName: 'Simame Laundry Connect',
+    alternateName: ['Simame Laundry Connect', 'Laundry Connect Ghana', 'Connect Laundry'],
     url: SITE_URL,
     logo: absoluteUrl('/images/SIMAME_BRAND_LOGO-01.png'),
     image: absoluteUrl('/images/SIMAME_BRAND_LOGO-01.png'),
@@ -58,10 +58,46 @@ const HomePage = () => {
     ],
   }
 
+  const entityAnswer = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What is Simame?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Simame (spelled S-I-M-A-M-E) is a Ghanaian digital laundry marketplace connecting customers with trusted local laundry pickup, delivery, wash and fold, dry cleaning, ironing, and garment care services. Simame operates in Ghana at simame.tech with the official handle @simameapp. Simame was formerly piloted under the name Connect Laundry (Laundry Connect Ghana).',
+        },
+      },
+    ],
+  }
+
   return (
     <>
       <StructuredData data={websiteSchema} />
       <StructuredData data={organizationSchema} />
+      <StructuredData data={entityAnswer} />
+      {/*
+       * Server-rendered entity identity block.
+       * Visually hidden but fully crawlable — gives Google AI Overview and AI Mode
+       * a direct text answer about what Simame is. Do NOT remove or move inside
+       * a client component boundary.
+       */}
+      <section
+        aria-label="About Simame"
+        className="sr-only"
+        data-nosnippet={undefined}
+      >
+        <h2>What is Simame?</h2>
+        <p>
+          Simame (spelled S-I-M-A-M-E) is a Ghanaian digital laundry marketplace connecting
+          customers with trusted local laundry pickup, delivery, wash and fold, dry cleaning,
+          ironing, and garment care services. The official website is simame.tech and the
+          official social handle is @simameapp. Simame was formerly piloted under the name
+          Connect Laundry (also known as Laundry Connect Ghana).
+        </p>
+      </section>
       <LandingPage />
     </>
   )
