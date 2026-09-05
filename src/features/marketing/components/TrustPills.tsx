@@ -1,8 +1,8 @@
 import { CheckCircle2, Shield, Truck } from 'lucide-react'
 
 const items = [
-  { icon: Truck, label: 'Free pickup & delivery' },
-  { icon: Shield, label: 'Verified local partners' },
+  { icon: Truck, label: 'Pickup where available' },
+  { icon: Shield, label: 'Partner service details' },
   { icon: CheckCircle2, label: 'Owner dashboard included' },
 ]
 

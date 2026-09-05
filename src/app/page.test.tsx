@@ -10,7 +10,7 @@ vi.mock('next/navigation', () => ({
   }),
 }))
 
-// Mock next/image — omit Next.js-only props that are invalid on <img>
+// Mock next/image â€” omit Next.js-only props that are invalid on <img>
 vi.mock('next/image', () => ({
   default: ({
     src,
@@ -40,10 +40,10 @@ describe('HomePage', () => {
   it('renders the hero section', () => {
     render(<HomePage />)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      /Fresh, Clean & Delivered to Your Door/i,
+      /Laundry pickup and delivery in Ghana/i,
     )
     expect(
-      screen.getByText(/SIMAME offers premium laundry and dry cleaning services/i),
+      screen.getByText(/Simame helps customers arrange wash and fold/i),
     ).toBeInTheDocument()
   })
 

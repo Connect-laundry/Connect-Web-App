@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { LegalLayout } from '@/features/legal/components/LegalLayout'
 import { TermsOfServiceContent } from '@/features/legal/components/TermsOfServiceContent'
+import { publicPageMetadata } from '@/shared/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Terms of Service — SIMAME',
-  description: 'Terms and conditions governing the use of SIMAME laundry services, partner business dashboard, and delivery platform.',
-}
+export const metadata: Metadata = publicPageMetadata({
+  title: 'Terms of Service - Simame',
+  description: 'Read the terms that govern Simame laundry services, partner business dashboard access, delivery workflows, and platform use.',
+  path: '/terms',
+})
 
 export default function TermsPage() {
   return (
