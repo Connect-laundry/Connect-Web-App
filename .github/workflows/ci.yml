@@ -1,10 +1,14 @@
-name: CI/CD Pipeline
+name: CI Validation Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'hotfix/*' ]
   pull_request:
     branches: [ main, develop ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   # Gatekeeper: production (main) may only receive merges from `develop`

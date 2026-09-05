@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 const envSchema = z.object({
-  NEXT_PUBLIC_API_URL: z.string().url().default('https://connect-full-backend.onrender.com/api/v1'),
+  NEXT_PUBLIC_API_URL: z.string().url().default('https://connect-full-backend-production.onrender.com/api/v1'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 })
 

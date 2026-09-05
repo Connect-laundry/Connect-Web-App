@@ -47,7 +47,7 @@ export async function apiClient<T = any>(
 
   } catch (error: any) {
     if (process.env.NODE_ENV === 'development') {
-      console.error('[simame.app] API Connectivity Error:', error.message)
+      console.error('[simame.tech] API Connectivity Error:', error.message)
     }
     throw new Error(`Connection failed. Please check your internet or try again later.`)
   }
