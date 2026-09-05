@@ -6,7 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Check, X, AlertCircle } from 'lucide-react'
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://connect-full-backend.onrender.com/api/v1'
+const DEFAULT_BACKEND_URL = typeof window !== 'undefined' && window.location.hostname === 'staging.simame.tech'
+  ? 'https://connect-full-backend.onrender.com/api/v1'
+  : 'https://connect-full-backend-production.onrender.com/api/v1'
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || DEFAULT_BACKEND_URL
 
 interface TestResult {
   name: string

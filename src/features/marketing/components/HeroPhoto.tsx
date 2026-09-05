@@ -19,7 +19,7 @@ export const HeroPhoto = ({ className = '' }: { className?: string }) => {
         <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 z-10">
           <p className="text-white/90 text-xs font-bold uppercase tracking-[0.2em] mb-2">
-            Free pickup & delivery
+            Pickup where available
           </p>
           <p className="text-white text-xl sm:text-2xl font-black max-w-md leading-tight">
             Clean clothes, delivered to your door.

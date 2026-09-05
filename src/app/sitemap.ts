@@ -1,26 +1,7 @@
 import { MetadataRoute } from 'next'
+import { getPublicSitemapEntries, isSearchIndexingDisabled } from '@/shared/lib/seo'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://simame.tech' // Production URL
-
-  return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/auth/login`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/auth/register`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-  ]
+  if (isSearchIndexingDisabled()) return []
+  return getPublicSitemapEntries()
 }
