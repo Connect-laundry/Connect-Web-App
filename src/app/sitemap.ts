@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://simame.app' // Replace with production URL
+  const baseUrl = 'https://simame.tech' // Production URL
 
   return [
     {

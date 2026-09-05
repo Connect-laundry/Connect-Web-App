@@ -68,7 +68,7 @@ const PendingPage = () => {
             </Button>
 
             <p className="text-xs text-muted-foreground">
-              Questions? support@simame.app
+              Questions? support@simame.tech
             </p>
           </CardContent>
         </Card>

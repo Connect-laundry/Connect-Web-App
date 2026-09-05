@@ -163,12 +163,12 @@ To use the real SIMAME backend instead of the mock API:
 
 1. Update `.env.local`:
    ```
-   NEXT_PUBLIC_API_BASE_URL=https://connect-full-backend.onrender.com/api/v1
+   NEXT_PUBLIC_API_BASE_URL=https://connect-full-backend-production.onrender.com/api/v1
    ```
 
 2. Or set the environment variable when running:
    ```bash
-   NEXT_PUBLIC_API_BASE_URL=https://connect-full-backend.onrender.com/api/v1 npm run dev
+   NEXT_PUBLIC_API_BASE_URL=https://connect-full-backend-production.onrender.com/api/v1 npm run dev
    ```
 
 ## Mock Data

@@ -113,7 +113,7 @@ cp .env.local.example .env.local
 
 4. Update `.env.local` with your API configuration:
 ```
-NEXT_PUBLIC_API_BASE_URL=https://connect-full-backend.onrender.com/api/v1
+NEXT_PUBLIC_API_BASE_URL=https://connect-full-backend-production.onrender.com/api/v1
 NEXT_PUBLIC_APP_NAME=SIMAME Owner
 ```
 

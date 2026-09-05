@@ -22,7 +22,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'SIMAME — Professional Laundry & Dry Cleaning Services',
   description: 'Premium laundry, dry cleaning, and garment care with free pickup and delivery. Fresh, clean clothes delivered to your door.',
-  generator: 'simame.app',
+  generator: 'simame.tech',
   applicationName: 'SIMAME',
   appleWebApp: {
     capable: true,
