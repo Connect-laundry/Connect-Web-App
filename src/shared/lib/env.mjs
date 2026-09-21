@@ -9,10 +9,14 @@ const envSchema = z.object({
   // Backend API Configuration
   NEXT_PUBLIC_API_BASE_URL: z.string().url().default("https://connect-full-backend-production.onrender.com/api/v1"),
   NEXT_PUBLIC_APP_NAME: z.string().min(1).default("SIMAME Owner"),
-  
+
+  // Public site and indexing controls
+  NEXT_PUBLIC_SITE_URL: z.string().url().default("https://simame.tech"),
+  NEXT_PUBLIC_DISABLE_INDEXING: z.enum(["true", "false"]).default("false"),
+
   // Sentry Configuration (Optional/Placeholder for now)
   NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
-  
+
   // Environment context
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
@@ -22,7 +26,7 @@ const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
   console.error(
-    "❌ Invalid environment variables:",
+    "Invalid environment variables:",
     JSON.stringify(_env.error.format(), null, 2)
   );
   // In production, we throw to explicitly fail the build or start

@@ -11,35 +11,35 @@ import {
 } from 'lucide-react'
 
 export const navigationLinks = [
-  { label: 'Services', href: '#services' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Why Us', href: '#why-us' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Services', href: '/services' },
+  { label: 'How It Works', href: '/how-it-works' },
+  { label: 'Locations', href: '/locations' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 export const services = [
   {
     icon: WashingMachine,
     title: 'Wash & Fold',
-    description: 'Everyday laundry washed, dried, and folded — ready for your drawer.',
+    description: 'Everyday laundry washed, dried, and folded by participating laundry partners.',
     tone: 'primary' as const,
   },
   {
     icon: Sparkles,
     title: 'Dry Cleaning',
-    description: 'Care labels followed. Suits, dresses, and delicates handled by pros.',
+    description: 'Partner-supported care for suits, dresses, and delicate garments.',
     tone: 'accent' as const,
   },
   {
     icon: Truck,
     title: 'Pickup & Delivery',
-    description: 'Schedule once. We collect and return to your door at no extra hassle.',
+    description: 'Schedule collection and return where local service coverage supports it.',
     tone: 'primary' as const,
   },
   {
     icon: Zap,
-    title: 'Express',
-    description: 'Tight deadline? Rush options when your local partner supports it.',
+    title: 'Express Options',
+    description: 'Rush turnaround can be offered when a local laundry partner supports it.',
     tone: 'accent' as const,
   },
 ]
@@ -48,19 +48,19 @@ export const processSteps = [
   {
     step: '01',
     title: 'Schedule a Pickup',
-    description: "Book a pickup online or call us. Choose a time that works for you and we'll be there.",
+    description: 'Choose a pickup time and share the laundry service you need from a supported area.',
     icon: Phone,
   },
   {
     step: '02',
-    title: 'We Clean & Care',
-    description: 'Our experts sort, wash, dry, and fold your clothes with premium detergents and care.',
+    title: 'Partner Care',
+    description: 'A laundry partner receives the order details and handles the service workflow.',
     icon: Sparkles,
   },
   {
     step: '03',
-    title: 'Delivered Fresh',
-    description: 'Your freshly cleaned clothes are delivered right to your doorstep, neatly packaged.',
+    title: 'Delivery or Completion',
+    description: 'Follow order status until the garments are ready for delivery or collection.',
     icon: Truck,
   },
 ]
@@ -68,22 +68,22 @@ export const processSteps = [
 export const reasons = [
   {
     icon: Shield,
-    title: 'Trusted Quality',
-    description: 'We use premium, eco-friendly detergents and advanced cleaning techniques to protect your garments.',
+    title: 'Clear Service Information',
+    description: 'Customers can review service information before booking with a laundry partner.',
   },
   {
     icon: Clock,
-    title: 'Fast Turnaround',
-    description: 'Standard 24-hour turnaround with express options available for same-day service.',
+    title: 'Operational Visibility',
+    description: 'Order status, pricing, hours, and staff tools help laundry teams manage work.',
   },
   {
     icon: Heart,
-    title: 'Customer First',
-    description: 'Your satisfaction is our priority. We offer a 100% happiness guarantee on every order.',
+    title: 'Support Access',
+    description: 'Customers and partners can reach official Simame support channels when needed.',
   },
   {
     icon: CheckCircle2,
-    title: 'Transparent Pricing',
-    description: "No hidden fees. Know exactly what you'll pay before you book. Simple, honest pricing.",
+    title: 'Structured Pricing',
+    description: 'Partner-managed pricing tools support clearer item, weight, and delivery-zone workflows.',
   },
 ]

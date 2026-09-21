@@ -1,0 +1,273 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import robots from './robots'
+import sitemap from './sitemap'
+import { COVERAGE_ENTRIES, getIndexableLocationSlugs, isLocationIndexable } from '@/shared/lib/coverage'
+import { resolveBackendBaseUrl, PRODUCTION_BACKEND_BASE_URL, STAGING_BACKEND_BASE_URL } from '@/shared/lib/backend-url'
+import { SEO_CONTENT_INVENTORY, getIndexableInventoryPaths } from '@/shared/lib/seo-content'
+import { ORGANIZATION_SAME_AS, isValidCanonicalSocialUrl } from '@/shared/lib/social'
+import { isSearchIndexingDisabled } from '@/shared/lib/seo'
+
+const originalEnv = { ...process.env }
+
+function resetSeoEnv() {
+  process.env = {
+    ...originalEnv,
+    NEXT_PUBLIC_DISABLE_INDEXING: 'false',
+    DISABLE_INDEXING: '',
+    NEXT_PUBLIC_SITE_URL: '',
+    SITE_URL: '',
+    VERCEL_ENV: '',
+    NEXT_PUBLIC_VERCEL_ENV: '',
+    VERCEL_TARGET_ENV: '',
+    NEXT_PUBLIC_VERCEL_TARGET_ENV: '',
+    VERCEL_GIT_COMMIT_REF: '',
+  }
+}
+
+beforeEach(resetSeoEnv)
+afterEach(resetSeoEnv)
+
+describe('SEO route configuration', () => {
+  it('keeps public trust and authority pages in the sitemap and auth utility pages out', () => {
+    const urls = sitemap().map((entry) => entry.url)
+
+    expect(urls).toContain('https://simame.tech/')
+    expect(urls).toContain('https://simame.tech/about')
+    expect(urls).toContain('https://simame.tech/app')
+    expect(urls).toContain('https://simame.tech/services')
+    expect(urls).toContain('https://simame.tech/how-it-works')
+    expect(urls).toContain('https://simame.tech/for-laundries')
+    expect(urls).toContain('https://simame.tech/locations')
+    expect(urls).toContain('https://simame.tech/campuses')
+    expect(urls).toContain('https://simame.tech/technology')
+    expect(urls).toContain('https://simame.tech/press')
+    expect(urls).toContain('https://simame.tech/contact')
+    expect(urls).toContain('https://simame.tech/privacy')
+    expect(urls).toContain('https://simame.tech/terms')
+    expect(urls).toContain('https://simame.tech/account-deletion')
+    expect(urls).not.toContain('https://simame.tech/auth/login')
+    expect(urls).not.toContain('https://simame.tech/auth/register')
+    expect(urls).not.toContain('https://simame.tech/locations/accra')
+    expect(urls).not.toContain('https://simame.tech/campuses/knust')
+  })
+
+  it('keeps develop and staging environments out of the sitemap and flags indexing as disabled', () => {
+    // Production default: indexing is enabled
+    expect(isSearchIndexingDisabled()).toBe(false)
+
+    // Develop branch: indexing disabled
+    process.env.VERCEL_GIT_COMMIT_REF = 'develop'
+    expect(isSearchIndexingDisabled()).toBe(true)
+    expect(sitemap()).toEqual([])
+
+    // Staging site URL: indexing disabled
+    process.env.VERCEL_GIT_COMMIT_REF = ''
+    process.env.NEXT_PUBLIC_SITE_URL = 'https://staging.simame.tech'
+    expect(isSearchIndexingDisabled()).toBe(true)
+    expect(sitemap()).toEqual([])
+
+    // Preview environment: indexing disabled
+    process.env.NEXT_PUBLIC_SITE_URL = ''
+    process.env.VERCEL_ENV = 'preview'
+    expect(isSearchIndexingDisabled()).toBe(true)
+    expect(sitemap()).toEqual([])
+  })
+
+  it('never emits staging, preview, localhost, or vercel app URLs as production canonicals', () => {
+    const urls = sitemap().map((entry) => entry.url)
+
+    expect(urls.every((url) => url.startsWith('https://simame.tech'))).toBe(true)
+    expect(urls.join('\n')).not.toMatch(/staging\.simame\.tech|localhost|vercel\.app/i)
+  })
+
+  it('disallows private app surfaces while leaving public pages crawlable', () => {
+    const config = robots()
+    const rules = Array.isArray(config.rules) ? config.rules[0] : config.rules
+
+    expect(rules.allow).toBe('/')
+    expect(rules.disallow).toEqual(
+      expect.arrayContaining([
+        '/api/',
+        '/auth/',
+        '/dashboard/',
+        '/orders/',
+        '/business/',
+        '/notifications/',
+        '/earnings/',
+        '/staff/',
+        '/settings/',
+        '/onboarding/',
+      ]),
+    )
+  })
+})
+
+describe('backend URL resolution and isolation', () => {
+  it('pins production domains to the production backend', () => {
+    expect(resolveBackendBaseUrl('simame.tech')).toBe(PRODUCTION_BACKEND_BASE_URL)
+    expect(resolveBackendBaseUrl('www.simame.tech')).toBe(PRODUCTION_BACKEND_BASE_URL)
+  })
+
+  it('pins staging to the staging backend', () => {
+    expect(resolveBackendBaseUrl('staging.simame.tech')).toBe(STAGING_BACKEND_BASE_URL)
+  })
+
+  it('pins develop and preview deployments to the staging backend', () => {
+    process.env.VERCEL_GIT_COMMIT_REF = 'develop'
+    expect(resolveBackendBaseUrl('connect-web-app-zeta.vercel.app')).toBe(STAGING_BACKEND_BASE_URL)
+
+    process.env.VERCEL_GIT_COMMIT_REF = ''
+    process.env.VERCEL_ENV = 'preview'
+    expect(resolveBackendBaseUrl('connect-web-app-zeta.vercel.app')).toBe(STAGING_BACKEND_BASE_URL)
+  })
+
+  it('strictly isolates backend origins in next.config.mjs CSP rules', () => {
+    const nextConfigContent = readFileSync(join(process.cwd(), 'next.config.mjs'), 'utf8')
+    expect(nextConfigContent).toContain('connect-full-backend-production.onrender.com')
+    expect(nextConfigContent).toContain('connect-full-backend.onrender.com')
+    expect(nextConfigContent).toContain('const backendOrigin = disableIndexing')
+  })
+})
+
+describe('entity and content governance', () => {
+  it('keeps every indexable inventory route represented in the sitemap', () => {
+    const sitemapUrls = new Set(sitemap().map((entry) => entry.url.replace('https://simame.tech', '') || '/'))
+
+    expect(getIndexableInventoryPaths().every((path) => sitemapUrls.has(path))).toBe(true)
+  })
+
+  it('keeps verified social sameAs URLs canonical and excludes profiles needing founder review', () => {
+    expect(ORGANIZATION_SAME_AS).toEqual([
+      'https://www.instagram.com/simameapp/',
+      'https://x.com/simameapp',
+      'https://www.youtube.com/@simameapp',
+    ])
+    expect(ORGANIZATION_SAME_AS.every(isValidCanonicalSocialUrl)).toBe(true)
+    expect(ORGANIZATION_SAME_AS).not.toContain('https://www.tiktok.com/@simameapp')
+  })
+
+  it('gates city and campus pages until provider coverage is verified', () => {
+    expect(getIndexableLocationSlugs()).toEqual(['ghana'])
+    expect(isLocationIndexable('accra')).toBe(false)
+    expect(isLocationIndexable('kumasi')).toBe(false)
+    expect(isLocationIndexable('knust')).toBe(false)
+    expect(COVERAGE_ENTRIES.every((entry) => entry.reason.length > 40)).toBe(true)
+  })
+
+  it('keeps each public content item accountable to an owner and query intent', () => {
+    expect(SEO_CONTENT_INVENTORY.every((item) => item.owner && item.intent && item.targetQueries.length > 0)).toBe(true)
+  })
+
+  it('preserves historical continuity of Connect Laundry on the About page without keyword stuffing', () => {
+    const aboutSource = readFileSync(join(process.cwd(), 'src/app/about/page.tsx'), 'utf8')
+    expect(aboutSource).toMatch(/Connect Laundry/i)
+    expect(aboutSource).toMatch(/Brand heritage (&amp;|&) continuity/i)
+    expect(aboutSource).toMatch(/Official brand', 'Simame'/i)
+  })
+
+  it('blocks high-risk unsupported public marketing claims from returning', () => {
+    const files = [
+      'src/app/page.tsx',
+      'src/features/landing/data/landingData.ts',
+      'src/features/landing/components/Hero.tsx',
+      'src/features/landing/components/Footer.tsx',
+      'src/features/marketing/data/landingContent.ts',
+      'src/features/marketing/components/MarketingHero.tsx',
+      'src/features/marketing/components/MarketingFooter.tsx',
+      'src/features/marketing/components/TrustPills.tsx',
+    ]
+    const publicMarketingSource = files
+      .map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
+      .join('\n')
+
+    expect(publicMarketingSource).not.toMatch(
+      /Ghana'?s first|number one|#1|1000\+|1,000\+|4\.9\/5|nationwide|all Ghana|all campuses|free pickup|free delivery|100% happiness|same-day service/i,
+    )
+  })
+
+  it('never includes Simami in any schema, alternateName, sameAs, or metadata', () => {
+    const seoFiles = [
+      'src/app/page.tsx',
+      'src/app/about/page.tsx',
+      'src/app/app/page.tsx',
+      'src/app/press/page.tsx',
+      'src/shared/lib/seo.ts',
+      'src/shared/lib/social.ts',
+      'src/shared/lib/seo-content.ts',
+    ]
+    const combined = seoFiles
+      .map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
+      .join('\n')
+
+    // 'Simami' must NEVER appear as a brand alias, schema value, sameAs URL, or keyword target
+    expect(combined).not.toMatch(/Simami/)
+  })
+
+  it('has a server-rendered entity answer block on the homepage', () => {
+    const homepageSource = readFileSync(join(process.cwd(), 'src/app/page.tsx'), 'utf8')
+    expect(homepageSource).toMatch(/sr-only/)
+    expect(homepageSource).toMatch(/What is Simame\?/)
+    expect(homepageSource).toMatch(/Ghanaian digital laundry marketplace/i)
+    expect(homepageSource).toMatch(/S-I-M-A-M-E/)
+  })
+
+  it('has FAQPage schema on the About page answering key brand questions', () => {
+    const aboutSource = readFileSync(join(process.cwd(), 'src/app/about/page.tsx'), 'utf8')
+    expect(aboutSource).toMatch(/FAQPage/)
+    expect(aboutSource).toMatch(/How is Simame spelled\?/)
+    expect(aboutSource).toMatch(/What was Connect Laundry\?/)
+    expect(aboutSource).toMatch(/S-I-M-A-M-E/)
+  })
+
+  it('has FAQPage schema on the App page for download-intent queries', () => {
+    const appSource = readFileSync(join(process.cwd(), 'src/app/app/page.tsx'), 'utf8')
+    expect(appSource).toMatch(/FAQPage/)
+    expect(appSource).toMatch(/Where can I download the Simame app\?/)
+    expect(appSource).toMatch(/Simame – Laundry Connect/)
+  })
+
+  it('has the brand spelling card on the press page', () => {
+    const pressSource = readFileSync(join(process.cwd(), 'src/app/press/page.tsx'), 'utf8')
+    expect(pressSource).toMatch(/S-I-M-A-M-E/)
+    expect(pressSource).toMatch(/Official name/i)
+    expect(pressSource).toMatch(/ENTITY_DESCRIPTIONS/)
+    expect(pressSource).not.toMatch(/Simami/)
+  })
+})
+
+describe('growth acceleration, IndexNow, and commercial SEO', () => {
+  it('hosts valid IndexNow key and endpoint for search engine submission', () => {
+    const keyFile = readFileSync(join(process.cwd(), 'public/4f89d3a7e6b241c890f5a7e1c3b5d2e4.txt'), 'utf8').trim()
+    expect(keyFile).toBe('4f89d3a7e6b241c890f5a7e1c3b5d2e4')
+
+    const indexNowRoute = readFileSync(join(process.cwd(), 'src/app/api/indexnow/route.ts'), 'utf8')
+    expect(indexNowRoute).toContain('4f89d3a7e6b241c890f5a7e1c3b5d2e4')
+    expect(indexNowRoute).toContain('https://api.indexnow.org/indexnow')
+  })
+
+  it('embeds FAQPage structured data and commercial categories on the services page', () => {
+    const servicesSource = readFileSync(join(process.cwd(), 'src/app/services/page.tsx'), 'utf8')
+    expect(servicesSource).toContain('FAQPage')
+    expect(servicesSource).toContain('Laundry Pickup & Delivery')
+    expect(servicesSource).toContain('Professional Dry Cleaning')
+    expect(servicesSource).toContain('Wash and Fold')
+    expect(servicesSource).toContain('Campus & Student Laundry')
+  })
+
+  it('provides official partner badge embed snippet on the for-laundries page', () => {
+    const forLaundriesSource = readFileSync(join(process.cwd(), 'src/app/for-laundries/page.tsx'), 'utf8')
+    expect(forLaundriesSource).toContain('Partner Link &amp; Badge Program')
+    expect(forLaundriesSource).toContain('Book on Simame')
+    expect(forLaundriesSource).toContain('simame.tech/for-laundries')
+  })
+
+  it('enforces strict gating on dynamic provider profile pages', () => {
+    const providerSource = readFileSync(join(process.cwd(), 'src/app/laundries/[slug]/page.tsx'), 'utf8')
+    expect(providerSource).toContain('notFound()')
+    expect(providerSource).toContain('DryCleaningOrLaundry')
+    expect(providerSource).toContain('isVerified')
+    expect(providerSource).toContain('APPROVED')
+  })
+})
