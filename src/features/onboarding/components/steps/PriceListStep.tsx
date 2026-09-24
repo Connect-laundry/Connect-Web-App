@@ -117,6 +117,7 @@ export const PriceListStep = ({
 
       {/* --------------------------------- optional: AI photo price-import */}
       <OnboardingPriceImportPanel
+        key={activeCategory}
         serviceCategory={activeCategory}
         serviceLabel={activeMeta.label.toLowerCase()}
         onAdd={appendImportedItems}

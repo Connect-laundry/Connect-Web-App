@@ -12,6 +12,8 @@ export interface OnboardingDraftState {
   priceItems: PriceItem[]
   weightTiers: WeightTier[]
   express: ExpressByService
+  imageDataUrl?: string
+  imageFileName?: string
 }
 
 interface UseOnboardingStorageProps {
@@ -26,6 +28,29 @@ interface UseOnboardingStorageProps {
   setWeightTiers: (tiers: WeightTier[]) => void
   express: ExpressByService
   setExpress: (express: ExpressByService) => void
+  selectedFile: File | null
+  setSelectedFile: (file: File | null) => void
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+function dataUrlToFile(dataUrl: string, filename: string): File {
+  const arr = dataUrl.split(',')
+  const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg'
+  const bstr = atob(arr[1])
+  let n = bstr.length
+  const u8arr = new Uint8Array(n)
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
+  }
+  return new File([u8arr], filename, { type: mime })
 }
 
 export function useOnboardingStorage({
@@ -40,6 +65,8 @@ export function useOnboardingStorage({
   setWeightTiers,
   express,
   setExpress,
+  selectedFile,
+  setSelectedFile,
 }: UseOnboardingStorageProps) {
   const isHydrated = useRef(false)
 
@@ -55,6 +82,14 @@ export function useOnboardingStorage({
         if (parsed.priceItems) setPriceItems(parsed.priceItems)
         if (parsed.weightTiers) setWeightTiers(parsed.weightTiers)
         if (parsed.express) setExpress(parsed.express)
+        if (parsed.imageDataUrl && parsed.imageFileName) {
+          try {
+            const restoredFile = dataUrlToFile(parsed.imageDataUrl, parsed.imageFileName)
+            setSelectedFile(restoredFile)
+          } catch (e) {
+            console.warn('Failed to restore image file from draft', e)
+          }
+        }
       }
     } catch (error) {
       console.warn('Failed to parse onboarding draft', error)
@@ -75,10 +110,22 @@ export function useOnboardingStorage({
     saveDraft(form.getValues())
 
     return () => subscription.unsubscribe()
-  }, [form, currentStep, hours, priceItems, weightTiers, express])
+  }, [form, currentStep, hours, priceItems, weightTiers, express, selectedFile])
 
-  const saveDraft = (formValues?: SetupFormValues) => {
+  const saveDraft = async (formValues?: SetupFormValues) => {
     try {
+      let imageDataUrl: string | undefined
+      let imageFileName: string | undefined
+
+      if (selectedFile) {
+        try {
+          imageDataUrl = await fileToDataUrl(selectedFile)
+          imageFileName = selectedFile.name
+        } catch (e) {
+          console.warn('Failed to encode image file for draft', e)
+        }
+      }
+
       const stateToSave: OnboardingDraftState = {
         currentStep,
         formValues: formValues || form.getValues(),
@@ -86,6 +133,8 @@ export function useOnboardingStorage({
         priceItems,
         weightTiers,
         express,
+        imageDataUrl,
+        imageFileName,
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave))
     } catch (error) {
@@ -99,3 +148,4 @@ export function useOnboardingStorage({
 
   return { saveDraft, clearDraft }
 }
+

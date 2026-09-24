@@ -61,6 +61,8 @@ export function useOnboardingWizard() {
     setWeightTiers,
     express,
     setExpress,
+    selectedFile,
+    setSelectedFile,
   })
 
   const saveAndExit = () => {
