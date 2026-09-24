@@ -58,6 +58,24 @@ export const OnboardingPriceImportPanel = ({
             className="hidden"
             onChange={(e) => workflow.selectFile(e.target.files?.[0] ?? null)}
           />
+          <input
+            id="camera-input"
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => workflow.selectFile(e.target.files?.[0] ?? null)}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={workflow.isUploading}
+            onClick={() => document.getElementById('camera-input')?.click()}
+          >
+            {workflow.isUploading ? <Spinner className="h-4 w-4" /> : <Camera className="h-4 w-4 mr-2" />}
+            {workflow.isUploading ? 'Reading…' : 'Take Photo'}
+          </Button>
           <Button
             type="button"
             variant="outline"
@@ -66,7 +84,7 @@ export const OnboardingPriceImportPanel = ({
             onClick={() => inputRef.current?.click()}
           >
             {workflow.isUploading ? <Spinner className="h-4 w-4" /> : <Upload className="h-4 w-4 mr-2" />}
-            {workflow.isUploading ? 'Reading photo…' : 'Upload price list'}
+            {workflow.isUploading ? 'Reading…' : 'Upload'}
           </Button>
         </div>
       </div>

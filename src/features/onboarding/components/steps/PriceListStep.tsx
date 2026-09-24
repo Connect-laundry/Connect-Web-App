@@ -6,7 +6,7 @@ import { cn } from '@/shared/lib/utils'
 import { ExpressServiceFields } from './ExpressServiceFields'
 import { OnboardingPriceImportPanel } from './OnboardingPriceImportPanel'
 import { type ExpressByService, type PriceItem } from '../../types'
-import { SERVICE_CATEGORIES, COMMON_ITEMS, OTHER, ONBOARDING_PRICE_IMPORT_ENABLED } from '../../constants'
+import { SERVICE_CATEGORIES, COMMON_ITEMS, OTHER } from '../../constants'
 
 interface PriceListStepProps {
   items: PriceItem[]
@@ -116,13 +116,11 @@ export const PriceListStep = ({
       </div>
 
       {/* --------------------------------- optional: AI photo price-import */}
-      {ONBOARDING_PRICE_IMPORT_ENABLED && (
-        <OnboardingPriceImportPanel
-          serviceCategory={activeCategory}
-          serviceLabel={activeMeta.label.toLowerCase()}
-          onAdd={appendImportedItems}
-        />
-      )}
+      <OnboardingPriceImportPanel
+        serviceCategory={activeCategory}
+        serviceLabel={activeMeta.label.toLowerCase()}
+        onAdd={appendImportedItems}
+      />
 
       {/* ---------------------------------------- items for the active tab */}
       <div className="space-y-3">
