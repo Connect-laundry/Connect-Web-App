@@ -41,7 +41,10 @@ export const OnboardingWizard = () => {
                 </motion.div>
               </AnimatePresence>
               <div className="flex justify-between pt-6 border-t mt-8">
-                <Button type="button" variant="outline" onClick={wizard.previousStep} disabled={wizard.currentStep === 0 || wizard.isLoading}><ChevronLeft className="w-4 h-4 mr-2" />Back</Button>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={wizard.previousStep} disabled={wizard.currentStep === 0 || wizard.isLoading}><ChevronLeft className="w-4 h-4 mr-2" />Back</Button>
+                  <Button type="button" variant="ghost" onClick={wizard.saveAndExit} disabled={wizard.isLoading}>Save & Exit</Button>
+                </div>
                 {!wizard.isLastStep ? (
                   <Button type="button" onClick={wizard.nextStep}>Next<ChevronRight className="w-4 h-4 ml-2" /></Button>
                 ) : (

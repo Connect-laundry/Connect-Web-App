@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useOnboardingStorage } from './useOnboardingStorage'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@/features/auth/context/AuthContext'
@@ -47,6 +48,25 @@ export function useOnboardingWizard() {
     mode: 'onChange',
     defaultValues: formDefaults,
   })
+
+  const { saveDraft, clearDraft } = useOnboardingStorage({
+    form,
+    currentStep,
+    setCurrentStep,
+    hours,
+    setHours,
+    priceItems,
+    setPriceItems,
+    weightTiers,
+    setWeightTiers,
+    express,
+    setExpress,
+  })
+
+  const saveAndExit = () => {
+    saveDraft()
+    router.push('/')
+  }
   const pricingModel = form.watch('pricing_model')
   const showPriceList = usesItemPricing(pricingModel)
   const steps = useMemo(() => buildSteps(showPriceList), [showPriceList])
@@ -65,7 +85,7 @@ export function useOnboardingWizard() {
   const validateLocalStep = (stepId: StepId | undefined): boolean => {
     let message: string | null = null
     if (stepId === 'hours') message = validateHours(hours)
-    if (stepId === 'pricing') message = validateWeightTiers(weightTiers) || validateExpress(express)
+    if (stepId === 'pricing') message = (usesWeightPricing(pricingModel) ? validateWeightTiers(weightTiers) : null) || validateExpress(express)
     if (stepId === 'pricelist') message = (showPriceList ? validatePriceList(priceItems) : null) || validateExpress(express)
     setError(message)
     return message === null
@@ -113,6 +133,7 @@ export function useOnboardingWizard() {
       if (usesWeightPricing(values.pricing_model)) await saveWeightPricing(values, weightTiers)
       if (showPriceList) await savePriceItems(priceItems, createdItemsRef.current)
       await refreshLaundry()
+      clearDraft()
       router.push('/onboarding/pending')
     } catch (error: unknown) {
       console.warn('[onboarding] submit failed', error)
@@ -144,5 +165,6 @@ export function useOnboardingWizard() {
     nextStep,
     previousStep,
     submit,
+    saveAndExit,
   }
 }

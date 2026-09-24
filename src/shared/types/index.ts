@@ -144,6 +144,7 @@ export interface Order {
   order_timeline?: OrderTimeline[];
   rejection_reason?: string;
   cancellation_reason?: string;
+  handover_code?: string;
   created_at: string;
   updated_at: string;
 }
