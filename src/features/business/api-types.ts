@@ -1,23 +1,3 @@
-export interface PriceImportDraftItem {
-  id: string
-  item_name: string
-  suggested_price: string | number | null
-  category: string
-  confidence: number | null
-  is_selected: boolean
-}
-
-export interface PriceImportJob {
-  id: string
-  status: 'PENDING' | 'PROCESSING' | 'READY' | 'CONFIRMED' | 'FAILED'
-  provider: string
-  error: string
-  draft_items: PriceImportDraftItem[]
-  created_at: string
-  updated_at: string
-  confirmed_at: string | null
-}
-
 export interface PricingCatalogVersion {
   id: string
   version_number: number

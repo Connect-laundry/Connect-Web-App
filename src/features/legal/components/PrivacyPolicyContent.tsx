@@ -92,6 +92,9 @@ export const PrivacyPolicyContent: React.FC = () => {
               <strong className="text-foreground">Infrastructure Providers:</strong> Hosting and backend database providers under strict confidentiality agreements.
             </li>
             <li>
+              <strong className="text-foreground">Price-List Scanning (laundry owners):</strong> If a laundry owner chooses to scan a photo of their price list, the photo is sent to Google (Gemini API) and, as a fallback, to OCR.space, solely to read the services and prices shown. The owner reviews every result before anything is saved. Stored copies of these photos are deleted after 30 days.
+            </li>
+            <li>
               <strong className="text-foreground">Legal Obligations:</strong> When required by court order, law enforcement request, or applicable data protection regulations.
             </li>
           </ul>

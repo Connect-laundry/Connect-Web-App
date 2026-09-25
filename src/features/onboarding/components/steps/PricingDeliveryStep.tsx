@@ -4,6 +4,7 @@ import { NumberField } from '../fields/NumberField'
 import { RadioCardGroup, type RadioCardOption } from '../fields/RadioCardGroup'
 import { WeightPricingFields } from './WeightPricingFields'
 import { ExpressServiceFields } from './ExpressServiceFields'
+import { OnboardingPriceScan } from './OnboardingPriceScan'
 import { usesWeightPricing, usesItemPricing } from '../../config'
 import { WEIGHT_EXPRESS_KEY, type ExpressByService, type WeightTier } from '../../types'
 
@@ -46,6 +47,16 @@ export const PricingDeliveryStep = ({
   return (
     <div className="space-y-6">
       <RadioCardGroup name="pricing_model" label="How do you price?" options={pricingModels} />
+
+      {/* Weight-only laundries have no Price List step: offer the scan here. */}
+      {pricingModel === 'BY_WEIGHT' && (
+        <OnboardingPriceScan
+          items={[]}
+          setItems={() => {}}
+          weightTiers={weightTiers}
+          setWeightTiers={setWeightTiers}
+        />
+      )}
 
       {usesWeightPricing(pricingModel) && (
         <WeightPricingFields

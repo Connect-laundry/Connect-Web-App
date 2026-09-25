@@ -11,6 +11,7 @@ import { BusinessHeader } from '@/features/business/components/BusinessHeader'
 import { BusinessProfileCard } from '@/features/business/components/BusinessProfileCard'
 import { HoursEditor } from '@/features/business/components/HoursEditor'
 import { ServicesPricingTab } from '@/features/business/components/ServicesPricingTab'
+import { FreeDeliveryPromoCard } from '@/features/promotions/FreeDeliveryPromoCard'
 
 const BusinessPage = () => {
   const {
@@ -26,7 +27,6 @@ const BusinessPage = () => {
     onVacationToggle,
     usesItems,
     usesWeight,
-    getPricingItems,
   } = useBusinessProfile()
 
   return (
@@ -54,7 +54,13 @@ const BusinessPage = () => {
             <TabsTrigger value="profile">Business Profile</TabsTrigger>
             <TabsTrigger value="hours">Operating Hours</TabsTrigger>
             <TabsTrigger value="services">Services &amp; Pricing</TabsTrigger>
+            <TabsTrigger value="promotions">Promotions</TabsTrigger>
           </TabsList>
+
+          {/* Promotions Tab */}
+          <TabsContent value="promotions" className="mt-6">
+            <FreeDeliveryPromoCard />
+          </TabsContent>
 
           {/* Business Profile Tab */}
           <TabsContent value="profile" className="mt-6">
@@ -87,7 +93,8 @@ const BusinessPage = () => {
               setWeightPricing={setWeightPricing}
               pricingItems={pricingItems}
               setPricingItems={setPricingItems}
-              getPricingItems={getPricingItems}
+              pricingModel={laundry?.pricing_model}
+              ironingAvailable={laundry?.ironing_available}
             />
           </TabsContent>
         </Tabs>

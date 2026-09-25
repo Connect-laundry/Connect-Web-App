@@ -5,6 +5,7 @@ import { Dialog, DialogContent } from "@/shared/ui/dialog";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { AlertCircle, CheckCircle, Clock, Receipt } from "lucide-react";
 import { OrderWeighingCard } from "./OrderWeighingCard";
+import { OrderHandoverCodeCard } from "./OrderHandoverCodeCard";
 import { OrderModalHeader } from "./OrderModalHeader";
 import { OrderLifecycleStepper } from "./OrderLifecycleStepper";
 import { OrderInfoGrids } from "./OrderInfoGrid";
@@ -24,6 +25,8 @@ export const OrderDetailModal = ({
     successMessage,
     weight,
     setWeight,
+    handoverCode,
+    setHandoverCode,
     orderTimeline,
     priceBreakdown,
     availableActions,
@@ -55,11 +58,22 @@ export const OrderDetailModal = ({
             </Alert>
           )}
 
+          {(order.dispute_status === "OPEN" || order.dispute_status === "MANUAL_REVIEW") && (
+            <Alert className="border-amber-500/30 bg-amber-500/10 text-amber-800">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="font-semibold">
+                The customer reported a problem with this order. Payment is on hold while Simame support reviews it.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {order.status !== "CANCELLED" && order.status !== "REJECTED" && (
             <OrderLifecycleStepper currentStepIndex={currentStepIndex} />
           )}
 
           <OrderWeighingCard status={order.status} weight={weight} setWeight={setWeight} />
+
+          <OrderHandoverCodeCard status={order.status} handoverCode={handoverCode} setHandoverCode={setHandoverCode} />
 
           <OrderInfoGrids order={order} />
 

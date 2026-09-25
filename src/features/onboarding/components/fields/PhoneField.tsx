@@ -7,8 +7,7 @@ import { useFormContext } from "react-hook-form";
 export const PhoneField = ({ name = 'phone_number' }: { name?: string }) => {
   const form = useFormContext()
 
-  const parseInitialPhone = (): { code: string; phone: string } => {
-    const val = form.getValues(name) as string
+  const parsePhone = (val: string | undefined): { code: string; phone: string } => {
     if (val && val.startsWith('+')) {
       const match = countryCodes.find((c) => val.startsWith(c.code))
       if (match) return { code: match.code, phone: val.slice(match.code.length) }
@@ -16,17 +15,34 @@ export const PhoneField = ({ name = 'phone_number' }: { name?: string }) => {
     }
     return { code: '+233', phone: val ?? '' }
   }
+  const combine = (code: string, phone: string) => {
+    const digits = phone.replace(/\D/g, '')
+    return digits ? `${code}${digits}` : ''
+  }
 
-  const [countryCode, setCountryCode] = useState<string>(() => parseInitialPhone().code)
-  const [localPhone, setLocalPhone] = useState<string>(() => parseInitialPhone().phone)
+  const [countryCode, setCountryCode] = useState<string>(() => parsePhone(form.getValues(name)).code)
+  const [localPhone, setLocalPhone] = useState<string>(() => parsePhone(form.getValues(name)).phone)
 
   const placeholder = countryCodes.find((c) => c.code === countryCode)?.placeholder ?? '20 000 0000'
 
-  // Keep the combined value in sync with the form.
+  // Write to the form only when the owner edits the number. Writing on mount
+  // wiped a phone restored from a saved draft (the field mounts before the
+  // draft is loaded, with an empty local copy).
+  const commit = (code: string, phone: string) => {
+    setCountryCode(code)
+    setLocalPhone(phone)
+    form.setValue(name, combine(code, phone), { shouldValidate: true, shouldDirty: true })
+  }
+
+  // Follow changes made elsewhere (draft restore, form.reset).
+  const formValue = form.watch(name) as string | undefined
   useEffect(() => {
-    const digits = localPhone.replace(/\D/g, '')
-    form.setValue(name, digits ? `${countryCode}${digits}` : '', { shouldValidate: true })
-  }, [countryCode, localPhone, form, name])
+    if ((formValue ?? '') === combine(countryCode, localPhone)) return
+    const parsed = parsePhone(formValue)
+    setCountryCode(parsed.code)
+    setLocalPhone(parsed.phone)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formValue])
 
   return (
     <FormField
@@ -39,7 +55,7 @@ export const PhoneField = ({ name = 'phone_number' }: { name?: string }) => {
             <div className="flex gap-2">
               <select
                 value={countryCode}
-                onChange={(e) => setCountryCode(e.target.value)}
+                onChange={(e) => commit(e.target.value, localPhone)}
                 className="flex h-10 w-[140px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {countryCodes.map((c) => (
@@ -52,7 +68,7 @@ export const PhoneField = ({ name = 'phone_number' }: { name?: string }) => {
                 type="tel"
                 placeholder={placeholder}
                 value={localPhone}
-                onChange={(e) => setLocalPhone(e.target.value)}
+                onChange={(e) => commit(countryCode, e.target.value)}
                 className="flex-1"
               />
             </div>

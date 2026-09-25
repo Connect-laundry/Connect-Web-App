@@ -46,6 +46,16 @@ export const setupSchema = z
     minimum_order_weight_kg: z.string().optional().or(z.literal('')),
     rounding_strategy: z.enum(['NONE', 'UP_0_5_KG', 'UP_1_KG']).optional(),
     image: z.any().optional(),
+
+    // Payout Account Configuration
+    use_business_phone_for_payout: z.boolean().default(true),
+    payout_method: z.enum(['MOBILE_MONEY', 'BANK_ACCOUNT']).default('MOBILE_MONEY'),
+    payout_provider: z.string().min(1, 'Please select your payout provider / network'),
+    payout_phone: z.string().min(9, 'Valid payout phone number is required'),
+    payout_account_name: z.string().optional().or(z.literal('')),
+    payout_confirmed: z.boolean().refine((val) => val === true, {
+      message: 'You must confirm authorization for this payout account to receive earnings',
+    }),
   })
 
 export type SetupFormValues = z.infer<typeof setupSchema>
@@ -71,4 +81,10 @@ export const formDefaults: DefaultValues<SetupFormValues> = {
   minimum_charge: '0',
   minimum_order_weight_kg: '',
   rounding_strategy: 'NONE',
+  use_business_phone_for_payout: true,
+  payout_method: 'MOBILE_MONEY',
+  payout_provider: 'MTN',
+  payout_phone: '',
+  payout_account_name: '',
+  payout_confirmed: false,
 }

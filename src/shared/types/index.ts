@@ -131,6 +131,13 @@ export interface Order {
   status: OrderStatus;
   status_display: string;
   payment_status?: "UNPAID" | "PAID" | "REFUNDED";
+  payment_method?: "CASH" | "CARD" | "BANK_TRANSFER" | string;
+  payment_state?: "CASH_DUE" | "CASH_COLLECTED" | "PAID" | "ONLINE_REQUIRED" | "AWAITING_QUOTE" | string;
+  amount_due?: string;
+  amount_collected?: string;
+  cash_collected_at?: string | null;
+  /** Latest customer report on this order; read-only for the owner. */
+  dispute_status?: 'OPEN' | 'RESOLVED_RELEASED' | 'RESOLVED_REFUNDED' | 'MANUAL_REVIEW' | null;
   total_amount: number;
   pickup_date: string;
   delivery_date: string;
@@ -144,7 +151,6 @@ export interface Order {
   order_timeline?: OrderTimeline[];
   rejection_reason?: string;
   cancellation_reason?: string;
-  handover_code?: string;
   created_at: string;
   updated_at: string;
 }

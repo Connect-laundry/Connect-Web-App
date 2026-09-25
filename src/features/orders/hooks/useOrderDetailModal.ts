@@ -17,6 +17,7 @@ export function useOrderDetailModal(
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [weight, setWeight] = useState<string>("");
+    const [handoverCode, setHandoverCode] = useState<string>("");
     const [orderTimeline, setOrderTimeline] = useState<OrderTimelineType[] | null>(null);
     const [priceBreakdown, setPriceBreakdown] = useState<Record<string, unknown> | null>(null);
 
@@ -24,7 +25,10 @@ export function useOrderDetailModal(
         let isMounted = true;
         if (order?.id) {
             Promise.resolve().then(() => {
-                if (isMounted) setWeight(order.actual_weight?.toString() || "");
+                if (isMounted) {
+                    setWeight(order.actual_weight?.toString() || "");
+                    setHandoverCode("");
+                }
             });
             getOrderTimeline(order.id)
                 .then((tl) => { if (isMounted) setOrderTimeline(tl); })
@@ -38,7 +42,7 @@ export function useOrderDetailModal(
         };
     }, [order?.id, order?.actual_weight]);
 
-    const availableActions = order ? getAvailableActions(order.status) : [];
+    const availableActions = order ? getAvailableActions(order.status, order) : [];
     const currentStepIndex = order
         ? LIFECYCLE_STEPS.findIndex((s) => s.id === order.status)
         : -1;
@@ -50,7 +54,7 @@ export function useOrderDetailModal(
         setSuccessMessage(null);
 
         try {
-            const updatedOrder = await executeOrderAction(order.id, action, order, weight);
+            const updatedOrder = await executeOrderAction(order.id, action, order, weight, undefined, handoverCode);
             const actionTitle = ACTION_LABELS[action] || action;
             setSuccessMessage(`${actionTitle} successfully processed`);
             setTimeout(() => {
@@ -80,6 +84,8 @@ export function useOrderDetailModal(
         successMessage,
         weight,
         setWeight,
+        handoverCode,
+        setHandoverCode,
         orderTimeline,
         priceBreakdown,
         availableActions,

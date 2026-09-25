@@ -4,8 +4,9 @@ import { Button } from '@/shared/ui/button'
 import { Plus, Trash2, Tag } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 import { ExpressServiceFields } from './ExpressServiceFields'
-import { OnboardingPriceImportPanel } from './OnboardingPriceImportPanel'
-import { type ExpressByService, type PriceItem } from '../../types'
+import { OnboardingPriceScan } from './OnboardingPriceScan'
+import { type ExpressByService, type PriceItem, type WeightTier } from '../../types'
+import type { ServiceType } from '@/features/price-import/types'
 import { SERVICE_CATEGORIES, COMMON_ITEMS, OTHER } from '../../constants'
 
 interface PriceListStepProps {
@@ -14,6 +15,8 @@ interface PriceListStepProps {
   express: ExpressByService
   setExpress: (updater: (prev: ExpressByService) => ExpressByService) => void
   isHybrid: boolean
+  weightTiers: WeightTier[]
+  setWeightTiers: (updater: (prev: WeightTier[]) => WeightTier[]) => void
 }
 
 export const PriceListStep = ({
@@ -22,6 +25,8 @@ export const PriceListStep = ({
   express,
   setExpress,
   isHybrid,
+  weightTiers,
+  setWeightTiers,
 }: PriceListStepProps) => {
   const [activeCategory, setActiveCategory] = useState<string>(SERVICE_CATEGORIES[0].value)
   const activeMeta = SERVICE_CATEGORIES.find((c) => c.value === activeCategory)!
@@ -42,10 +47,6 @@ export const PriceListStep = ({
     setItems((prev) => [...prev, { item_name: '', category: activeCategory, unit_price: '' }])
 
   const removeItem = (index: number) => setItems((prev) => prev.filter((_, i) => i !== index))
-
-  /** Append photo-import results as new rows under the active service tab. */
-  const appendImportedItems = (imported: PriceItem[]) =>
-    setItems((prev) => [...prev, ...imported])
 
   /** Names already used in the active tab (a garment appears once per service). */
   const usedNames = new Set(
@@ -115,11 +116,13 @@ export const PriceListStep = ({
         })}
       </div>
 
-      {/* --------------------------------- optional: AI photo price-import */}
-      <OnboardingPriceImportPanel
-        serviceCategory={activeCategory}
-        serviceLabel={activeMeta.label.toLowerCase()}
-        onAdd={appendImportedItems}
+      {/* ------------------- optional: fill prices from a photo of the list */}
+      <OnboardingPriceScan
+        items={items}
+        setItems={setItems}
+        weightTiers={weightTiers}
+        setWeightTiers={setWeightTiers}
+        activeService={activeCategory as ServiceType}
       />
 
       {/* ---------------------------------------- items for the active tab */}

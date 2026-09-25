@@ -40,15 +40,3 @@ export const COMMON_ITEMS = [
 
 /** Sentinel value for the "Other… (type your own)" option in the item picker. */
 export const OTHER = '__other__'
-
-/**
- * Feature flag: AI photo → price-list import inside the onboarding wizard.
- *
- * OFF by default. The backend's price-import endpoints currently require an
- * already-registered laundry (they 400 otherwise), but onboarding creates the
- * laundry only at the final step — so enabling this now would fail for every
- * new owner. Flip `NEXT_PUBLIC_ONBOARDING_PRICE_IMPORT=true` once the backend
- * allows upload + poll without a laundry.
- */
-export const ONBOARDING_PRICE_IMPORT_ENABLED =
-  process.env.NEXT_PUBLIC_ONBOARDING_PRICE_IMPORT === 'true'
