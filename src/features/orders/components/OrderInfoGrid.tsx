@@ -1,8 +1,11 @@
-import { User, Phone, Calendar, FileText, MapPin } from "lucide-react";
+import { User, Phone, Calendar, FileText, MapPin, Banknote } from "lucide-react";
 import { formatDate } from "@/shared/lib/format";
 import { Order } from "@/shared/types";
 
 export const OrderInfoGrids = ({ order }: { order: Order }) => {
+    const isCod = order.payment_method === 'CASH' || order.payment_method === 'CASH_ON_DELIVERY';
+    const isPaid = order.payment_status === 'PAID';
+
     return (
         <>
             {/* Customer & Schedule Grid */}
@@ -53,24 +56,8 @@ export const OrderInfoGrids = ({ order }: { order: Order }) => {
                 </div>
             </div>
 
-            {/* Handover Code Banner — shown when backend returns the code */}
-            {order.handover_code && (
-                <div className="p-4 rounded-xl border-2 border-primary/30 bg-primary/5 shadow-xs">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                                Delivery Handover Code
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                                Customer reads this code aloud when receiving their clothes to confirm delivery.
-                            </p>
-                        </div>
-                        <div className="flex items-center justify-center bg-primary text-primary-foreground font-black text-2xl tracking-[0.35em] px-6 py-3 rounded-xl min-w-[120px] shadow-lg shadow-primary/20 select-all">
-                            {order.handover_code}
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* The handover code is the customer's secret: the backend never sends it to
+                owners (OrderHandoverCodeCard collects it from the customer instead). */}
 
             {/* Service Details & Addresses */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -115,6 +102,46 @@ export const OrderInfoGrids = ({ order }: { order: Order }) => {
                         )}
                     </div>
                 </div>
+            </div>
+
+            {/* Payment Details */}
+            <div className="p-4 rounded-xl border border-border/40 bg-card shadow-xs space-y-3">
+                <div className="flex items-center gap-2 text-sm font-bold text-foreground pb-2 border-b border-border/30">
+                    <Banknote className="w-4 h-4 text-primary" />
+                    <span>Payment Information</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <span className="text-muted-foreground font-medium block">Payment Method</span>
+                        <span className="font-bold text-foreground">
+                            {isCod ? 'Cash on Delivery (COD)' : 'Card / Mobile Money'}
+                        </span>
+                    </div>
+                    <div>
+                        <span className="text-muted-foreground font-medium block">Payment Status</span>
+                        <span className={`inline-flex px-2.5 py-0.5 rounded-full font-bold text-[11px] ${
+                            isPaid
+                                ? 'bg-emerald-500/10 text-emerald-600'
+                                : isCod
+                                    ? 'bg-amber-500/10 text-amber-600 border border-amber-500/20'
+                                    : 'bg-blue-500/10 text-blue-600'
+                        }`}>
+                            {isPaid
+                                ? (isCod ? 'Paid in Cash' : 'Paid Online')
+                                : (isCod ? 'Cash Due on Delivery' : 'Unpaid')}
+                        </span>
+                    </div>
+                </div>
+                {isCod && !isPaid && (
+                    <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-medium">
+                        Please collect <strong className="font-bold">GH₵{Number(order.total_amount).toFixed(2)}</strong> in cash upon delivery, then click &ldquo;Confirm Cash Received&rdquo;.
+                    </div>
+                )}
+                {isCod && isPaid && order.cash_collected_at && (
+                    <p className="text-[11px] text-muted-foreground">
+                        Cash collected on {formatDate(order.cash_collected_at)}
+                    </p>
+                )}
             </div>
         </>
     );

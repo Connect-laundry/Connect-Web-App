@@ -5,12 +5,13 @@ import {
   CalendarClock,
   Tag,
   ListChecks,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react'
 import type { SetupFormValues } from './schema'
 import type { DayHours } from './types'
 
-export type StepId = 'business' | 'location' | 'hours' | 'pricing' | 'pricelist' | 'review'
+export type StepId = 'business' | 'location' | 'hours' | 'pricing' | 'pricelist' | 'payout' | 'review'
 
 export interface StepMeta {
   id: StepId
@@ -25,6 +26,7 @@ export const STEP_META: Record<StepId, StepMeta> = {
   hours: { id: 'hours', title: 'Working Hours', icon: CalendarClock, description: 'Set the days and times you operate.' },
   pricing: { id: 'pricing', title: 'Pricing & Delivery', icon: Tag, description: 'Set your pricing and delivery options.' },
   pricelist: { id: 'pricelist', title: 'Price List', icon: ListChecks, description: 'Add the items customers can order.' },
+  payout: { id: 'payout', title: 'Payout Account', icon: Wallet, description: 'Set up where to receive your Simame earnings.' },
   review: { id: 'review', title: 'Review', icon: Check, description: 'Review your details before submitting.' },
 }
 
@@ -36,12 +38,14 @@ export const stepFieldsById: Partial<Record<StepId, (keyof SetupFormValues)[]>> 
     'pricing_model', 'price_range', 'estimated_delivery_hours',
     'min_order', 'service_radius_km',
   ],
+  payout: ['payout_method', 'payout_provider', 'payout_phone', 'payout_confirmed'],
 }
 
 /** The Price List step only applies to item-based pricing models. */
 export function buildSteps(showPriceList: boolean): StepMeta[] {
   const ids: StepId[] = ['business', 'location', 'hours', 'pricing']
   if (showPriceList) ids.push('pricelist')
+  ids.push('payout')
   ids.push('review')
   return ids.map((id) => STEP_META[id])
 }

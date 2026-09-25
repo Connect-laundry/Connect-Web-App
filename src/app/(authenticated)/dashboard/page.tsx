@@ -11,6 +11,7 @@ import { DashboardStatsGrid } from '@/features/dashboard/components/DashboardSta
 import { PerformanceSummaryCard } from '@/features/dashboard/components/PerformanceSummaryCard'
 import { QuickActionsCard } from '@/features/dashboard/components/QuickActionsCard'
 import { RecentOrdersCard } from '@/features/dashboard/components/RecentOrdersCard'
+import { PayoutStatusBanner } from '@/features/earnings/components/PayoutStatusBanner'
 
 const DashboardPage = () => {
   const {
@@ -39,7 +40,7 @@ const DashboardPage = () => {
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
       {/* Top Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             Dashboard
@@ -49,6 +50,9 @@ const DashboardPage = () => {
           </p>
         </div>
       </div>
+
+      {/* Payout Setup Alert for existing laundries without verified recipient */}
+      <PayoutStatusBanner />
 
       {error && (
         <AnimateOnScroll animation="fade-in">

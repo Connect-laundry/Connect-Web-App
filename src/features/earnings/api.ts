@@ -3,6 +3,73 @@ import { unwrap } from '@/shared/api/unwrap'
 import { EarningsResponse, Transaction } from '@/shared/types'
 import { getPaymentOwnerStats } from '@/features/payments/api'
 
+export interface PayoutAccountInfo {
+  status: 'PAYOUT_SETUP_REQUIRED' | 'PAYOUT_SETUP_PENDING' | 'PAYOUT_READY' | 'PAYOUT_FAILED_RETRYABLE'
+  method: string
+  provider: string
+  phone: string
+  masked_phone: string
+  account_name?: string
+  is_ready: boolean
+  confirmed_at?: string
+  recipient_code_masked?: string
+  failure_reason?: string
+}
+
+export interface EarningSummary {
+  available: string
+  held: string
+  processing: string
+  paid_this_month: string
+  paid: string
+  currency: string
+  cash_collected?: string
+}
+
+export interface SettlementRow {
+  id: string
+  order_id: string
+  order_no: string
+  gross: string
+  platform_fee: string
+  commission: string
+  net: string
+  status: 'HELD' | 'PENDING' | 'SCHEDULED' | 'PAID' | 'REVERSED'
+  route: string
+  created_at: string
+  payout_id?: string
+  payout_status?: 'DRAFT' | 'PROCESSING' | 'WAITING_FOR_FUNDS' | 'PAID' | 'FAILED' | 'REVERSED'
+  paid_at?: string
+}
+
+export interface PayoutItem {
+  id: string
+  amount: string
+  status: string
+  method: string
+  reference: string
+  paystack_transfer_code?: string
+  paid_at?: string
+  failure_reason?: string
+  created_at: string
+}
+
+export interface DashboardPayoutsResponse {
+  summary: EarningSummary
+  settles_directly: boolean
+  payout_account: PayoutAccountInfo
+  settlements: SettlementRow[]
+  payouts: PayoutItem[]
+}
+
+/**
+ * Get comprehensive payouts and earnings dashboard data
+ */
+export async function getPayoutsDashboard(): Promise<DashboardPayoutsResponse> {
+  const response = await apiGet<any>('/laundries/dashboard/payouts/')
+  return unwrap<DashboardPayoutsResponse>(response)
+}
+
 /**
  * Get earnings overview
  */

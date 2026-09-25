@@ -1,4 +1,4 @@
-import { apiGet, apiPatch } from "@/shared/api/client";
+import { apiGet, apiPatch, apiPost } from "@/shared/api/client";
 import { unwrap } from "@/shared/api/unwrap";
 import { Order, OrderListResponse, OrderTimeline } from "@/shared/types";
 import { getDashboardOrders } from "@/features/dashboard/api";
@@ -63,8 +63,9 @@ export async function markOutForDelivery(
   return lifecycleAction(orderId, "mark-out-for-delivery");
 }
 
-export async function markDelivered(orderId: string): Promise<Partial<Order>> {
-  return lifecycleAction(orderId, "mark-delivered");
+export async function markDelivered(orderId: string, handoverCode?: string): Promise<Partial<Order>> {
+  const trimmed = handoverCode?.trim();
+  return lifecycleAction(orderId, "mark-delivered", trimmed ? { handover_code: trimmed } : undefined);
 }
 
 export const getOrderTimeline = async (orderId: string) => {
@@ -76,6 +77,18 @@ export async function completeOrder(orderId: string): Promise<Partial<Order>> {
   return lifecycleAction(orderId, "complete");
 }
 
+export async function collectCashOrder(
+  orderId: string,
+  amount: number | string,
+): Promise<Partial<Order>> {
+  const response = await apiPost<any>(
+    `/booking/lifecycle/${orderId}/collect-cash/`,
+    { amount: Number(amount).toFixed(2) },
+  );
+  const data = (response as any)?.data ?? response;
+  return unwrap<Partial<Order>>(data);
+}
+
 export async function cancelOrder(orderId: string, reason?: string): Promise<Partial<Order>> {
   return lifecycleAction(orderId, "cancel", reason ? { reason } : undefined);
 }
@@ -85,7 +98,19 @@ export async function getOrderPriceBreakdown(orderId: string) {
   return unwrap<Record<string, unknown>>(response);
 }
 
-export function getAvailableActions(status: string): string[] {
+export function getAvailableActions(status: string, order?: Order | null): string[] {
+  const isCod = order?.payment_method === 'CASH' || order?.payment_method === 'CASH_ON_DELIVERY';
+  const isPaid = order?.payment_status === 'PAID';
+
+  if (isCod && !isPaid) {
+    if (status === 'OUT_FOR_DELIVERY') {
+      return ["markDelivered", "collectCash"];
+    }
+    if (status === 'DELIVERED') {
+      return ["collectCash"];
+    }
+  }
+
   const actions: Record<string, string[]> = {
     PENDING: ["accept", "reject", "cancel"],
     CONFIRMED: ["markPickedUp", "cancel"],
@@ -119,6 +144,7 @@ export async function executeOrderAction(
   existingOrder: Order,
   weight?: string,
   reason?: string,
+  handoverCode?: string,
 ): Promise<Order> {
   const actionMap: Record<
     string,
@@ -129,7 +155,8 @@ export async function executeOrderAction(
     markPickedUp,
     markWashed,
     markOutForDelivery,
-    markDelivered,
+    markDelivered: (id) => markDelivered(id, handoverCode),
+    collectCash: (id) => collectCashOrder(id, existingOrder.total_amount),
     complete: completeOrder,
     cancel: (id) => cancelOrder(id, reason),
   };

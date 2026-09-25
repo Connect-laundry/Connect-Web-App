@@ -90,6 +90,18 @@ export function buildLaundryFormData(
   fd.append('ironing_available', String(values.ironing_available))
   if (image) fd.append('image', image)
   fd.append('operating_hours', JSON.stringify(buildOperatingHours(hours)))
+
+  // Payout Account Fields
+  if (values.payout_phone) {
+    fd.append('payout_method', values.payout_method || 'MOBILE_MONEY')
+    fd.append('payout_provider', values.payout_provider || 'MTN')
+    fd.append('payout_phone', values.payout_phone)
+    if (values.payout_account_name) {
+      fd.append('payout_account_name', values.payout_account_name)
+    }
+    fd.append('payout_confirmed', String(Boolean(values.payout_confirmed)))
+  }
+
   return fd
 }
 

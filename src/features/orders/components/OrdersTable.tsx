@@ -69,7 +69,12 @@ export const OrdersTable = ({
                       </span>
                     </td>
                     <td className="py-3 px-4 font-medium">
-                      GH₵{order.total_amount.toLocaleString()}
+                      <div>GH₵{order.total_amount.toLocaleString()}</div>
+                      <div className="text-[11px] font-normal text-muted-foreground">
+                        {order.payment_method === 'CASH' || order.payment_method === 'CASH_ON_DELIVERY'
+                          ? (order.payment_status === 'PAID' ? '• Paid in Cash' : '• Cash on Delivery')
+                          : (order.payment_status === 'PAID' ? '• Paid Online' : '• Card/MoMo')}
+                      </div>
                     </td>
                     <td className="py-3 px-4 text-sm text-muted-foreground">
                       {new Date(order.pickup_date).toLocaleDateString()}

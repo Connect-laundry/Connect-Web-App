@@ -14,7 +14,8 @@ export const ACTION_LABELS: Record<string, string> = {
     markWashed: "Mark In Process",
     markOutForDelivery: "Mark Out for Delivery",
     markDelivered: "Mark Delivered",
-    complete: "Complete Order",
+    collectCash: "Confirm Cash Received",
+    complete: "Finish Order",
     cancel: "Cancel Order",
 };
 
