@@ -8,6 +8,5 @@
 export * from './api-types'
 export * from './api/profile'
 export * from './api/pricing'
-export * from './api/price-import'
 export * from './api/advanced-pricing'
 export * from './api/legacy-services'

@@ -2,9 +2,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { WeightPricing, PricingItem } from '@/shared/types'
+import type { LaundryPricingModel } from '@/features/price-import/types'
 import { WeightPricingEditor } from './WeightPricingEditor'
 import { PriceItemsEditor } from './PriceItemsEditor'
-import { PriceImportPanel } from './PriceImportPanel'
+import { DashboardPriceScan } from './DashboardPriceScan'
 import { AdvancedPricingPanel } from './AdvancedPricingPanel'
 
 interface ServicesPricingTabProps {
@@ -14,7 +15,8 @@ interface ServicesPricingTabProps {
   setWeightPricing: (pricing: WeightPricing) => void
   pricingItems: PricingItem[]
   setPricingItems: (items: PricingItem[]) => void
-  getPricingItems: () => Promise<PricingItem[]>
+  pricingModel?: LaundryPricingModel
+  ironingAvailable?: boolean
 }
 
 export const ServicesPricingTab = ({
@@ -24,7 +26,8 @@ export const ServicesPricingTab = ({
   setWeightPricing,
   pricingItems,
   setPricingItems,
-  getPricingItems,
+  pricingModel,
+  ironingAvailable,
 }: ServicesPricingTabProps) => {
   return (
     <div className="space-y-6">
@@ -58,8 +61,17 @@ export const ServicesPricingTab = ({
         </Card>
       )}
 
-      {/* AI Photo & Bulk Import Tools */}
-      <PriceImportPanel onImported={setPricingItems} reloadItems={getPricingItems} />
+      {/* Fill prices from a photo of an existing price list */}
+      {pricingModel && (
+        <DashboardPriceScan
+          pricingModel={pricingModel}
+          ironingAvailable={ironingAvailable}
+          pricingItems={pricingItems}
+          weightPricing={weightPricing}
+          onItemsChanged={setPricingItems}
+          onWeightChanged={setWeightPricing}
+        />
+      )}
 
       {/* Advanced Pricing: Scheduled Changes & Delivery Zones */}
       <AdvancedPricingPanel />

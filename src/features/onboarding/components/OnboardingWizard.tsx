@@ -12,6 +12,7 @@ import { BusinessInfoStep } from './steps/BusinessInfoStep'
 import { LocationStep } from './steps/LocationStep'
 import { PriceListStep } from './steps/PriceListStep'
 import { PricingDeliveryStep } from './steps/PricingDeliveryStep'
+import { PayoutAccountStep } from './steps/PayoutAccountStep'
 import { ReviewStep } from './steps/ReviewStep'
 import { WorkingHoursStep } from './steps/WorkingHoursStep'
 
@@ -36,16 +37,22 @@ export const OnboardingWizard = () => {
                   {wizard.currentStepId === 'location' && <LocationStep />}
                   {wizard.currentStepId === 'hours' && <WorkingHoursStep hours={wizard.hours} updateDay={wizard.updateDay} />}
                   {wizard.currentStepId === 'pricing' && <PricingDeliveryStep weightTiers={wizard.weightTiers} setWeightTiers={wizard.setWeightTiers} express={wizard.express} setExpress={wizard.setExpress} />}
-                  {wizard.currentStepId === 'pricelist' && <PriceListStep items={wizard.priceItems} setItems={wizard.setPriceItems} express={wizard.express} setExpress={wizard.setExpress} isHybrid={wizard.isHybrid} />}
+                  {wizard.currentStepId === 'pricelist' && <PriceListStep items={wizard.priceItems} setItems={wizard.setPriceItems} express={wizard.express} setExpress={wizard.setExpress} isHybrid={wizard.isHybrid} weightTiers={wizard.weightTiers} setWeightTiers={wizard.setWeightTiers} />}
+                  {wizard.currentStepId === 'payout' && <PayoutAccountStep />}
                   {wizard.currentStepId === 'review' && <ReviewStep hours={wizard.hours} priceItems={wizard.priceItems} weightTiers={wizard.weightTiers} express={wizard.express} />}
                 </motion.div>
               </AnimatePresence>
-              <div className="flex justify-between pt-6 border-t mt-8">
-                <Button type="button" variant="outline" onClick={wizard.previousStep} disabled={wizard.currentStep === 0 || wizard.isLoading}><ChevronLeft className="w-4 h-4 mr-2" />Back</Button>
+              <div className="flex flex-col-reverse gap-3 pt-6 border-t mt-8 sm:flex-row sm:justify-between">
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={wizard.previousStep} disabled={wizard.currentStep === 0 || wizard.isLoading}><ChevronLeft className="w-4 h-4 mr-2" />Back</Button>
+                  <Button type="button" variant="ghost" onClick={wizard.saveAndExit} disabled={wizard.isLoading}>Save & Exit</Button>
+                </div>
+                {/* Distinct keys: reusing one <button> turned the Next click that reaches the
+                    last step into a submit, skipping Review. */}
                 {!wizard.isLastStep ? (
-                  <Button type="button" onClick={wizard.nextStep}>Next<ChevronRight className="w-4 h-4 ml-2" /></Button>
+                  <Button key="next" type="button" onClick={wizard.nextStep} className="w-full sm:w-auto">Next<ChevronRight className="w-4 h-4 ml-2" /></Button>
                 ) : (
-                  <Button type="submit" disabled={wizard.isLoading}>{wizard.isLoading ? 'Creating Profile...' : 'Complete Registration'}<Check className="w-4 h-4 ml-2" /></Button>
+                  <Button key="submit" type="submit" disabled={wizard.isLoading} className="w-full sm:w-auto">{wizard.isLoading ? 'Creating Profile...' : 'Complete Registration'}<Check className="w-4 h-4 ml-2" /></Button>
                 )}
               </div>
             </form>

@@ -35,3 +35,9 @@ export interface OrderWeighingCardProps {
     weight: string;
     setWeight: (weight: string) => void;
 }
+
+export interface OrderHandoverCodeCardProps {
+    status: string;
+    handoverCode: string;
+    setHandoverCode: (code: string) => void;
+}

@@ -14,8 +14,11 @@ import {
 import { AccountTab } from '@/features/settings/components/AccountTab'
 import { SecurityTab } from '@/features/settings/components/SecurityTab'
 import { NotificationsTab } from '@/features/settings/components/NotificationsTab'
+import { PayoutAccountCard } from '@/features/earnings/components/PayoutAccountCard'
+import { useAuth } from '@/features/auth/context/AuthContext'
 
 const SettingsPage = () => {
+  const { refreshLaundry } = useAuth()
   const [sessions, setSessions] = useState<any[]>([])
   const [notifications, setNotifications] = useState<any[]>([])
   const [prefs, setPrefs] = useState<any>(null)
@@ -53,7 +56,7 @@ const SettingsPage = () => {
 
   return (
     <PageShell contentClassName="max-w-2xl">
-      <PageHeader title="Settings" description="Manage your account and preferences." />
+      <PageHeader title="Settings" description="Manage your account, payout account, and preferences." />
 
       {error && (
         <Alert variant="destructive" className="mb-6">
@@ -64,12 +67,17 @@ const SettingsPage = () => {
       <Tabs defaultValue="account" className="w-full">
         <TabsList className="w-full flex overflow-x-auto justify-start sm:justify-center border-b pb-1 custom-scrollbar">
           <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="payout">Payout Account</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
 
         <TabsContent value="account" className="mt-6">
           <AccountTab />
+        </TabsContent>
+
+        <TabsContent value="payout" className="mt-6">
+          <PayoutAccountCard onRefresh={() => refreshLaundry()} />
         </TabsContent>
 
         <TabsContent value="security" className="mt-6">

@@ -99,6 +99,7 @@ export const ReviewStep = ({ hours, priceItems = [], weightTiers = [], express =
           ],
           ['Min order', `GH₵ ${form.watch('min_order')}`],
           ['Service radius', `${form.watch('service_radius_km') || '—'} km`],
+          ['Payout account', `${form.watch('payout_provider') || 'MTN'} • ${(form.watch('payout_phone') || '').replace(/\D/g, '').length >= 7 ? (form.watch('payout_phone') || '').slice(0, 3) + ' *** ' + (form.watch('payout_phone') || '').slice(-4) : (form.watch('payout_phone') || '—')}`],
           ...(attributes ? [['Attributes', attributes] as [string, string]] : []),
         ].map(([label, value]) => (
           <div key={label} className="flex justify-between gap-4 px-4 py-2">
