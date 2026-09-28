@@ -20,8 +20,15 @@ export async function patchMyLaundry(laundryId: string, data: Record<string, unk
   return unwrap<Laundry>(response)
 }
 
-export async function toggleVacationMode(): Promise<boolean> {
-  const response = await apiPost<unknown>('/laundries/dashboard/my-laundry/toggle-vacation/')
+/**
+ * Sets vacation mode to `enabled`. Sending the wanted state (not a bare
+ * toggle) means a double click or a retried request cannot flip it back:
+ * vacation mode shows the laundry as Closed and blocks every booking.
+ */
+export async function setVacationMode(enabled: boolean): Promise<boolean> {
+  const response = await apiPost<unknown>('/laundries/dashboard/my-laundry/toggle-vacation/', {
+    vacation_mode: enabled,
+  })
   return Boolean(unwrap<{ vacation_mode?: boolean }>(response)?.vacation_mode)
 }
 
