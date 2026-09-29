@@ -4,7 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/features/auth/context/AuthContext'
 import { PwaRegister } from '@/shared/components/PwaRegister'
 import { AppToaster } from '@/shared/components/AppToaster'
-import { SEO_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl, isSearchIndexingDisabled } from '@/shared/lib/seo'
+import { SEO_DESCRIPTION, SITE_NAME, SITE_URL, GOOGLE_PLAY_PACKAGE_NAME, absoluteUrl, isSearchIndexingDisabled } from '@/shared/lib/seo'
 import './globals.css'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -109,6 +109,9 @@ export const metadata: Metadata = {
         ? { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
         : {}),
     },
+  },
+  other: {
+    'google-play-app': `app-id=${GOOGLE_PLAY_PACKAGE_NAME}`,
   },
 }
 

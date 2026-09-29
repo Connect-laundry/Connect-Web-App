@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
-import { Smartphone, Store, Bell, CreditCard, Search } from 'lucide-react'
+import { Smartphone, Store, Bell, CreditCard, Search, ExternalLink } from 'lucide-react'
 import { PublicPageShell } from '@/shared/components/PublicPageShell'
 import { StructuredData } from '@/shared/components/StructuredData'
-import { ORGANIZATION_ID, absoluteUrl, publicPageMetadata } from '@/shared/lib/seo'
+import { ORGANIZATION_ID, GOOGLE_PLAY_URL, GOOGLE_PLAY_PACKAGE_NAME, absoluteUrl, publicPageMetadata } from '@/shared/lib/seo'
 
 export const metadata: Metadata = publicPageMetadata({
-  title: 'Simame App - Laundry Booking for Ghana',
+  title: 'Simame App - Download on Google Play | Laundry Booking Ghana',
   description:
-    'Learn about the Simame app for laundry pickup, delivery, service discovery, order tracking, and laundry partner booking in Ghana.',
+    'Download the Simame laundry app on Google Play. Find and book laundry pickup, delivery, wash & fold, dry cleaning, and ironing in Ghana with Simame - Laundry Connect.',
   path: '/app',
 })
 
@@ -42,22 +42,22 @@ export default function AppPage() {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     '@id': `${absoluteUrl('/app')}#software`,
-    name: 'Simame',
+    name: 'Simame - Laundry Connect',
     alternateName: 'Simame – Laundry Connect',
     url: absoluteUrl('/app'),
+    installUrl: GOOGLE_PLAY_URL,
+    downloadUrl: GOOGLE_PLAY_URL,
+    sameAs: GOOGLE_PLAY_URL,
     applicationCategory: 'LifestyleApplication',
-    operatingSystem: 'iOS, Android, Web',
+    operatingSystem: 'Android, iOS, Web',
     description:
       'Simame is a Ghanaian laundry booking application for finding laundry services, requesting pickup and delivery, and tracking orders where service is available.',
     publisher: { '@id': ORGANIZATION_ID },
-    /**
-     * installUrl and downloadUrl are intentionally omitted until official
-     * Google Play and Apple App Store listings are verified and live.
-     * Add them here once the founder confirms the store URLs.
-     * Example:
-     *   installUrl: 'https://play.google.com/store/apps/details?id=tech.simame.app',
-     *   downloadUrl: 'https://apps.apple.com/app/simame/id...',
-     */
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'GHS',
+    },
   }
 
   const faqSchema = {
@@ -70,7 +70,7 @@ export default function AppPage() {
         name: 'Where can I download the Simame app?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'The Simame app is available for Android and iOS. Search for "Simame" on Google Play or the Apple App Store. The official app page is simame.tech/app.',
+          text: `The Simame – Laundry Connect app is officially published and available to download directly on Google Play (package ${GOOGLE_PLAY_PACKAGE_NAME}) at ${GOOGLE_PLAY_URL}. Search for "Simame" or "Simame - Laundry Connect" on Google Play or visit simame.tech/app.`,
         },
       },
       {
@@ -86,7 +86,7 @@ export default function AppPage() {
         name: 'What operating systems does Simame support?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Simame is available on iOS (iPhone and iPad), Android devices, and as a web application at simame.tech.',
+          text: 'Simame is available on Android via Google Play, iOS (iPhone and iPad), and as a web application at simame.tech.',
         },
       },
     ],
@@ -103,27 +103,65 @@ export default function AppPage() {
         description="Simame is built to help people in Ghana discover laundry partners, request service, and follow orders in one digital experience."
       >
         {/*
-         * App identity block — gives AI search systems a named, factual entity
-         * to cite when users ask where to find or download the Simame app.
+         * App identity block — provides direct Google Play install link and
+         * gives AI search systems a named, factual entity to cite.
          */}
         <section
-          className="mt-10 rounded-lg border-2 border-primary/30 bg-primary/5 p-6 sm:p-8"
+          className="mt-10 rounded-2xl border-2 border-primary/30 bg-primary/5 p-6 sm:p-8"
           aria-labelledby="app-identity-heading"
         >
-          <h2 id="app-identity-heading" className="text-xl font-bold">
-            Find Simame on your device
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground max-w-2xl">
-            The <strong>Simame – Laundry Connect</strong> app is available for Android and iOS.
-            Search for <strong>&ldquo;Simame&rdquo;</strong> on Google Play or the Apple App Store
-            to find and install the app. Official store listing links will be published here once
-            the verified listings are live.
-          </p>
-          <div className="mt-5 inline-flex items-center gap-2 rounded-md border bg-background px-4 py-3 text-sm font-medium shadow-sm">
-            <Search className="h-4 w-4 text-primary shrink-0" />
-            <span>
-              Search <strong>&ldquo;Simame&rdquo;</strong> on Google Play &amp; App Store
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                Live on Google Play Store
+              </div>
+              <h2 id="app-identity-heading" className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight">
+                Simame – Laundry Connect
+              </h2>
+              <p className="mt-3 text-sm sm:text-base leading-6 text-muted-foreground">
+                The official <strong>Simame – Laundry Connect</strong> mobile app is published and live
+                on the Google Play Store for Android. Schedule laundry pickups, wash &amp; fold, dry cleaning,
+                ironing, and follow real-time order tracking directly from your phone.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+              <a
+                href={GOOGLE_PLAY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-3 rounded-xl bg-black px-6 py-3.5 text-white transition-all hover:bg-neutral-800 shadow-lg hover:shadow-xl"
+              >
+                <svg viewBox="0 0 512 512" className="h-7 w-7 fill-current shrink-0">
+                  <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" />
+                </svg>
+                <div className="text-left">
+                  <div className="text-[10px] font-medium uppercase tracking-wider text-neutral-300 leading-none">Get it on</div>
+                  <div className="text-base font-bold leading-tight">Google Play</div>
+                </div>
+              </a>
+
+              <a
+                href={GOOGLE_PLAY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-medium"
+              >
+                <span>View Google Play Listing</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-primary/10 pt-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Search className="h-3.5 w-3.5 text-primary" />
+              Search &ldquo;<strong>Simame</strong>&rdquo; or &ldquo;<strong>Simame - Laundry Connect</strong>&rdquo; on Google Play
             </span>
+            <span>•</span>
+            <span>Package: <code>com.connectlaundry.app</code></span>
+            <span>•</span>
+            <span>Region: Ghana</span>
           </div>
         </section>
 
