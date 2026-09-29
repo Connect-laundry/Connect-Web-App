@@ -463,6 +463,309 @@ export const GUIDES: Guide[] = [
       },
     ],
   },
+  {
+    slug: 'how-to-keep-white-clothes-white',
+    title: 'How to keep white clothes white',
+    metaTitle: 'How to Keep White Clothes White (and Fix Yellowing)',
+    description:
+      'Why white clothes turn grey or yellow and how to fix it: sorting, water temperature, the right amount of detergent, oxygen vs chlorine bleach, laundry blue, borehole water and drying in the sun.',
+    summary:
+      'Why whites go grey or yellow, and how to fix it with sorting, the right detergent dose, bleach used safely and the sun.',
+    datePublished: '2026-09-29',
+    dateModified: '2026-09-29',
+    readingMinutes: 5,
+    sections: [
+      {
+        heading: 'Why whites go grey or yellow',
+        paragraphs: [
+          'White clothes rarely turn dull overnight. It happens slowly, through dye picked up from other clothes in the wash, detergent and body oils that are never fully rinsed out, sweat that builds up in collars and underarms, and minerals in the water. Once you know which one is the cause, the fix is usually simple.',
+        ],
+      },
+      {
+        heading: 'Wash whites only with whites',
+        paragraphs: [
+          'Even a light grey T-shirt or a pair of blue jeans releases a little dye every wash, and white fabric picks it up. Keep a separate bag or basket for whites and wash them together, never with colours.',
+        ],
+      },
+      {
+        heading: 'Use enough water, heat and rinsing, but not too much detergent',
+        bullets: [
+          'Cotton whites can usually take warmer water than colours. Check the care label and use the warmest temperature it allows.',
+          'Do not overload the machine or bucket. Clothes need room to move for dirt to wash out.',
+          'More detergent does not mean cleaner clothes. Too much leaves a film that traps dirt and makes whites look grey. Use the amount on the pack, and rinse twice when hand washing.',
+          'Pre-treat collars, cuffs and underarms with a little liquid detergent before washing.',
+        ],
+      },
+      {
+        heading: 'Bleach: oxygen first, chlorine with care',
+        paragraphs: [
+          'Oxygen bleach (sodium percarbonate, sold as powder or in "oxy" products) is the safest way to brighten whites. Dissolve it in warm water and soak whites for a few hours or overnight before washing.',
+          'Chlorine bleach is stronger but harsher. Use it only on white cotton and linen whose label allows it, always diluted, and never on silk, wool, spandex or anything with coloured trim. It can make sweat stains and iron-based stains worse.',
+          'Never mix chlorine bleach with vinegar, ammonia or other cleaning products. The combination releases toxic gas.',
+        ],
+      },
+      {
+        heading: 'Laundry blue',
+        paragraphs: [
+          'Laundry blue, a traditional whitener still widely used in Ghana, adds a tiny amount of blue that cancels out a yellow tint, so whites look brighter. Dissolve it fully in the final rinse water and use very little, stirring well before adding clothes, or it can leave blue streaks.',
+        ],
+      },
+      {
+        heading: 'Borehole and well water',
+        paragraphs: [
+          'Water with a lot of iron, common in some borehole and well water, can slowly turn whites yellow or leave orange spots, and chlorine bleach makes this worse by turning the iron into rust marks. If your water leaves orange stains in buckets or sinks, wash whites in treated or filtered water where you can, and use oxygen bleach instead of chlorine.',
+        ],
+      },
+      {
+        heading: 'Let the sun help',
+        paragraphs: [
+          'Sunlight gently bleaches white cotton, so hang whites in direct sun (the opposite of what you should do with colours). Bring them in once dry, and store whites only when they are completely clean and dry, because stains left in fabric darken over time.',
+        ],
+      },
+      {
+        heading: 'Let a laundry handle it',
+        paragraphs: [
+          'Work shirts, school uniforms and white bedsheets can be sent to a laundry for proper washing and pressing. With the Simame - Laundry Connect app you can book a partner laundry near you for pickup and delivery. It is free on Google Play.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Why do my white shirts turn yellow under the arms?',
+        answer:
+          'Sweat and some antiperspirants build up in the fabric. Pre-treat with a paste of baking soda and water, then soak in oxygen bleach and wash warm. Avoid chlorine bleach on these stains, as it can make the yellow darker.',
+      },
+      {
+        question: 'Can I use chlorine bleach on all white clothes?',
+        answer:
+          'No. Only use it on white cotton or linen whose care label allows bleach, always diluted. Never use it on silk, wool, spandex or whites with coloured details.',
+      },
+      {
+        question: 'Does drying whites in the sun really help?',
+        answer:
+          'Yes. Sunlight has a mild bleaching effect on white cotton and helps it look brighter. Keep coloured clothes out of direct sun, because the same effect fades them.',
+      },
+    ],
+  },
+  {
+    slug: 'how-to-wash-african-print-fabric',
+    title: 'How to wash African print so the colours last',
+    metaTitle: 'How to Wash African Print Without Fading',
+    description:
+      'How to wash, dry, iron and store African wax print and ankara clothes so the colours stay bright, plus why you should pre-wash fabric before your tailor sews it.',
+    summary:
+      'Pre-washing before the tailor, cold hand washing, drying in the shade and ironing on the reverse to keep prints bright.',
+    datePublished: '2026-09-29',
+    dateModified: '2026-09-29',
+    readingMinutes: 5,
+    sections: [
+      {
+        heading: 'Pre-wash fabric before it goes to the tailor',
+        paragraphs: [
+          'Cotton wax print can shrink slightly the first time it is washed. If a tailor sews it straight from the shop, the finished dress or shirt can end up a little tighter or shorter after its first wash, and seams can pucker.',
+          'To avoid that, wash the fabric once in cold or lukewarm water, dry it in the shade and iron it before handing it to the tailor. This also removes excess dye and some of the stiffness from the finishing.',
+        ],
+      },
+      {
+        heading: 'Wash it gently, in cold water',
+        steps: [
+          'Turn the garment inside out to protect the printed face.',
+          'Wash separately, or only with similar colours, for the first few washes in case dye runs. A colour-catcher sheet in the wash helps.',
+          'Use cold water and a mild detergent. Hot water speeds up fading.',
+          'Hand wash, or use a gentle machine cycle. Do not leave the garment soaking for hours.',
+          'Never use chlorine bleach on printed fabric.',
+          'Squeeze out the water gently instead of twisting hard.',
+        ],
+      },
+      {
+        heading: 'Dry in the shade',
+        paragraphs: [
+          'Strong sun is the fastest way to fade a print. Dry African print inside out, in the shade or somewhere with good airflow, and bring it in as soon as it is dry.',
+        ],
+      },
+      {
+        heading: 'Iron on the reverse side',
+        paragraphs: [
+          'Iron while the fabric is still slightly damp, on the cotton setting, with the garment inside out. Ironing the printed face directly can leave shiny patches. For embellished styles, press around beads and sequins, or put a thin cloth between the iron and the garment.',
+        ],
+      },
+      {
+        heading: 'Store it away from light',
+        paragraphs: [
+          'Keep print clothes in a wardrobe or a cloth bag, out of direct light, and only when fully dry. Kente and other hand-woven cloth are best folded with a sheet of acid-free tissue or a clean cotton cloth between the folds. For how to clean kente itself, see our dry cleaning guide.',
+        ],
+      },
+      {
+        heading: 'When to send it out',
+        paragraphs: [
+          'Heavily embellished outfits, lined styles, special-occasion kaba and slit, and anything with a "dry clean only" label are safest with a professional. With the Simame - Laundry Connect app you can book a partner laundry near you for pickup and delivery. It is free on Google Play.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Does African print shrink?',
+        answer:
+          'Cotton wax print can shrink slightly in its first wash. Pre-wash the fabric in cold or lukewarm water, dry it and iron it before your tailor cuts it.',
+      },
+      {
+        question: 'Why is my African print fading?',
+        answer:
+          'The usual causes are hot water, strong detergent, drying in direct sun and ironing on the printed side. Wash cold and inside out, dry in the shade and iron on the reverse.',
+      },
+      {
+        question: 'Can I machine wash wax print?',
+        answer:
+          'Usually yes, on a gentle cycle in cold water, turned inside out. Check the label, and keep embellished or lined styles for hand washing or professional cleaning.',
+      },
+    ],
+  },
+  {
+    slug: 'how-to-stop-clothes-smelling-musty',
+    title: 'How to stop clothes smelling musty in the rainy season',
+    metaTitle: 'How to Stop Clothes Smelling Musty in the Rainy Season',
+    description:
+      'Why clothes smell damp or musty after washing, especially in the rainy season, how to dry them properly indoors, and how to remove the smell and mildew spots.',
+    summary:
+      'Why clothes smell damp after washing, how to dry them indoors, and how to remove musty smells and mildew.',
+    datePublished: '2026-09-29',
+    dateModified: '2026-09-29',
+    readingMinutes: 5,
+    sections: [
+      {
+        heading: 'Why clean clothes can smell',
+        paragraphs: [
+          'That damp, musty smell comes from mildew and bacteria that grow when fabric stays wet for too long. In the rainy season, clothes can take a day or more to dry, which is plenty of time for the smell to start. Towels and thick fabrics such as jeans are usually the first to go.',
+        ],
+      },
+      {
+        heading: 'Get the water out quickly',
+        bullets: [
+          'Hang clothes as soon as washing finishes. Never leave wet laundry sitting in a machine or bucket.',
+          'Use the fastest spin your machine allows, or wring by hand firmly (but not so hard that you stretch delicate items).',
+          'Wash smaller loads in the rainy season so there is less to dry at once.',
+        ],
+      },
+      {
+        heading: 'Drying indoors',
+        bullets: [
+          'Leave space between items on the line or rack so air can move around them.',
+          'Put the rack by an open window or in the path of a fan. Moving air matters more than heat.',
+          'Hang shirts and dresses on hangers, and turn thick items halfway through.',
+          'Check that seams, pockets and waistbands are dry before you fold anything. They are always the last parts to dry.',
+        ],
+      },
+      {
+        heading: 'Removing a musty smell',
+        steps: [
+          'Rewash the item with your normal detergent.',
+          'Add about a cup of white vinegar to the rinse water. Do not use vinegar and chlorine bleach together.',
+          'For towels that still smell after washing, run a second wash with half a cup of baking soda.',
+          'Dry completely, in the sun if the fabric and colours allow it.',
+        ],
+      },
+      {
+        heading: 'Dealing with mildew spots',
+        paragraphs: [
+          'Black or grey mildew spots should be brushed off outdoors first, so the spores do not spread. Pre-treat with liquid detergent and wash in the warmest water the label allows. On white cotton, an oxygen bleach soak helps. Mildew that has been in fabric for a long time can leave permanent marks, so act quickly.',
+        ],
+      },
+      {
+        heading: 'Keep your wardrobe dry',
+        paragraphs: [
+          'Do not pack clothes in too tightly, keep the wardrobe a little away from damp outside walls, and use moisture absorbers such as silica gel sachets or charcoal bags. Air the wardrobe on dry days.',
+          'In long rainy spells, a laundry with commercial dryers can return clothes fully dry. With the Simame - Laundry Connect app you can book a partner laundry near you for pickup and delivery. It is free on Google Play.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Why do my towels smell even after washing?',
+        answer:
+          'Detergent and body oils build up in towels and hold moisture, so bacteria keep growing. Wash towels warm with less detergent, add vinegar to the rinse, and make sure they dry fully between uses.',
+      },
+      {
+        question: 'Is it bad to dry clothes indoors?',
+        answer:
+          'No, as long as there is airflow. Open a window or use a fan, space items out, and avoid drying in a closed room with no ventilation.',
+      },
+      {
+        question: 'Can vinegar damage my clothes?',
+        answer:
+          'Diluted white vinegar in the rinse is safe for most washable fabrics. Avoid pouring it undiluted onto delicate fabric, and never mix it with chlorine bleach.',
+      },
+    ],
+  },
+  {
+    slug: 'how-to-iron-a-shirt',
+    title: 'How to iron a shirt properly',
+    metaTitle: 'How to Iron a Shirt Properly, Step by Step',
+    description:
+      'A step-by-step guide to ironing a dress shirt: iron temperature settings, the right order (collar, cuffs, sleeves, yoke, back, front), dark shirts, and tips to iron less.',
+    summary:
+      'Temperature settings, the right order for collar, cuffs, sleeves and body, and how to iron less.',
+    datePublished: '2026-09-29',
+    dateModified: '2026-09-29',
+    readingMinutes: 4,
+    sections: [
+      {
+        heading: 'Check the temperature first',
+        paragraphs: [
+          'The iron symbol on the care label tells you how hot to go. One dot means low heat, for synthetics such as nylon and acrylic. Two dots means medium, for polyester, silk and wool. Three dots means high, for cotton and linen. An iron with a cross through it means do not iron. For poly-cotton blends, use the lower setting.',
+        ],
+      },
+      {
+        heading: 'Iron slightly damp',
+        paragraphs: [
+          'Creases come out far more easily when the fabric is slightly damp. Use the steam setting, or mist the shirt with a spray bottle of clean water. Make sure the iron plate is clean, because residue on the plate can mark a white shirt.',
+        ],
+      },
+      {
+        heading: 'The order that works',
+        steps: [
+          'Collar: iron the underside first, from the points towards the middle, then the top side.',
+          'Cuffs: unbutton them, iron the inside, then the outside.',
+          'Sleeves: lay each sleeve flat along its seam, smooth it with your hand, and iron from the shoulder down to the cuff. Turn it over and repeat.',
+          'Yoke and shoulders: slip one shoulder over the narrow end of the ironing board and iron, then do the other.',
+          'Back: lay the back flat across the board and iron from top to bottom.',
+          'Front panels: iron each side, working the tip of the iron around the buttons rather than over them.',
+        ],
+      },
+      {
+        heading: 'Finish and hang',
+        paragraphs: [
+          'Put the shirt straight on a hanger and fasten the top button so the collar keeps its shape. Let it cool for a few minutes before you wear it. Warm fabric creases again easily.',
+        ],
+      },
+      {
+        heading: 'Dark and delicate shirts',
+        paragraphs: [
+          'Dark cotton, and fabrics like polyester and silk, can turn shiny under a hot iron. Iron them inside out, or put a thin cotton cloth between the iron and the shirt.',
+        ],
+      },
+      {
+        heading: 'How to iron less',
+        bullets: [
+          'Take shirts out of the wash promptly and shake them out.',
+          'Dry shirts on hangers, buttoned at the top, instead of folding them over a line.',
+          'Iron several shirts in one session while the iron is hot, and when power is available, so you are covered for the week.',
+          'Send work shirts out for washing and pressing. With the Simame - Laundry Connect app you can book a partner laundry near you for pickup and delivery. It is free on Google Play.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'What temperature should I iron a cotton shirt at?',
+        answer:
+          'Cotton takes the highest setting (three dots). Use steam or iron the shirt while slightly damp for the best result. For poly-cotton blends, drop to the medium setting.',
+      },
+      {
+        question: 'Why does my iron leave shiny marks?',
+        answer:
+          'The iron is too hot for the fabric, or you are pressing directly on dark or synthetic fabric. Lower the heat, iron inside out, or use a pressing cloth.',
+      },
+    ],
+  },
 ]
 
 export function getGuideBySlug(slug: string) {

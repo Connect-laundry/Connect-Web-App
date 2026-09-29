@@ -44,7 +44,7 @@
 - Retargeted `/app` at "laundry app Ghana" with download steps and six FAQs; removed the false iOS availability claim from copy and schema.
 - Consolidated the homepage and `/app` app schemas into one Android `MobileApplication` entity (`https://simame.tech/app#software`) built by `mobileApplicationSchema()`; no ratings until real Play ratings exist.
 - Added `/connect-laundry` to map the legacy Connect Laundry / Laundry Connect names to Simame and the live Google Play listing.
-- Added `/guides` and five laundry guides with Article, FAQPage and three-level BreadcrumbList schema; guides are included in the sitemap automatically.
+- Added `/guides` and nine laundry guides with Article, FAQPage and three-level BreadcrumbList schema; guides are included in the sitemap automatically.
 - Added `/download` (307 to Google Play with a UTM `referrer`, optional `?src=` campaign tag).
 - Filled the empty homepage CTA banner with an app download section; replaced dead `href="#"` App Store buttons in the hero and footer with a shared `GooglePlayBadge`.
 - Sitemap now uses per-route last-modified dates; IndexNow script reads the live sitemap; `/api/indexnow` only relays simame.tech URLs.

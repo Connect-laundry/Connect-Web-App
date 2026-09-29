@@ -19,12 +19,12 @@ The single biggest blocker is indexing. Until Google has crawled simame.tech, no
 
 - `/app` now targets "laundry app Ghana": new title and copy, download steps, and six FAQs. The false iPhone claim is gone.
 - New `/connect-laundry` page for "Connect Laundry", "Laundry Connect" and "Connect Laundry app" searches.
-- New `/guides` hub with five full laundry guides. They target the generic "laundry" questions people search in Ghana: choosing a laundry service, dry cleaning vs washing, removing palm oil, red soil and sweat stains, hostel laundry for students, and getting clothes ready for pickup.
+- New `/guides` hub with nine full laundry guides. They target the generic "laundry" questions people search in Ghana: choosing a laundry service, dry cleaning vs washing, removing palm oil, red soil and sweat stains, hostel laundry for students, getting clothes ready for pickup, keeping whites white, washing African print, musty smells in the rainy season, and ironing a shirt.
 - New `/download` short link that redirects to Google Play with install tracking. Add `?src=` to tag a campaign, e.g. `simame.tech/download?src=knust-flyer`. Installs appear in Play Console, under the acquisition report's UTM section.
 - The homepage's empty call-to-action box is now a "Get the Simame laundry app" section with the Play badge.
 - Removed the two "Download on the App Store" buttons. They linked to `#`, which broke user trust and wasted a link.
 - One `MobileApplication` schema entity for the app (Android only, no invented ratings) is used on both the homepage and `/app`.
-- The sitemap grew from 14 to 21 URLs, with real last-modified dates.
+- The sitemap grew from 14 to 25 URLs, with real last-modified dates.
 - The IndexNow script now reads the live sitemap, so new pages are always included.
 - Added `/llms.txt`, a short fact sheet for AI assistants that read it.
 
@@ -148,7 +148,7 @@ Links and mentions from other real sites are the strongest signal a new domain c
 ## 5. After deploy (engineering)
 
 1. Merge and deploy to production.
-2. Run `node scripts/submit_indexnow.mjs` to push all 21 URLs to Bing and the other IndexNow engines.
+2. Run `node scripts/submit_indexnow.mjs` to push all 25 URLs to Bing and the other IndexNow engines.
 3. Check `https://simame.tech/download` redirects to Google Play.
 4. Validate `/app`, `/connect-laundry` and one guide in Google's Rich Results Test (https://search.google.com/test/rich-results).
 
