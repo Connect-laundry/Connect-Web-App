@@ -1,5 +1,6 @@
 import type { Metadata, MetadataRoute } from 'next'
 import { SEO_CONTENT_INVENTORY } from './seo-content'
+import { GUIDES } from '@/features/guides/data/guides'
 
 export const SITE_NAME = 'Simame'
 export const SITE_URL = 'https://simame.tech'
@@ -8,14 +9,23 @@ export const ORGANIZATION_ID = `${SITE_URL}/#organization`
 export const WEBSITE_ID = `${SITE_URL}/#website`
 export const GOOGLE_PLAY_PACKAGE_NAME = 'com.connectlaundry.app'
 export const GOOGLE_PLAY_URL = `https://play.google.com/store/apps/details?id=${GOOGLE_PLAY_PACKAGE_NAME}`
+// Play Console attributes installs that arrive with a `referrer` UTM string.
+export const GOOGLE_PLAY_WEBSITE_URL = `${GOOGLE_PLAY_URL}&referrer=${encodeURIComponent(
+  'utm_source=simame.tech&utm_medium=website&utm_campaign=download',
+)}`
+export const DOWNLOAD_PATH = '/download'
+export const APP_NAME = 'Simame - Laundry Connect'
+export const APP_ID = `${SITE_URL}/app#software`
 
 export const SEO_DESCRIPTION =
   'Simame helps customers in Ghana arrange laundry pickup, delivery, wash and fold, dry cleaning, ironing, and garment care with trusted laundry partners.'
 
 export const PUBLIC_ROUTES = [
-  { path: '/', priority: 1, changeFrequency: 'weekly' },
+  { path: '/', priority: 1, changeFrequency: 'weekly', lastModified: '2026-09-29' },
   { path: '/about', priority: 0.8, changeFrequency: 'monthly' },
-  { path: '/app', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/app', priority: 0.9, changeFrequency: 'monthly', lastModified: '2026-09-29' },
+  { path: '/connect-laundry', priority: 0.8, changeFrequency: 'monthly', lastModified: '2026-09-29' },
+  { path: '/guides', priority: 0.7, changeFrequency: 'weekly', lastModified: '2026-09-29' },
   { path: '/services', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/how-it-works', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/for-laundries', priority: 0.8, changeFrequency: 'monthly' },
@@ -27,7 +37,14 @@ export const PUBLIC_ROUTES = [
   { path: '/privacy', priority: 0.5, changeFrequency: 'yearly' },
   { path: '/terms', priority: 0.5, changeFrequency: 'yearly' },
   { path: '/account-deletion', priority: 0.4, changeFrequency: 'yearly' },
-] as const
+] as const satisfies ReadonlyArray<{
+  path: string
+  priority: number
+  changeFrequency: 'weekly' | 'monthly' | 'yearly'
+  lastModified?: string
+}>
+
+const DEFAULT_LAST_MODIFIED = '2026-09-05'
 
 export function absoluteUrl(path = '/') {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
@@ -108,15 +125,55 @@ export function noindexMetadata(title = SITE_NAME): Metadata {
 }
 
 export function getPublicSitemapEntries(): MetadataRoute.Sitemap {
-  const lastModified = new Date('2026-09-05')
   const indexablePaths = new Set(
     SEO_CONTENT_INVENTORY.filter((item) => item.indexable).map((item) => item.path),
   )
 
-  return PUBLIC_ROUTES.filter((route) => indexablePaths.has(route.path)).map((route) => ({
+  const routes = PUBLIC_ROUTES.filter((route) => indexablePaths.has(route.path)).map((route) => ({
     url: absoluteUrl(route.path),
-    lastModified,
+    lastModified: new Date('lastModified' in route ? route.lastModified : DEFAULT_LAST_MODIFIED),
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }))
+
+  const guides = GUIDES.map((guide) => ({
+    url: absoluteUrl(`/guides/${guide.slug}`),
+    lastModified: new Date(guide.dateModified),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
+
+  return [...routes, ...guides]
+}
+
+/**
+ * The one MobileApplication entity for the Android app. Every page that
+ * describes the app emits this same @id so search engines see a single app.
+ * No aggregateRating: add one only from real Google Play ratings.
+ */
+export function mobileApplicationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MobileApplication',
+    '@id': APP_ID,
+    name: APP_NAME,
+    alternateName: ['Simame', 'Simame Laundry App', 'Simame App', 'Connect Laundry app', 'Laundry Connect app'],
+    url: absoluteUrl('/app'),
+    image: absoluteUrl('/images/SIMAME_EVOLVED_APPICON-01.png'),
+    installUrl: GOOGLE_PLAY_URL,
+    downloadUrl: GOOGLE_PLAY_URL,
+    sameAs: [GOOGLE_PLAY_URL],
+    applicationCategory: 'LifestyleApplication',
+    operatingSystem: 'Android',
+    countriesSupported: 'GH',
+    inLanguage: 'en',
+    description:
+      'Simame - Laundry Connect is a laundry app for Ghana. Find laundry services near you, book pickup and delivery, choose wash and fold, dry cleaning or ironing, pay with Mobile Money or card, and track your order.',
+    publisher: { '@id': ORGANIZATION_ID },
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'GHS',
+    },
+  }
 }

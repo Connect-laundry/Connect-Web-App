@@ -7,7 +7,15 @@ import { COVERAGE_ENTRIES, getIndexableLocationSlugs, isLocationIndexable } from
 import { resolveBackendBaseUrl, PRODUCTION_BACKEND_BASE_URL, STAGING_BACKEND_BASE_URL } from '@/shared/lib/backend-url'
 import { SEO_CONTENT_INVENTORY, getIndexableInventoryPaths } from '@/shared/lib/seo-content'
 import { ORGANIZATION_SAME_AS, isValidCanonicalSocialUrl } from '@/shared/lib/social'
-import { isSearchIndexingDisabled } from '@/shared/lib/seo'
+import {
+  APP_ID,
+  GOOGLE_PLAY_URL,
+  isSearchIndexingDisabled,
+  mobileApplicationSchema,
+} from '@/shared/lib/seo'
+import { GUIDES } from '@/features/guides/data/guides'
+import { GET as downloadRedirect } from './download/route'
+import { NextRequest } from 'next/server'
 
 const originalEnv = { ...process.env }
 
@@ -47,6 +55,12 @@ describe('SEO route configuration', () => {
     expect(urls).toContain('https://simame.tech/privacy')
     expect(urls).toContain('https://simame.tech/terms')
     expect(urls).toContain('https://simame.tech/account-deletion')
+    expect(urls).toContain('https://simame.tech/connect-laundry')
+    expect(urls).toContain('https://simame.tech/guides')
+    for (const guide of GUIDES) {
+      expect(urls).toContain(`https://simame.tech/guides/${guide.slug}`)
+    }
+    expect(urls).not.toContain('https://simame.tech/download')
     expect(urls).not.toContain('https://simame.tech/auth/login')
     expect(urls).not.toContain('https://simame.tech/auth/register')
     expect(urls).not.toContain('https://simame.tech/locations/accra')
@@ -177,6 +191,10 @@ describe('entity and content governance', () => {
       'src/features/marketing/components/MarketingHero.tsx',
       'src/features/marketing/components/MarketingFooter.tsx',
       'src/features/marketing/components/TrustPills.tsx',
+      'src/features/landing/components/CTABanner.tsx',
+      'src/app/app/page.tsx',
+      'src/app/connect-laundry/page.tsx',
+      'src/features/guides/data/guides.ts',
     ]
     const publicMarketingSource = files
       .map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
@@ -196,6 +214,9 @@ describe('entity and content governance', () => {
       'src/shared/lib/seo.ts',
       'src/shared/lib/social.ts',
       'src/shared/lib/seo-content.ts',
+      'src/app/connect-laundry/page.tsx',
+      'src/features/guides/data/guides.ts',
+      'public/llms.txt',
     ]
     const combined = seoFiles
       .map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
@@ -270,4 +291,67 @@ describe('growth acceleration, IndexNow, and commercial SEO', () => {
     expect(providerSource).toContain('isVerified')
     expect(providerSource).toContain('APPROVED')
   })
-})
+})
+
+describe('app discovery and search growth', () => {
+  it('describes one Android MobileApplication entity with no iOS claim or invented rating', () => {
+    const schema = mobileApplicationSchema()
+    expect(schema['@type']).toBe('MobileApplication')
+    expect(schema['@id']).toBe(APP_ID)
+    expect(schema.operatingSystem).toBe('Android')
+    expect(schema.installUrl).toBe(GOOGLE_PLAY_URL)
+    expect(schema).not.toHaveProperty('aggregateRating')
+    expect(schema).not.toHaveProperty('review')
+  })
+
+  it('does not claim an iPhone app or link to a store that does not exist', () => {
+    const files = [
+      'src/app/page.tsx',
+      'src/app/app/page.tsx',
+      'src/app/connect-laundry/page.tsx',
+      'src/features/landing/components/Hero.tsx',
+      'src/features/landing/components/Footer.tsx',
+      'src/features/landing/components/CTABanner.tsx',
+    ]
+    const source = files.map((file) => readFileSync(join(process.cwd(), file), 'utf8')).join('\n')
+
+    expect(source).not.toMatch(/apps\.apple\.com|Download on the|Android, iOS/)
+    expect(source).not.toMatch(/href="#"/)
+  })
+
+  it('sends /download to the Google Play listing with install attribution', () => {
+    const plain = downloadRedirect(new NextRequest('https://simame.tech/download'))
+    expect(plain.status).toBe(307)
+    const location = plain.headers.get('location') ?? ''
+    expect(location.startsWith(GOOGLE_PLAY_URL)).toBe(true)
+    expect(decodeURIComponent(location)).toContain('utm_source=simame.tech')
+
+    const tagged = downloadRedirect(new NextRequest('https://simame.tech/download?src=knust-flyer'))
+    expect(decodeURIComponent(tagged.headers.get('location') ?? '')).toContain('utm_source=knust-flyer')
+
+    const hostile = downloadRedirect(new NextRequest('https://simame.tech/download?src=%3Cscript%3E'))
+    expect(decodeURIComponent(hostile.headers.get('location') ?? '')).toContain('utm_source=simame.tech')
+  })
+
+  it('keeps guides unique, substantial and within search snippet limits', () => {
+    const slugs = GUIDES.map((guide) => guide.slug)
+    expect(new Set(slugs).size).toBe(slugs.length)
+
+    for (const guide of GUIDES) {
+      expect(guide.slug).toMatch(/^[a-z0-9-]+$/)
+      expect(guide.metaTitle.length).toBeLessThanOrEqual(60)
+      expect(guide.description.length).toBeLessThanOrEqual(220)
+      expect(guide.sections.length).toBeGreaterThanOrEqual(3)
+      expect(guide.faqs.length).toBeGreaterThanOrEqual(2)
+      expect(Number.isNaN(Date.parse(guide.dateModified))).toBe(false)
+      expect(Date.parse(guide.dateModified)).toBeGreaterThanOrEqual(Date.parse(guide.datePublished))
+    }
+  })
+
+  it('has a Connect Laundry page that maps the legacy name to the live app', () => {
+    const source = readFileSync(join(process.cwd(), 'src/app/connect-laundry/page.tsx'), 'utf8')
+    expect(source).toMatch(/Connect Laundry is now Simame/)
+    expect(source).toMatch(/GooglePlayBadge/)
+    expect(source).toMatch(/FAQPage/)
+  })
+})

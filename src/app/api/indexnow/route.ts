@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
-import { absoluteUrl } from '@/shared/lib/seo'
-import { getIndexableInventoryPaths } from '@/shared/lib/seo-content'
+import { SITE_URL, getPublicSitemapEntries } from '@/shared/lib/seo'
+
+function sitemapUrls() {
+  return getPublicSitemapEntries().map((entry) => entry.url)
+}
 
 export const INDEXNOW_KEY = '4f89d3a7e6b241c890f5a7e1c3b5d2e4'
 export const INDEXNOW_KEY_LOCATION = `https://simame.tech/${INDEXNOW_KEY}.txt`
@@ -13,7 +16,7 @@ export async function GET() {
     key: INDEXNOW_KEY,
     keyLocation: INDEXNOW_KEY_LOCATION,
     endpoint: 'https://api.indexnow.org/indexnow',
-    submittableUrlsCount: getIndexableInventoryPaths().length,
+    submittableUrlsCount: sitemapUrls().length,
   })
 }
 
@@ -24,15 +27,18 @@ export async function POST(request: Request) {
     // Check if custom urlList provided
     try {
       const body = await request.json()
-      if (Array.isArray(body?.urlList) && body.urlList.length > 0) {
-        urlsToSubmit = body.urlList
+      if (Array.isArray(body?.urlList)) {
+        // Only our own pages: this endpoint is public, so never relay arbitrary URLs.
+        urlsToSubmit = body.urlList.filter(
+          (url: unknown): url is string => typeof url === 'string' && url.startsWith(`${SITE_URL}/`),
+        )
       }
     } catch {
       // Body empty or not JSON; fall back to all canonical inventory paths
     }
 
     if (urlsToSubmit.length === 0) {
-      urlsToSubmit = getIndexableInventoryPaths().map((path) => absoluteUrl(path))
+      urlsToSubmit = sitemapUrls()
     }
 
     const payload = {
