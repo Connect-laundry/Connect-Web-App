@@ -7,6 +7,8 @@ import {
   SITE_NAME,
   SITE_URL,
   WEBSITE_ID,
+  GOOGLE_PLAY_URL,
+  GOOGLE_PLAY_PACKAGE_NAME,
   absoluteUrl,
   publicPageMetadata,
 } from '@/shared/lib/seo'
@@ -58,6 +60,28 @@ const HomePage = () => {
     ],
   }
 
+  const softwareApplicationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    '@id': `${SITE_URL}#software`,
+    name: 'Simame - Laundry Connect',
+    alternateName: ['Simame Laundry App', 'Laundry Connect App', 'Simame App'],
+    url: `${SITE_URL}/app`,
+    installUrl: GOOGLE_PLAY_URL,
+    downloadUrl: GOOGLE_PLAY_URL,
+    sameAs: GOOGLE_PLAY_URL,
+    applicationCategory: 'LifestyleApplication',
+    operatingSystem: 'Android, iOS, Web',
+    description:
+      'Simame - Laundry Connect mobile application for booking laundry pickup, delivery, wash and fold, dry cleaning, and ironing across Ghana.',
+    publisher: { '@id': ORGANIZATION_ID },
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'GHS',
+    },
+  }
+
   const entityAnswer = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -70,6 +94,14 @@ const HomePage = () => {
           text: 'Simame (spelled S-I-M-A-M-E) is a Ghanaian digital laundry marketplace connecting customers with trusted local laundry pickup, delivery, wash and fold, dry cleaning, ironing, and garment care services. Simame operates in Ghana at simame.tech with the official handle @simameapp. Simame was formerly piloted under the name Connect Laundry (Laundry Connect Ghana).',
         },
       },
+      {
+        '@type': 'Question',
+        name: 'Where can I download the Simame Laundry App?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Download the official Simame - Laundry Connect mobile app directly from the Google Play Store (package ${GOOGLE_PLAY_PACKAGE_NAME}) at ${GOOGLE_PLAY_URL} or use the web platform at simame.tech/app.`,
+        },
+      },
     ],
   }
 
@@ -77,6 +109,7 @@ const HomePage = () => {
     <>
       <StructuredData data={websiteSchema} />
       <StructuredData data={organizationSchema} />
+      <StructuredData data={softwareApplicationSchema} />
       <StructuredData data={entityAnswer} />
       {/*
        * Server-rendered entity identity block.
@@ -96,6 +129,11 @@ const HomePage = () => {
           ironing, and garment care services. The official website is simame.tech and the
           official social handle is @simameapp. Simame was formerly piloted under the name
           Connect Laundry (also known as Laundry Connect Ghana).
+        </p>
+        <h2>Where can I download the Simame Laundry App?</h2>
+        <p>
+          Download the official Simame - Laundry Connect app on Google Play (package {GOOGLE_PLAY_PACKAGE_NAME})
+          or access the web app at simame.tech/app to schedule laundry pickup and track orders.
         </p>
       </section>
       <LandingPage />

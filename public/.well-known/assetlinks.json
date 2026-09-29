@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.connectlaundry.app",
+      "sha256_cert_fingerprints": [
+        "96:DD:BE:00:2E:96:74:5C:21:AC:C1:2C:02:32:39:6C:14:A0:75:1C:B1:20:EF:F6:6D:0A:58:D2:77:F9:BE:6C"
+      ]
+    }
+  }
+]

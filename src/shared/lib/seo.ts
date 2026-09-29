@@ -6,6 +6,8 @@ export const SITE_URL = 'https://simame.tech'
 export const STAGING_SITE_URL = 'https://staging.simame.tech'
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`
 export const WEBSITE_ID = `${SITE_URL}/#website`
+export const GOOGLE_PLAY_PACKAGE_NAME = 'com.connectlaundry.app'
+export const GOOGLE_PLAY_URL = `https://play.google.com/store/apps/details?id=${GOOGLE_PLAY_PACKAGE_NAME}`
 
 export const SEO_DESCRIPTION =
   'Simame helps customers in Ghana arrange laundry pickup, delivery, wash and fold, dry cleaning, ironing, and garment care with trusted laundry partners.'

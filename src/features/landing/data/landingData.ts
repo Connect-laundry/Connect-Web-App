@@ -41,6 +41,7 @@ export interface ReasonItem {
 export const NAV_LINKS: NavLink[] = [
   { label: 'Services', href: '/services' },
   { label: 'How It Works', href: '/how-it-works' },
+  { label: 'Get App', href: '/app' },
   { label: 'Locations', href: '/locations' },
   { label: 'For Laundries', href: '/for-laundries' },
   { label: 'About', href: '/about' },
