@@ -5,6 +5,7 @@ import { PublicPageShell } from '@/shared/components/PublicPageShell'
 import { StructuredData } from '@/shared/components/StructuredData'
 import { AppDownloadCallout } from '@/shared/components/AppDownloadCallout'
 import { GooglePlayBadge } from '@/shared/components/GooglePlayBadge'
+import { SpellingHelp } from '@/shared/components/SpellingHelp'
 import {
   APP_ID,
   APP_NAME,
@@ -120,6 +121,8 @@ export default function ConnectLaundryPage() {
             Other apps and laundries with similar-sounding names are separate businesses and are not connected to Simame.
           </p>
         </section>
+
+        <SpellingHelp variant="card" />
 
         <section className="mt-12" aria-labelledby="features-heading">
           <h2 id="features-heading" className="text-2xl font-bold tracking-tight">

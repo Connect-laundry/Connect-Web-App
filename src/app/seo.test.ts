@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import robots from './robots'
@@ -216,7 +216,6 @@ describe('entity and content governance', () => {
       'src/shared/lib/seo-content.ts',
       'src/app/connect-laundry/page.tsx',
       'src/features/guides/data/guides.ts',
-      'public/llms.txt',
     ]
     const combined = seoFiles
       .map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
@@ -294,6 +293,40 @@ describe('growth acceleration, IndexNow, and commercial SEO', () => {
 })
 
 describe('app discovery and search growth', () => {
+  it('mentions Simami only to say Simame is a different company', () => {
+    const allowed = new Set(['src/shared/components/SpellingHelp.tsx'])
+    const offenders = (readdirSync(join(process.cwd(), 'src'), { recursive: true }) as string[])
+      .map((file) => `src/${file.replaceAll('\\', '/')}`)
+      .filter((file) => /\.(ts|tsx)$/.test(file) && !file.endsWith('.test.ts') && !allowed.has(file))
+      .filter((file) => /Simami/i.test(readFileSync(join(process.cwd(), file), 'utf8')))
+    expect(offenders).toEqual([])
+
+    const spelling = readFileSync(join(process.cwd(), 'src/shared/components/SpellingHelp.tsx'), 'utf8')
+    const lines = spelling.split('\n').filter((line) => /Simami/.test(line) && !line.trim().startsWith('//'))
+    expect(lines).toHaveLength(1)
+    expect(lines[0]).toMatch(/not connected to Simami/)
+
+    const llms = readFileSync(join(process.cwd(), 'public/llms.txt'), 'utf8')
+    for (const line of llms.split('\n').filter((l) => /Simami/.test(l))) {
+      expect(line).toMatch(/Not to be confused with|different businesses/)
+    }
+  })
+
+  it('shows spelling help with common misspellings on brand pages', () => {
+    const pages = [
+      'src/features/landing/components/LandingPage.tsx',
+      'src/app/app/page.tsx',
+      'src/app/about/page.tsx',
+      'src/app/connect-laundry/page.tsx',
+    ]
+    for (const page of pages) {
+      expect(readFileSync(join(process.cwd(), page), 'utf8')).toContain('<SpellingHelp')
+    }
+    const spelling = readFileSync(join(process.cwd(), 'src/shared/components/SpellingHelp.tsx'), 'utf8')
+    expect(spelling).toMatch(/S-I-M-A-M-E/)
+    expect(spelling).toMatch(/Simama/)
+  })
+
   it('describes one Android MobileApplication entity with no iOS claim or invented rating', () => {
     const schema = mobileApplicationSchema()
     expect(schema['@type']).toBe('MobileApplication')

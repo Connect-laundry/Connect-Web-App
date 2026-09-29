@@ -135,17 +135,27 @@ Links and mentions from other real sites are the strongest signal a new domain c
 5. **Campus and flyers.** QR codes on flyers and hostel notice boards pointing to `simame.tech/download?src=<campus>-flyer`. Every install is then attributed in Play Console.
 6. **Google Business Profile for Simame itself.** Only if eligible. Google requires a physical location customers visit, or a business that travels to customers within about 2 hours of its base, and online-only businesses are not eligible. If Simame's own staff or riders collect from customers, it can register as a service-area business. The name must be exactly "Simame", with no keywords added.
 
-## 4. Deliberately not done
+## 4. Misspellings (Simama, Simami and others)
 
-- **"Simami".** Simami is a different, active laundry company in Ghana with its own Google Play app (`com.simamigh.simami`) and website (simamigh.com). Using their name in our metadata, schema or Play listing would break Google Play's metadata policy, which forbids references to other apps and brands. It also risks a trademark complaint that could take our listing down.
-  Our defence is clear spelling everywhere (S-I-M-A-M-E), which the site already does, and a strong brand search result once indexed. The existing SEO test keeps "Simami" out of all metadata and schema.
+Customers hear "Simame" and type it several ways. What is in place, and what else helps:
+
+- **On the website:** a visible "Not sure how to spell it? It's Simame: S-I-M-A-M-E" section (`src/shared/components/SpellingHelp.tsx`) on the homepage, `/app`, `/about` and `/connect-laundry`.
+  - It lists the common misspellings (Simama, Simamee, Simamay, Simamé, Semame, Simaame), so pages contain the words people actually type.
+  - It says plainly that Simame is not connected to Simami.
+  - `llms.txt` carries the same spelling and "not to be confused with" facts for AI assistants.
+- **Simami is a real, separate company** with its own Google Play app (`com.simamigh.simami`) and website (simamigh.com). We mention it only to say we are different. It never goes into page titles, descriptions, schema, `sameAs` or the Play listing: Play's metadata policy forbids other apps' names, and a trademark complaint could take our listing down. A test enforces this.
+- **Google autocomplete and "Did you mean"** come from what real people search. They cannot be set by any website. As more people search "Simame", Google learns it and starts correcting "Simama" to "Simame" on its own. Every flyer, social post and word-of-mouth mention that spells it clearly speeds this up.
+- **Guaranteed placement for misspellings (paid):** a small Google Ads search campaign on keywords like `simame`, `simama`, `simame app`, `laundry app ghana` shows Simame at the top straight away. Bidding on a misspelled keyword is allowed. Do not use Simami's name in the ad text itself.
+- **Typo domains (optional):** if available, register `simame.com` and `simama.tech` (never `simami.*`) and 301-redirect them to `https://simame.tech`.
+
+## 5. Deliberately not done
 - **Ranking for "laundry" everywhere.** No legitimate method makes one app appear for every laundry search. Google localises results, so someone in Accra searching "laundry app" sees different results from someone in London, and Simame only serves Ghana. Aim for:
   - brand searches (Simame, Simame app, Connect Laundry), typically within days to weeks of indexing;
   - Ghana laundry searches ("laundry app Ghana", "laundry pickup Accra"), over months as installs, ratings and links grow;
   - "how to" laundry questions, through the guides.
 - **City and provider pages** (e.g. "laundry in Kumasi"). The production API needs a login to list laundries, and the site's coverage gate (`src/shared/lib/coverage.ts`) keeps city pages unindexed until real partner coverage is confirmed. With a confirmed list of active partner laundries and their areas, these are the next pages to build. They are the best route to "laundry near me" searches.
 
-## 5. After deploy (engineering)
+## 6. After deploy (engineering)
 
 1. Merge and deploy to production.
 2. Run `node scripts/submit_indexnow.mjs` to push all 25 URLs to Bing and the other IndexNow engines.

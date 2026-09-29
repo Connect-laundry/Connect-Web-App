@@ -4,6 +4,7 @@ import { Smartphone, Store, Bell, CreditCard, Search, ExternalLink } from 'lucid
 import { PublicPageShell } from '@/shared/components/PublicPageShell'
 import { StructuredData } from '@/shared/components/StructuredData'
 import { GooglePlayBadge } from '@/shared/components/GooglePlayBadge'
+import { SpellingHelp } from '@/shared/components/SpellingHelp'
 import {
   GOOGLE_PLAY_URL,
   GOOGLE_PLAY_PACKAGE_NAME,
@@ -182,6 +183,8 @@ export default function AppPage() {
             .
           </p>
         </section>
+
+        <SpellingHelp variant="card" />
 
         {/* FAQ visible block for AI search eligibility */}
         <section className="mt-10" aria-labelledby="app-faq-heading">

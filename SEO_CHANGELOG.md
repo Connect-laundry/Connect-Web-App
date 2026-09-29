@@ -49,3 +49,4 @@
 - Filled the empty homepage CTA banner with an app download section; replaced dead `href="#"` App Store buttons in the hero and footer with a shared `GooglePlayBadge`.
 - Sitemap now uses per-route last-modified dates; IndexNow script reads the live sitemap; `/api/indexnow` only relays simame.tech URLs.
 - Added `public/llms.txt` and `SIMAME_SEARCH_GROWTH_PLAYBOOK.md` (Play listing copy, Search Console and off-site actions).
+- Added a visible spelling-help section (S-I-M-A-M-E plus common misspellings such as Simama) on the homepage, `/app`, `/about` and `/connect-laundry`; Simami is mentioned only to say it is a separate company, and a test keeps it out of all other source, schema and metadata.
