@@ -6,7 +6,7 @@ import {
   getLaundryProfile,
   getPricingItems,
   getWeightPricing,
-  toggleVacationMode,
+  setVacationMode,
 } from '@/features/business/api'
 
 export function useBusinessProfile() {
@@ -47,10 +47,11 @@ export function useBusinessProfile() {
   }, [])
 
   const onVacationToggle = async () => {
+    if (!laundry) return
     setIsTogglingVacation(true)
     setError(null)
     try {
-      const vacation_mode = await toggleVacationMode()
+      const vacation_mode = await setVacationMode(!laundry.vacation_mode)
       setLaundry((prev) => (prev ? { ...prev, vacation_mode } : prev))
     } catch (err: any) {
       setError(err?.message || 'Failed to toggle vacation mode.')
