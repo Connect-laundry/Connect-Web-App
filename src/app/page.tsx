@@ -10,13 +10,15 @@ import {
   GOOGLE_PLAY_URL,
   GOOGLE_PLAY_PACKAGE_NAME,
   absoluteUrl,
+  mobileApplicationSchema,
   publicPageMetadata,
 } from '@/shared/lib/seo'
 import { ORGANIZATION_SAME_AS } from '@/shared/lib/social'
 
 export const metadata: Metadata = publicPageMetadata({
-  title: 'Simame - Laundry Pickup and Delivery in Ghana',
-  description: SEO_DESCRIPTION,
+  title: 'Simame - Laundry App for Pickup & Delivery in Ghana',
+  description:
+    'Simame - Laundry Connect is the laundry app for Ghana. Find laundries near you, book pickup and delivery, wash and fold, dry cleaning and ironing, and pay with MoMo. Free on Google Play.',
   path: '/',
 })
 
@@ -60,28 +62,6 @@ const HomePage = () => {
     ],
   }
 
-  const softwareApplicationSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    '@id': `${SITE_URL}#software`,
-    name: 'Simame - Laundry Connect',
-    alternateName: ['Simame Laundry App', 'Laundry Connect App', 'Simame App'],
-    url: `${SITE_URL}/app`,
-    installUrl: GOOGLE_PLAY_URL,
-    downloadUrl: GOOGLE_PLAY_URL,
-    sameAs: GOOGLE_PLAY_URL,
-    applicationCategory: 'LifestyleApplication',
-    operatingSystem: 'Android, iOS, Web',
-    description:
-      'Simame - Laundry Connect mobile application for booking laundry pickup, delivery, wash and fold, dry cleaning, and ironing across Ghana.',
-    publisher: { '@id': ORGANIZATION_ID },
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'GHS',
-    },
-  }
-
   const entityAnswer = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -99,7 +79,7 @@ const HomePage = () => {
         name: 'Where can I download the Simame Laundry App?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: `Download the official Simame - Laundry Connect mobile app directly from the Google Play Store (package ${GOOGLE_PLAY_PACKAGE_NAME}) at ${GOOGLE_PLAY_URL} or use the web platform at simame.tech/app.`,
+          text: `Download the official Simame - Laundry Connect app for Android from the Google Play Store (package ${GOOGLE_PLAY_PACKAGE_NAME}) at ${GOOGLE_PLAY_URL}. More details are at simame.tech/app.`,
         },
       },
     ],
@@ -109,7 +89,7 @@ const HomePage = () => {
     <>
       <StructuredData data={websiteSchema} />
       <StructuredData data={organizationSchema} />
-      <StructuredData data={softwareApplicationSchema} />
+      <StructuredData data={mobileApplicationSchema()} />
       <StructuredData data={entityAnswer} />
       {/*
        * Server-rendered entity identity block.
@@ -132,8 +112,8 @@ const HomePage = () => {
         </p>
         <h2>Where can I download the Simame Laundry App?</h2>
         <p>
-          Download the official Simame - Laundry Connect app on Google Play (package {GOOGLE_PLAY_PACKAGE_NAME})
-          or access the web app at simame.tech/app to schedule laundry pickup and track orders.
+          Download the official Simame - Laundry Connect app for Android on Google Play (package{' '}
+          {GOOGLE_PLAY_PACKAGE_NAME}) to schedule laundry pickup and track orders. Details are at simame.tech/app.
         </p>
       </section>
       <LandingPage />

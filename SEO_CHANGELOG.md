@@ -38,3 +38,15 @@
 - Added six new SEO regression tests: Simami isolation test (never appears in schema/metadata/sameAs), entity answer block presence, About FAQPage assertions, App FAQPage assertions, press spelling card assertions.
 - Verified all routes return HTTP 200 in production with no blocking x-robots-tag.
 - Live search audit confirmed 0 Google-indexed pages as of 2026-09-05 (pre-indexing state). Highest-impact next action: founder must log into Google Search Console and request URL inspection + indexing for all 14 pages.
+
+## 2026-09-29 - Search Growth: App Discovery, Connect Laundry, Guides
+
+- Retargeted `/app` at "laundry app Ghana" with download steps and six FAQs; removed the false iOS availability claim from copy and schema.
+- Consolidated the homepage and `/app` app schemas into one Android `MobileApplication` entity (`https://simame.tech/app#software`) built by `mobileApplicationSchema()`; no ratings until real Play ratings exist.
+- Added `/connect-laundry` to map the legacy Connect Laundry / Laundry Connect names to Simame and the live Google Play listing.
+- Added `/guides` and nine laundry guides with Article, FAQPage and three-level BreadcrumbList schema; guides are included in the sitemap automatically.
+- Added `/download` (307 to Google Play with a UTM `referrer`, optional `?src=` campaign tag).
+- Filled the empty homepage CTA banner with an app download section; replaced dead `href="#"` App Store buttons in the hero and footer with a shared `GooglePlayBadge`.
+- Sitemap now uses per-route last-modified dates; IndexNow script reads the live sitemap; `/api/indexnow` only relays simame.tech URLs.
+- Added `public/llms.txt` and `SIMAME_SEARCH_GROWTH_PLAYBOOK.md` (Play listing copy, Search Console and off-site actions).
+- Added a visible spelling-help section (S-I-M-A-M-E plus common misspellings such as Simama) on the homepage, `/app`, `/about` and `/connect-laundry`; Simami is mentioned only to say it is a separate company, and a test keeps it out of all other source, schema and metadata.

@@ -7,6 +7,7 @@ import { HowItWorks } from './HowItWorks'
 import { WhyChooseUs } from './WhyChooseUs'
 import { CTABanner } from './CTABanner'
 import { Footer } from './Footer'
+import { SpellingHelp } from '@/shared/components/SpellingHelp'
 
 export const LandingPage = () => {
   return (
@@ -17,6 +18,7 @@ export const LandingPage = () => {
       <HowItWorks />
       <WhyChooseUs />
       <CTABanner />
+      <SpellingHelp />
       <Footer />
     </main>
   )

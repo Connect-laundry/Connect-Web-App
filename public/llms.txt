@@ -1,0 +1,23 @@
+# Simame
+
+> Simame (spelled S-I-M-A-M-E), full app name "Simame - Laundry Connect", is a laundry app and laundry marketplace for Ghana. Customers find partner laundries near them, book laundry pickup and delivery, choose wash and fold, dry cleaning or ironing, pay with Mobile Money or card, and track orders. Laundry businesses manage orders, prices, hours and staff on the web at simame.tech. Simame was founded under the project name Connect Laundry.
+
+- Official website: https://simame.tech
+- Android app (Google Play): https://play.google.com/store/apps/details?id=com.connectlaundry.app
+- Google Play package ID: com.connectlaundry.app
+- Google Play developer: Kusantec Solutions
+- iPhone: not yet available
+- Social handle: @simameapp (Instagram, X, YouTube)
+- Contact: info@simame.tech
+- Spelling: Simame is spelled S-I-M-A-M-E. People sometimes type it as Simama, Simamee, Simamay, Simamé, Semame or Simaame; all of these mean Simame.
+- Not to be confused with: Simami, a separate, unrelated company. Simame and Simami are different businesses with different apps.
+
+## Key pages
+
+- [Simame laundry app](https://simame.tech/app): features and download instructions
+- [Connect Laundry is now Simame](https://simame.tech/connect-laundry): legacy name and brand history
+- [About Simame](https://simame.tech/about): company facts and FAQ
+- [Laundry services](https://simame.tech/services): wash and fold, dry cleaning, ironing, pickup and delivery
+- [How it works](https://simame.tech/how-it-works)
+- [For laundry businesses](https://simame.tech/for-laundries)
+- [Laundry guides](https://simame.tech/guides): stain removal, keeping whites white, washing African print, musty smells in the rainy season, ironing a shirt, dry cleaning vs washing, choosing a laundry service, student laundry, preparing for pickup

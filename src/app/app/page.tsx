@@ -1,106 +1,108 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Smartphone, Store, Bell, CreditCard, Search, ExternalLink } from 'lucide-react'
 import { PublicPageShell } from '@/shared/components/PublicPageShell'
 import { StructuredData } from '@/shared/components/StructuredData'
-import { ORGANIZATION_ID, GOOGLE_PLAY_URL, GOOGLE_PLAY_PACKAGE_NAME, absoluteUrl, publicPageMetadata } from '@/shared/lib/seo'
+import { GooglePlayBadge } from '@/shared/components/GooglePlayBadge'
+import { SpellingHelp } from '@/shared/components/SpellingHelp'
+import {
+  GOOGLE_PLAY_URL,
+  GOOGLE_PLAY_PACKAGE_NAME,
+  mobileApplicationSchema,
+  publicPageMetadata,
+} from '@/shared/lib/seo'
 
 export const metadata: Metadata = publicPageMetadata({
-  title: 'Simame App - Download on Google Play | Laundry Booking Ghana',
+  title: 'Laundry App Ghana - Download Simame on Google Play',
   description:
-    'Download the Simame laundry app on Google Play. Find and book laundry pickup, delivery, wash & fold, dry cleaning, and ironing in Ghana with Simame - Laundry Connect.',
+    'Download Simame - Laundry Connect, the laundry app for Ghana. Find laundries near you, book pickup and delivery, wash and fold, dry cleaning and ironing, pay with MoMo, and track your order. Free on Android.',
   path: '/app',
 })
 
 const features = [
   {
-    title: 'Discover services',
+    title: 'Find laundries near you',
     description:
-      'Find laundry services such as wash and fold, dry cleaning, ironing, and garment care where partners support them.',
+      'Browse partner laundries around your location and compare their services, from wash and fold to dry cleaning, ironing and household items.',
     icon: Store,
   },
   {
-    title: 'Schedule orders',
+    title: 'Book pickup and delivery',
     description:
-      'Request pickup and delivery through a digital flow instead of calling several providers.',
+      'Choose your services, set your address and pick a collection time. No more calling round several laundries or carrying heavy bags.',
     icon: Smartphone,
   },
   {
-    title: 'Track progress',
-    description: 'Follow order status updates from request through service completion.',
+    title: 'Track every order',
+    description: 'Follow your laundry from collection through cleaning to delivery, with notifications as the status changes.',
     icon: Bell,
   },
   {
-    title: 'Use digital payments',
-    description:
-      'Payment flows are part of the Simame marketplace experience where enabled by the product.',
+    title: 'Pay your way',
+    description: 'See prices before you order and pay with Mobile Money or card inside the app.',
     icon: CreditCard,
   },
 ]
 
-export default function AppPage() {
-  const softwareSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    '@id': `${absoluteUrl('/app')}#software`,
-    name: 'Simame - Laundry Connect',
-    alternateName: 'Simame – Laundry Connect',
-    url: absoluteUrl('/app'),
-    installUrl: GOOGLE_PLAY_URL,
-    downloadUrl: GOOGLE_PLAY_URL,
-    sameAs: GOOGLE_PLAY_URL,
-    applicationCategory: 'LifestyleApplication',
-    operatingSystem: 'Android, iOS, Web',
-    description:
-      'Simame is a Ghanaian laundry booking application for finding laundry services, requesting pickup and delivery, and tracking orders where service is available.',
-    publisher: { '@id': ORGANIZATION_ID },
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'GHS',
-    },
-  }
+const downloadSteps = [
+  'On your Android phone, open the Google Play Store.',
+  'Search for "Simame" or "Simame Laundry Connect".',
+  `Tap "Simame - Laundry Connect" (developer: Kusantec Solutions), then tap Install. You can also open ${GOOGLE_PLAY_URL} directly.`,
+  'Open the app, sign in, and allow location so it can show laundries near you.',
+]
 
+const faqs = [
+  {
+    question: 'Where can I download the Simame app?',
+    answer: `The Simame – Laundry Connect app is on Google Play (package ${GOOGLE_PLAY_PACKAGE_NAME}) at ${GOOGLE_PLAY_URL}. Search for "Simame" or "Simame - Laundry Connect" on Google Play, or visit simame.tech/download on your phone.`,
+  },
+  {
+    question: 'What is the Simame app?',
+    answer:
+      'Simame - Laundry Connect is a laundry app for Ghana. It lets customers find local laundry services, book pickup and delivery, choose wash and fold, dry cleaning or ironing, pay in the app, and track orders. Laundry businesses use the Simame partner dashboard on the web to manage orders, prices, hours and staff.',
+  },
+  {
+    question: 'Is the Simame laundry app free?',
+    answer:
+      'Yes. The app is free to download and use. You pay for the laundry services you order, plus any delivery fee shown before you confirm.',
+  },
+  {
+    question: 'Is Simame available on iPhone?',
+    answer:
+      'Not yet. The customer app is currently available for Android on Google Play. Follow @simameapp for news about an iPhone version.',
+  },
+  {
+    question: 'Can I pay with Mobile Money?',
+    answer: 'Yes. You can pay for orders with Mobile Money or a debit or credit card in the app.',
+  },
+  {
+    question: 'Is this the Connect Laundry app?',
+    answer:
+      'Yes. Connect Laundry was the founding project name of Simame, and the app is still published under the package com.connectlaundry.app.',
+  },
+]
+
+export default function AppPage() {
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     isPartOf: { '@id': 'https://simame.tech/#website' },
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'Where can I download the Simame app?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `The Simame – Laundry Connect app is officially published and available to download directly on Google Play (package ${GOOGLE_PLAY_PACKAGE_NAME}) at ${GOOGLE_PLAY_URL}. Search for "Simame" or "Simame - Laundry Connect" on Google Play or visit simame.tech/app.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'What is the Simame app?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'The Simame app is a Ghanaian laundry marketplace app that lets customers discover local laundry services, schedule pickup and delivery, and track orders. Laundry businesses use the partner dashboard to manage orders, pricing, hours, and operations.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'What operating systems does Simame support?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Simame is available on Android via Google Play, iOS (iPhone and iPad), and as a web application at simame.tech.',
-        },
-      },
-    ],
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
   }
 
   return (
     <>
-      <StructuredData data={softwareSchema} />
+      <StructuredData data={mobileApplicationSchema()} />
       <StructuredData data={faqSchema} />
       <PublicPageShell
         eyebrow="Simame App"
         path="/app"
-        title="Laundry booking from your phone."
-        description="Simame is built to help people in Ghana discover laundry partners, request service, and follow orders in one digital experience."
+        title="The laundry app for Ghana."
+        description="Find laundry services near you, book pickup and delivery, and track your clothes from your phone with Simame - Laundry Connect."
       >
         {/*
          * App identity block — provides direct Google Play install link and
@@ -113,41 +115,27 @@ export default function AppPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                Live on Google Play Store
+                Live on Google Play
               </div>
               <h2 id="app-identity-heading" className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight">
                 Simame – Laundry Connect
               </h2>
               <p className="mt-3 text-sm sm:text-base leading-6 text-muted-foreground">
-                The official <strong>Simame – Laundry Connect</strong> mobile app is published and live
-                on the Google Play Store for Android. Schedule laundry pickups, wash &amp; fold, dry cleaning,
-                ironing, and follow real-time order tracking directly from your phone.
+                The official <strong>Simame – Laundry Connect</strong> app for Android. Book laundry pickup,
+                wash and fold, dry cleaning and ironing, pay with Mobile Money or card, and follow your
+                order in real time.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+              <GooglePlayBadge />
               <a
                 href={GOOGLE_PLAY_URL}
                 target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-3 rounded-xl bg-black px-6 py-3.5 text-white transition-all hover:bg-neutral-800 shadow-lg hover:shadow-xl"
-              >
-                <svg viewBox="0 0 512 512" className="h-7 w-7 fill-current shrink-0">
-                  <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" />
-                </svg>
-                <div className="text-left">
-                  <div className="text-[10px] font-medium uppercase tracking-wider text-neutral-300 leading-none">Get it on</div>
-                  <div className="text-base font-bold leading-tight">Google Play</div>
-                </div>
-              </a>
-
-              <a
-                href={GOOGLE_PLAY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener"
                 className="inline-flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-medium"
               >
-                <span>View Google Play Listing</span>
+                <span>View Google Play listing</span>
                 <ExternalLink className="h-3 w-3" />
               </a>
             </div>
@@ -159,9 +147,9 @@ export default function AppPage() {
               Search &ldquo;<strong>Simame</strong>&rdquo; or &ldquo;<strong>Simame - Laundry Connect</strong>&rdquo; on Google Play
             </span>
             <span>•</span>
-            <span>Package: <code>com.connectlaundry.app</code></span>
+            <span>Package: <code>{GOOGLE_PLAY_PACKAGE_NAME}</code></span>
             <span>•</span>
-            <span>Region: Ghana</span>
+            <span>Android · Free · Ghana</span>
           </div>
         </section>
 
@@ -178,27 +166,57 @@ export default function AppPage() {
           })}
         </div>
 
+        <section className="mt-12" aria-labelledby="download-steps-heading">
+          <h2 id="download-steps-heading" className="text-2xl font-bold">
+            How to download the Simame laundry app
+          </h2>
+          <ol className="mt-4 list-decimal space-y-2 pl-6 text-muted-foreground">
+            {downloadSteps.map((step) => (
+              <li key={step.slice(0, 30)} className="break-words">{step}</li>
+            ))}
+          </ol>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Run a laundry? Businesses join and manage orders on the web.{' '}
+            <Link href="/for-laundries" className="font-medium text-primary hover:underline">
+              See Simame for laundries
+            </Link>
+            .
+          </p>
+        </section>
+
+        <SpellingHelp variant="card" />
+
         {/* FAQ visible block for AI search eligibility */}
         <section className="mt-10" aria-labelledby="app-faq-heading">
           <h2 id="app-faq-heading" className="text-2xl font-bold">
             App questions
           </h2>
           <div className="mt-4 divide-y divide-border rounded-lg border bg-card shadow-sm">
-            {faqSchema.mainEntity.map((item) => (
-              <details key={item.name} className="group px-6 py-5">
+            {faqs.map((item) => (
+              <details key={item.question} className="group px-6 py-5">
                 <summary className="flex cursor-pointer items-center justify-between gap-4 text-sm font-semibold leading-6 marker:hidden list-none">
-                  {item.name}
+                  {item.question}
                   <span className="shrink-0 text-primary text-xl leading-none group-open:rotate-45 transition-transform">
                     +
                   </span>
                 </summary>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  {item.acceptedAnswer.text}
-                </p>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground break-words">{item.answer}</p>
               </details>
             ))}
           </div>
         </section>
+
+        <p className="mt-10 text-sm text-muted-foreground">
+          New to laundry pickup? Read our{' '}
+          <Link href="/guides" className="font-medium text-primary hover:underline">
+            laundry guides
+          </Link>{' '}
+          or learn about{' '}
+          <Link href="/connect-laundry" className="font-medium text-primary hover:underline">
+            Connect Laundry
+          </Link>
+          .
+        </p>
       </PublicPageShell>
     </>
   )

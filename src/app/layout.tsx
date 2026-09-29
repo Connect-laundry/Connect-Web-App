@@ -23,7 +23,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Simame - Laundry Pickup and Delivery in Ghana',
+    default: 'Simame - Laundry App for Pickup & Delivery in Ghana',
     template: `%s | ${SITE_NAME}`,
   },
   description: SEO_DESCRIPTION,
