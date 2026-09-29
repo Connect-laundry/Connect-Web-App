@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { CheckCircle2, ExternalLink, ShieldCheck, Store, Truck } from 'lucide-react'
 import { PublicPageShell } from '@/shared/components/PublicPageShell'
 import { StructuredData } from '@/shared/components/StructuredData'
+import { SpellingHelp } from '@/shared/components/SpellingHelp'
 import { ORGANIZATION_ID, absoluteUrl, publicPageMetadata } from '@/shared/lib/seo'
 import { VERIFIED_SOCIAL_PROFILES } from '@/shared/lib/social'
 
@@ -171,6 +172,8 @@ export default function AboutPage() {
             ))}
           </ul>
         </section>
+
+        <SpellingHelp variant="card" />
 
         <section className="mt-8 rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="text-2xl font-bold">Brand heritage &amp; continuity</h2>

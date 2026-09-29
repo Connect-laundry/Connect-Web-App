@@ -14,6 +14,8 @@ interface PublicPageShellProps {
   ctaHref?: string
   ctaLabel?: string
   path?: string
+  parent?: { label: string; path: string }
+  breadcrumbLabel?: string
 }
 
 export function PublicPageShell({
@@ -24,25 +26,24 @@ export function PublicPageShell({
   ctaHref = '/auth/register',
   ctaLabel = 'Get started',
   path,
+  parent,
+  breadcrumbLabel = eyebrow,
 }: PublicPageShellProps) {
+  const trail = [
+    { name: 'Home', item: SITE_URL },
+    ...(parent ? [{ name: parent.label, item: absoluteUrl(parent.path) }] : []),
+    ...(path ? [{ name: breadcrumbLabel, item: absoluteUrl(path) }] : []),
+  ]
   const breadcrumbSchema = path
     ? {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Home',
-            item: SITE_URL,
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: eyebrow,
-            item: absoluteUrl(path),
-          },
-        ],
+        itemListElement: trail.map((crumb, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: crumb.name,
+          item: crumb.item,
+        })),
       }
     : null
 
@@ -69,8 +70,16 @@ export function PublicPageShell({
             <Link href="/" className="hover:text-foreground transition-colors">
               Home
             </Link>
+            {parent && (
+              <>
+                <ChevronRight className="h-3 w-3" />
+                <Link href={parent.path} className="hover:text-foreground transition-colors">
+                  {parent.label}
+                </Link>
+              </>
+            )}
             <ChevronRight className="h-3 w-3" />
-            <span className="text-foreground">{eyebrow}</span>
+            <span className="text-foreground">{breadcrumbLabel}</span>
           </nav>
           <div className="max-w-3xl">
             <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">{title}</h1>
