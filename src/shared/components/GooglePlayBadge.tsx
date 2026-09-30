@@ -1,9 +1,32 @@
+import { useId } from 'react'
 import { GOOGLE_PLAY_WEBSITE_URL } from '@/shared/lib/seo'
 import { cn } from '@/shared/lib/utils'
 
 interface GooglePlayBadgeProps {
   size?: 'sm' | 'md'
   className?: string
+}
+
+// Four-colour Play mark. The segments are clipped by a rounded triangle so the
+// corners stay soft like the current Google Play logo.
+function PlayLogo({ className }: { className?: string }) {
+  const clipId = useId()
+
+  return (
+    <svg viewBox="2 1 21 24" aria-hidden="true" className={className}>
+      <defs>
+        <clipPath id={clipId}>
+          <path d="M3 4.5V21.5Q3 24 5.16 22.75L19.84 14.25Q22 13 19.84 11.75L5.16 3.25Q3 2 3 4.5Z" />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${clipId})`}>
+        <path fill="#FBBC04" d="M3 2L22 13L3 24Z" />
+        <path fill="#34A853" d="M3 2L14.26 8.52L11 13L3 13Z" />
+        <path fill="#EA4335" d="M3 24L14.26 17.48L11 13L3 13Z" />
+        <path fill="#4285F4" d="M3 2L11 13L3 24Z" />
+      </g>
+    </svg>
+  )
 }
 
 export function GooglePlayBadge({ size = 'md', className }: GooglePlayBadgeProps) {
@@ -16,17 +39,41 @@ export function GooglePlayBadge({ size = 'md', className }: GooglePlayBadgeProps
       rel="noopener"
       aria-label="Get Simame - Laundry Connect on Google Play"
       className={cn(
-        'inline-flex items-center justify-center gap-2 bg-black text-white transition-colors hover:bg-neutral-800',
-        small ? 'h-[44px] w-[140px] rounded-lg px-3 py-1.5' : 'h-[52px] w-[170px] rounded-xl px-4 py-2',
+        'group relative inline-flex items-center overflow-hidden text-[oklch(0.98_0.003_260)]',
+        'bg-linear-to-b from-[oklch(0.27_0.012_260)] to-[oklch(0.16_0.01_260)]',
+        'ring-1 ring-[oklch(1_0_0/0.1)]',
+        'shadow-[inset_0_1px_0_oklch(1_0_0/0.14),0_1px_2px_oklch(0.2_0.02_260/0.25),0_8px_20px_-6px_oklch(0.2_0.02_260/0.45)]',
+        'transition-[translate,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        'hover:-translate-y-0.5 hover:shadow-[inset_0_1px_0_oklch(1_0_0/0.18),0_2px_4px_oklch(0.2_0.02_260/0.25),0_14px_28px_-8px_oklch(0.2_0.02_260/0.55)]',
+        'active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        small ? 'h-11 gap-2.5 rounded-lg pl-3.5 pr-4' : 'h-13 gap-3 rounded-xl pl-4 pr-5',
         className,
       )}
     >
-      <svg viewBox="0 0 512 512" aria-hidden="true" className={cn('shrink-0 fill-current', small ? 'h-5 w-5' : 'h-6 w-6')}>
-        <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" />
-      </svg>
-      <span className="text-left">
-        <span className={cn('block uppercase leading-tight', small ? 'text-[8px]' : 'text-[10px]')}>Get it on</span>
-        <span className={cn('block font-semibold leading-tight', small ? 'text-xs' : 'text-sm')}>Google Play</span>
+      {/* Soft sheen that drifts across on hover */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-linear-to-r from-transparent via-[oklch(1_0_0/0.08)] to-transparent opacity-0 transition-[translate,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[300%] group-hover:opacity-100 motion-reduce:hidden"
+      />
+      <PlayLogo className={cn('relative shrink-0 drop-shadow-[0_1px_1px_oklch(0_0_0/0.35)]', small ? 'h-6 w-5.5' : 'h-7.5 w-6.5')} />
+      <span className="relative flex flex-col text-left">
+        <span
+          className={cn(
+            'font-medium uppercase leading-none tracking-[0.14em] text-[oklch(0.98_0.003_260/0.7)]',
+            small ? 'text-[8.5px]' : 'text-[9.5px]',
+          )}
+        >
+          Get it on
+        </span>
+        <span
+          className={cn(
+            'mt-1 font-semibold leading-none tracking-[-0.01em]',
+            small ? 'text-[15px]' : 'text-[18px]',
+          )}
+        >
+          Google Play
+        </span>
       </span>
     </a>
   )
