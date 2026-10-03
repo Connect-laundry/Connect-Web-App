@@ -42,6 +42,12 @@ const nextConfig = {
         permanent: true,
       },
       {
+        // App Store Connect's Support URL must load (Guideline 1.5).
+        source: "/:page(support|help)",
+        destination: "/contact",
+        permanent: true,
+      },
+      {
         source: "/:path*",
         has: [{ type: "host", value: "www.simame.tech" }],
         destination: "https://simame.tech/:path*",
