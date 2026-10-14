@@ -7,9 +7,9 @@ document covers the web side only.
 
 ## What the owner sees
 
-1. On the pricing screen: **Already have a price list?** with **Take a photo**
-   (`capture="environment"`, opens the rear camera where supported) and
-   **Upload price list** (plain file picker, works everywhere).
+1. Inside the Services & Prices workspace: **Already have a price list?** with
+   **Take a photo** (`capture="environment"`, opens the rear camera where
+   supported) and **Upload price list** (JPEG, PNG, WebP or PDF).
 2. A preview with **Read price list · Retake · Choose another · Remove** and
    four framing tips.
 3. "Reading your price list…", then "Finding services and prices…", then
@@ -29,7 +29,7 @@ can keep entering prices manually.
 | --- | --- | --- |
 | Onboarding → Price List step (BY_ITEM, HYBRID) | `onboarding/components/steps/OnboardingPriceScan.tsx` | Fills the wizard's own state (items per service tab; per-kg as a 1 kg weight tier). Nothing is saved until **Complete Registration**. |
 | Onboarding → Pricing step (BY_WEIGHT) | same | Fills the weight tiers. |
-| Business → Services & Pricing | `business/components/DashboardPriceScan.tsx` | Calls the server confirm (validated, atomic, idempotent), then reloads the price editors. |
+| Business → Services & Pricing | `business/components/DashboardPriceScan.tsx` inside `ServicesPricingTab` | Calls the server confirm (validated, atomic, idempotent), then reloads the price editors. The same entry point is available for hybrid and weight-only businesses. |
 
 Shared module: `src/features/price-import/`
 (`api.ts`, `types.ts`, `hooks/usePriceListScan.ts`, `components/`, `lib/review.ts`
@@ -61,18 +61,20 @@ returns at once and the browser polls.
 
 ## Upload preparation
 
-`lib/image.ts` accepts JPEG, PNG and WebP. Large photos are redrawn to at most
-**2560 px** on the long edge (JPEG quality 0.9 → 0.7) to stay under 4.2 MB. Small
-price text stays readable at that size; the backend makes its own smaller copy
-for OCR.space. The server re-validates every upload; client checks are only for
-quick feedback.
+`lib/image.ts` accepts JPEG, PNG and WebP. PDF files are passed through without
+browser rasterisation. Large photos are redrawn to at most **2560 px** on the
+long edge (JPEG quality 0.9 → 0.7) to stay under 4.2 MB. The server must
+continue to accept `application/pdf` alongside the image types and re-validates
+every upload; client checks are only for quick feedback.
 
 ## Mapping to Simame pricing
 
 The adapter is `lib/review.ts` (`buildReviewRows` → `matchExisting` →
-`toAppliedPrices` / `toConfirmRows`). It maps onto the existing schema only:
-item prices (`item_name`, `category` ∈ Wash Only · Wash & Iron · Iron Only,
-`unit_price`) and the single per-kg price.
+`toAppliedPrices` / `toConfirmRows`). With unified pricing enabled, reviewed
+rows preserve the pricing basis and rules for per-item, per-kilogram, flat
+weight bracket, basket and fixed package prices. Use one row per basket tier
+(for example Half GH₵35 and Full GH₵70), and describe capacity, limits and
+overfill handling so the customer can choose a tier without guessing.
 
 | Rule | Behaviour |
 | --- | --- |

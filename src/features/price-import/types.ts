@@ -1,3 +1,4 @@
+import type { PricingBasis, CatalogFields, BasketDefinition } from '@/features/business/lib/unified-pricing'
 /**
  * Types mirroring the backend price-list import API
  * (connect_new_backend: docs/PRICE_LIST_IMPORT_API.md, laundries/serializers/price_import.py).
@@ -5,7 +6,7 @@
  */
 
 export type ImportJobStatus = 'PENDING' | 'PROCESSING' | 'READY' | 'CONFIRMED' | 'FAILED' | 'CANCELLED'
-export type PricingMethod = 'PER_ITEM' | 'PER_KG' | 'UNKNOWN'
+export type PricingMethod = PricingBasis | 'UNKNOWN'
 export type ReviewState = 'LOOKS_GOOD' | 'CHECK' | 'UNREADABLE'
 export type MatchType = 'NONE' | 'EXACT' | 'POSSIBLE'
 
@@ -23,6 +24,7 @@ export interface ImportDraftItem {
   raw_name: string
   variant: string
   category: string
+  pricing_details?: { service_type?: string; basket_name?: string; basket_capacity?: string; weight_min?: string; weight_max?: string; inclusions?: string[]; restrictions?: string[]; source_reference?: string }
   pricing_method: PricingMethod
   suggested_price: string | null
   price_per_kg: string | null
@@ -38,6 +40,9 @@ export interface ImportDraftItem {
 }
 
 export interface ImportJob {
+  review_draft?: { items: ConfirmRow[]; currency_confirmed: boolean; updated_at?: string }
+  source_pages?: number
+  source_available?: boolean
   id: string
   status: ImportJobStatus
   review_required: boolean
@@ -62,13 +67,15 @@ export interface ImportAvailability {
   used_last_24h: number
   max_upload_mb: number
   accepted_types: string[]
+  max_pages?: number
   manual_entry_available: boolean
 }
 
-export interface ConfirmRow {
+export interface ConfirmRow extends CatalogFields {
+  basket_definition?: BasketDefinition
   draft_id?: string | null
   action: 'CREATE' | 'UPDATE' | 'IGNORE'
-  pricing_method?: 'PER_ITEM' | 'PER_KG'
+  pricing_method?: PricingBasis
   item_name?: string
   category?: string
   unit_price?: string
@@ -86,6 +93,6 @@ export interface ConfirmResult {
 
 /** Simame service types (stored in LaundryPricingItem.category). */
 export const SERVICE_TYPES = ['Wash Only', 'Wash & Iron', 'Iron Only'] as const
-export type ServiceType = (typeof SERVICE_TYPES)[number]
+export type ServiceType = (typeof SERVICE_TYPES)[number] | 'Wash & Fold' | 'Dry Clean' | 'Other service'
 
 export type LaundryPricingModel = 'BY_ITEM' | 'BY_WEIGHT' | 'HYBRID'

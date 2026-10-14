@@ -4,7 +4,7 @@
  * service directly and never holds an AI key.
  */
 import { apiClient } from '@/shared/api/client'
-import { unwrap } from '@/shared/api/unwrap'
+import { unwrap, unwrapList } from '@/shared/api/unwrap'
 import type { ConfirmResult, ConfirmRow, ImportAvailability, ImportJob } from './types'
 
 const BASE = '/laundries/dashboard/price-imports'
@@ -23,6 +23,7 @@ export class ScanError extends Error {
 type ApiError = Error & { status?: number; data?: { code?: string; message?: string } }
 
 const withTimeout = async <T>(ms: number, outer: AbortSignal | undefined, run: (signal: AbortSignal) => Promise<T>) => {
+  if (outer?.aborted) throw new ScanError('CANCELLED', 'cancelled')
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), ms)
   const onOuterAbort = () => controller.abort()
@@ -57,12 +58,24 @@ export async function getImportJob(jobId: string, signal?: AbortSignal): Promise
 
 const sleep = (ms: number, signal?: AbortSignal) =>
   new Promise<void>((resolve, reject) => {
-    const t = setTimeout(resolve, ms)
-    signal?.addEventListener('abort', () => {
+    if (signal?.aborted) { reject(new ScanError('CANCELLED', 'cancelled')); return }
+    const onAbort = () => {
       clearTimeout(t)
       reject(new ScanError('CANCELLED', 'cancelled'))
-    })
+    }
+    const t = setTimeout(() => { signal?.removeEventListener('abort', onAbort); resolve() }, ms)
+    signal?.addEventListener('abort', onAbort, { once: true })
   })
+
+export async function getImportHistory(): Promise<ImportJob[]> {
+  return unwrapList<ImportJob>(await apiClient(`${BASE}/`, { method: 'GET' }))
+}
+
+export async function saveImportDraft(jobId: string, items: ConfirmRow[], currencyConfirmed: boolean): Promise<ImportJob> {
+  return unwrap<ImportJob>(await apiClient(`${BASE}/${jobId}/draft/`, {
+    method: 'PATCH', body: JSON.stringify({ items, currency_confirmed: currencyConfirmed }),
+  }))
+}
 
 /**
  * Upload with `?async=1` (the server answers at once with 202 and reads the
@@ -76,10 +89,17 @@ export async function scanPriceList(
   signal?: AbortSignal,
   /** Called as soon as the job exists, so a page reload can resume it. */
   onCreated?: (jobId: string) => void,
+  additionalFiles: Array<{ blob: Blob; filename: string }> = [],
+  processingConsent = false,
 ): Promise<ImportJob> {
+  if (!processingConsent) throw new ScanError('CONSENT_REQUIRED', 'Agree to third-party processing before reading your price list.')
   const started = Date.now()
   const form = new FormData()
-  form.append('source_image', image, filename)
+  form.append('third_party_processing_consent', 'true')
+  if (additionalFiles.length) {
+    form.append('source_images', image, filename)
+    additionalFiles.forEach((file) => form.append('source_images', file.blob, file.filename))
+  } else form.append('source_image', image, filename)
   const job = await withTimeout(UPLOAD_TIMEOUT_MS, signal, async (inner) =>
     unwrap<ImportJob>(await apiClient(`${BASE}/?async=1`, { method: 'POST', body: form, signal: inner })),
   )

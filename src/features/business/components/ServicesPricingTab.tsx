@@ -6,6 +6,7 @@ import type { LaundryPricingModel } from '@/features/price-import/types'
 import { WeightPricingEditor } from './WeightPricingEditor'
 import { PriceItemsEditor } from './PriceItemsEditor'
 import { DashboardPriceScan } from './DashboardPriceScan'
+import { unifiedPricingEnabled } from '../lib/unified-pricing'
 import { AdvancedPricingPanel } from './AdvancedPricingPanel'
 
 interface ServicesPricingTabProps {
@@ -47,30 +48,50 @@ export const ServicesPricingTab = ({
       )}
 
       {/* Item-based Price List (when applicable) */}
-      {usesItems && (
+      {(usesItems || unifiedPricingEnabled) && (
         <Card>
           <CardHeader>
-            <CardTitle>Per-Item Price List</CardTitle>
+            <CardTitle>Services &amp; prices</CardTitle>
             <CardDescription>
-              Manage pricing for specific individual garments and specialized laundry services.
+              Manage item, weight, basket and package prices together. You can use more than one pricing method.
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {pricingModel && (
+              <div className="mb-6 border-b pb-6">
+                <DashboardPriceScan
+                  pricingModel={pricingModel}
+                  ironingAvailable={ironingAvailable}
+                  pricingItems={pricingItems}
+                  weightPricing={weightPricing}
+                  onItemsChanged={setPricingItems}
+                  onWeightChanged={setWeightPricing}
+                />
+              </div>
+            )}
             <PriceItemsEditor items={pricingItems} onSaved={setPricingItems} />
           </CardContent>
         </Card>
       )}
 
-      {/* Fill prices from a photo of an existing price list */}
-      {pricingModel && (
-        <DashboardPriceScan
-          pricingModel={pricingModel}
-          ironingAvailable={ironingAvailable}
-          pricingItems={pricingItems}
-          weightPricing={weightPricing}
-          onItemsChanged={setPricingItems}
-          onWeightChanged={setWeightPricing}
-        />
+      {/* Weight-only laundries still need an import entry point even without item rows. */}
+      {pricingModel && !usesItems && !unifiedPricingEnabled && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Import a price list</CardTitle>
+            <CardDescription>Upload a photo or PDF and review the extracted weight prices before saving.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DashboardPriceScan
+              pricingModel={pricingModel}
+              ironingAvailable={ironingAvailable}
+              pricingItems={pricingItems}
+              weightPricing={weightPricing}
+              onItemsChanged={setPricingItems}
+              onWeightChanged={setWeightPricing}
+            />
+          </CardContent>
+        </Card>
       )}
 
       {/* Advanced Pricing: Scheduled Changes & Delivery Zones */}

@@ -45,7 +45,8 @@ export function mergeItems(prev: PriceItem[], applied: AppliedPrices['items']): 
     const isCommon = COMMON_ITEMS.some((c) => norm(c) === norm(a.name))
     // Replace an empty placeholder row in the same service rather than leaving it.
     const blank = next.findIndex((it) => it.category === a.service && !it.item_name.trim() && !it.unit_price.trim())
-    const row: PriceItem = { item_name: a.name, category: a.service, unit_price: a.price, is_custom: !isCommon }
+    const { name, service, price, replaces: _replaces, ...catalog } = a
+    const row: PriceItem = { ...catalog, item_name: name, category: service, unit_price: price, is_custom: !isCommon }
     if (blank >= 0) next[blank] = row
     else next.push(row)
   }

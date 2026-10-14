@@ -66,8 +66,8 @@ export const DashboardPriceScan = ({
         }
         throw new Error(scanErrorText(code))
       }
-      onItemsChanged(await getPricingItems())
-      const weight = await getWeightPricing().catch(() => null)
+      const [items, weight] = await Promise.all([getPricingItems(), getWeightPricing()])
+      onItemsChanged(items)
       if (weight) onWeightChanged(weight)
       const parts = [`Saved ${result.created.length} new`]
       if (result.updated.length) parts.push(`updated ${result.updated.length}`)

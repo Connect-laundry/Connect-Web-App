@@ -1,3 +1,4 @@
+import type { CatalogFields as importCatalogFields } from '@/features/business/lib/unified-pricing'
 // Auth Interfaces
 export interface User {
   id: string;
@@ -205,7 +206,7 @@ export interface Laundry {
   updated_at: string;
 }
 
-export interface PricingItem {
+export interface PricingItem extends importCatalogFields {
   id: string;
   item_name: string;
   category: string;

@@ -1,3 +1,4 @@
+import { catalogProblem, serviceCode, SERVICES, unifiedPricingEnabled, type CatalogFields, type PricingBasis } from '@/features/business/lib/unified-pricing'
 /**
  * Turn backend drafts into owner-reviewable rows, and reviewed rows into
  * either wizard form values (onboarding) or a confirm payload (dashboard).
@@ -14,11 +15,11 @@
  *  - Existing values are never overwritten silently: the owner picks
  *    "Keep existing" (default) or "Use detected".
  */
-import { SERVICE_TYPES, type ImportDraftItem, type LaundryPricingModel, type ServiceType } from '../types'
+import { SERVICE_TYPES, type ConfirmRow, type ImportDraftItem, type LaundryPricingModel, type ServiceType } from '../types'
 import { uniqueWarningTexts } from './messages'
 import { isValidMoney, normalizeMoney, sameMoney } from './money'
 
-export type RowMethod = 'PER_ITEM' | 'PER_KG' | ''
+export type RowMethod = PricingBasis | ''
 export type ServiceChoice = ServiceType | 'UNSTATED' | ''
 
 export interface ExistingValue {
@@ -28,7 +29,7 @@ export interface ExistingValue {
   price: string
 }
 
-export interface ReviewRow {
+export interface ReviewRow extends CatalogFields {
   key: string
   draftId: string | null
   include: boolean
@@ -162,7 +163,16 @@ function draftToRow(d: ImportDraftItem, index: number): ReviewRow {
     name = `${name} (${d.variant.trim()})`
   }
 
-  const method: RowMethod = d.pricing_method === 'PER_KG' ? 'PER_KG' : d.pricing_method === 'PER_ITEM' ? 'PER_ITEM' : ''
+  const method: RowMethod = d.pricing_method === 'UNKNOWN' ? '' : d.pricing_method
+  const details = d.pricing_details ?? {}
+  const advanced: CatalogFields = unifiedPricingEnabled ? {
+    pricing_basis: method || undefined,
+    service_type: details.service_type && details.service_type in SERVICES ? details.service_type as keyof typeof SERVICES : undefined,
+    pricing_rules: { ...(details.weight_min != null ? { weight_min: String(details.weight_min) } : {}), ...(details.weight_max != null ? { weight_max: String(details.weight_max) } : {}), inclusions: details.inclusions ?? [], exclusions: details.restrictions ?? [] },
+    ...(method === 'PER_BASKET' ? { basket_draft: { name: details.basket_name ?? name, capacity_description: details.basket_capacity ?? '', overfill_policy: '' } } : {}),
+  } : {}
+  if (advanced.service_type) { service = SERVICES[advanced.service_type] as ServiceChoice; include = d.is_selected && d.review_state !== 'UNREADABLE' }
+  if (!unifiedPricingEnabled && !['PER_ITEM', 'PER_KG', ''].includes(method)) { include = false; notes.push('This pricing method is not enabled yet. Keep this draft to review after catalog pricing is enabled.') }
   const rawPrice = method === 'PER_KG' ? d.price_per_kg : d.suggested_price ?? d.price_per_kg
   const price = rawPrice == null ? '' : normalizeMoney(rawPrice)
   if (!method) {
@@ -173,6 +183,7 @@ function draftToRow(d: ImportDraftItem, index: number): ReviewRow {
   }
 
   return {
+    ...advanced,
     key: d.id || `row-${index}`,
     draftId: d.id || null,
     include,
@@ -196,6 +207,7 @@ function draftToRow(d: ImportDraftItem, index: number): ReviewRow {
 
 /** Mark rows that don't fit the laundry, and match against existing values. */
 function applyFitRules(rows: ReviewRow[], ctx: ReviewContext) {
+  if (unifiedPricingEnabled) return
   const perKgRows: ReviewRow[] = []
   for (const row of rows) {
     if (row.method === 'PER_KG') {
@@ -264,9 +276,12 @@ export const resolveService = (row: ReviewRow, defaultService: ServiceType): Ser
 /** Why a row can't be applied as-is (null = ok). Only checked for included rows. */
 export function rowProblem(row: ReviewRow, defaultService: ServiceType): string | null {
   if (!row.include) return null
-  if (!row.name.trim() && row.method !== 'PER_KG') return 'Enter the service name.'
-  if (!row.method) return 'Choose per item or per kg.'
-  if (row.method === 'PER_ITEM' && !resolveService(row, defaultService)) return 'Choose a service type.'
+  if (!row.name.trim() && (unifiedPricingEnabled || row.method !== 'PER_KG')) return 'Enter the service name.'
+  if (!row.method) return 'Choose a pricing method.'
+  if (!unifiedPricingEnabled && !['PER_ITEM', 'PER_KG'].includes(row.method)) return 'This pricing method is not enabled yet.'
+  const problem = catalogProblem({ ...row, pricing_basis: row.method || undefined })
+  if (problem) return problem
+  if ((unifiedPricingEnabled || row.method === 'PER_ITEM') && !resolveService(row, defaultService)) return 'Choose a service type.'
   if (!isValidMoney(row.price)) return 'Enter a price, for example 15 or 15.50.'
   return null
 }
@@ -274,7 +289,7 @@ export function rowProblem(row: ReviewRow, defaultService: ServiceType): string 
 export function reviewProblems(rows: ReviewRow[], defaultService: ServiceType): string[] {
   const problems: string[] = []
   const perKg = rows.filter((r) => r.include && r.method === 'PER_KG' && !(r.existing && r.choice === 'KEEP'))
-  if (perKg.length > 1) problems.push('Your laundry can have one per-kg price. Keep only one per-kg row.')
+  if (!unifiedPricingEnabled && perKg.length > 1) problems.push('Your laundry can have one per-kg price. Keep only one per-kg row.')
   const seen = new Set<string>()
   for (const r of rows) {
     if (!r.include || r.method !== 'PER_ITEM') continue
@@ -292,7 +307,7 @@ export function reviewProblems(rows: ReviewRow[], defaultService: ServiceType): 
 
 export interface AppliedPrices {
   /** Per-item rows to add/update in the form: service type + name + price. */
-  items: Array<{ name: string; service: ServiceType; price: string; replaces: boolean }>
+  items: Array<CatalogFields & { name: string; service: ServiceType; price: string; replaces: boolean }>
   /** Per-kg price to put in the weight pricing, if the owner kept one. */
   perKg: { price: string; replaces: boolean } | null
 }
@@ -303,13 +318,13 @@ export function toAppliedPrices(rows: ReviewRow[], defaultService: ServiceType):
   for (const r of rows) {
     if (!r.include || rowProblem(r, defaultService)) continue
     if (r.existing && r.choice === 'KEEP') continue
-    if (r.method === 'PER_KG') {
+    if (r.method === 'PER_KG' && !unifiedPricingEnabled) {
       if (!out.perKg) out.perKg = { price: normalizeMoney(r.price), replaces: !!r.existing }
       continue
     }
     const service = resolveService(r, defaultService)
     if (!service) continue
-    out.items.push({ name: r.name.trim(), service, price: normalizeMoney(r.price), replaces: !!r.existing })
+    out.items.push({ ...(unifiedPricingEnabled ? { pricing_basis: r.method || undefined, service_type: r.service_type ?? serviceCode(service), pricing_rules: r.pricing_rules, basket_draft: r.basket_draft, description: r.description } : {}), name: r.name.trim(), service, price: normalizeMoney(r.price), replaces: !!r.existing })
   }
   return out
 }
@@ -325,7 +340,7 @@ export function toConfirmRows(rows: ReviewRow[], defaultService: ServiceType, ha
     const ignore = { draft_id: r.draftId, action: 'IGNORE' as const }
     if (!r.include || rowProblem(r, defaultService)) return ignore
     if (r.existing && r.choice === 'KEEP') return ignore
-    if (r.method === 'PER_KG') {
+    if (r.method === 'PER_KG' && !unifiedPricingEnabled) {
       return {
         draft_id: r.draftId,
         action: (hasWeightPricing ? 'UPDATE' : 'CREATE') as 'UPDATE' | 'CREATE',
@@ -334,11 +349,13 @@ export function toConfirmRows(rows: ReviewRow[], defaultService: ServiceType, ha
       }
     }
     const service = resolveService(r, defaultService)!
+    const catalog = unifiedPricingEnabled ? { pricing_basis: r.method || undefined, service_type: r.service_type ?? serviceCode(service), pricing_rules: r.pricing_rules ?? {}, basket: r.basket, basket_definition: r.basket_draft, description: r.description } : {}
     if (r.existing?.id && r.choice === 'USE_DETECTED') {
       return {
         draft_id: r.draftId,
         action: 'UPDATE' as const,
-        pricing_method: 'PER_ITEM' as const,
+        ...catalog,
+        pricing_method: (r.method || 'PER_ITEM') as PricingBasis,
         item_name: r.existing.name,
         category: service,
         unit_price: normalizeMoney(r.price),
@@ -351,7 +368,8 @@ export function toConfirmRows(rows: ReviewRow[], defaultService: ServiceType, ha
     return {
       draft_id: r.draftId,
       action: 'CREATE' as const,
-      pricing_method: 'PER_ITEM' as const,
+      ...catalog,
+      pricing_method: (r.method || 'PER_ITEM') as PricingBasis,
       item_name: clash ? `${r.name.trim()} (${service})` : r.name.trim(),
       category: service,
       unit_price: normalizeMoney(r.price),
@@ -360,3 +378,47 @@ export function toConfirmRows(rows: ReviewRow[], defaultService: ServiceType, ha
 }
 
 export const DEFAULT_SERVICE: ServiceType = SERVICE_TYPES[0]
+
+/** Draft saving deliberately preserves incomplete rows; publication revalidates. */
+export function toSavedDraftRows(rows: ReviewRow[], defaultService: ServiceType): ConfirmRow[] {
+  return rows.map((row) => ({
+    draft_id: row.draftId,
+    action: !row.include || (row.existing && row.choice === 'KEEP') ? 'IGNORE' : row.existing?.id && row.choice === 'USE_DETECTED' ? 'UPDATE' : 'CREATE',
+    item_name: row.name,
+    category: resolveService(row, defaultService) ?? '',
+    ...(row.method ? { pricing_method: row.method, pricing_basis: row.method } : {}),
+    unit_price: row.price,
+    ...(row.method === 'PER_KG' ? { price_per_kg: row.price } : {}),
+    service_type: row.service_type,
+    pricing_rules: row.pricing_rules,
+    basket: row.basket,
+    basket_definition: row.basket_draft,
+    description: row.description,
+    existing_item_id: row.existing?.id,
+  }))
+}
+
+export function restoreSavedDraft(rows: ReviewRow[], saved: ConfirmRow[]): ReviewRow[] {
+  return saved.map((item, index) => {
+    const original = rows.find((row) => row.draftId && row.draftId === item.draft_id)
+    return {
+      ...(original ?? newReviewRow(`saved-${index}`)),
+      name: item.item_name ?? original?.name ?? '',
+      service: (item.category ?? original?.service ?? '') as ServiceChoice,
+      method: item.pricing_method ?? item.pricing_basis ?? original?.method ?? '',
+      price: item.unit_price ?? item.price_per_kg ?? original?.price ?? '',
+      include: item.action !== 'IGNORE',
+      choice: item.action === 'UPDATE' ? 'USE_DETECTED' : item.action === 'IGNORE' ? 'KEEP' : 'CREATE_NEW',
+      pricing_basis: item.pricing_basis,
+      service_type: item.service_type,
+      pricing_rules: item.pricing_rules,
+      basket: item.basket,
+      basket_draft: item.basket_definition,
+      description: item.description,
+    }
+  })
+}
+
+export function newReviewRow(key: string, service: ServiceChoice = 'UNSTATED'): ReviewRow {
+  return { key, draftId: null, include: true, name: '', service, detectedService: '', method: 'PER_ITEM', price: '', reviewState: 'CHECK', notes: [], sourceText: '', existing: null, existingSource: null, choice: 'USE_DETECTED', matchType: 'NONE' }
+}

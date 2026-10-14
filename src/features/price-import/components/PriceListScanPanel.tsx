@@ -31,13 +31,12 @@ export const PriceListScanPanel = ({ context, initialService, applyLabel, onAppl
   const fileRef = useRef<HTMLInputElement>(null)
   const [applying, setApplying] = useState(false)
   const [done, setDone] = useState<string | null>(null)
-
-  // Unknown availability or switched off: manual entry only, no dead buttons.
-  if (scan.available !== true) return null
+  const [processingConsent, setProcessingConsent] = useState(false)
 
   const allowPerKg = context.pricingModel !== 'BY_ITEM'
   const allowPerItem = context.pricingModel !== 'BY_WEIGHT'
   const docNotes = (scan.job?.document_warnings ?? []).map((w) => DOC_NOTES[w]).filter(Boolean)
+  const scanUnavailable = scan.available === false
 
   const apply = async () => {
     setApplying(true)
@@ -55,14 +54,23 @@ export const PriceListScanPanel = ({ context, initialService, applyLabel, onAppl
 
   const pick = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDone(null)
-    scan.pickFile(e.target.files?.[0] ?? null)
+    setProcessingConsent(false)
+    scan.pickFiles(Array.from(e.target.files ?? []))
     e.target.value = '' // allow re-picking the same file
   }
 
   return (
     <section className="rounded-lg border border-dashed border-primary/30 bg-primary/5 p-4 space-y-4" aria-label="Scan your price list">
       <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={pick} data-testid="camera-input" />
-      <input ref={fileRef} type="file" accept={scan.accept} className="hidden" onChange={pick} data-testid="file-input" />
+      <input ref={fileRef} type="file" multiple accept={scan.accept} className="hidden" onChange={pick} data-testid="file-input" />
+
+      {scanUnavailable && (
+        <Alert>
+          <AlertDescription>
+            Price-list scanning is temporarily unavailable. You can still enter prices manually, or try again later.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {scan.phase === 'idle' && (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -77,7 +85,7 @@ export const PriceListScanPanel = ({ context, initialService, applyLabel, onAppl
               <Camera className="h-4 w-4 mr-2" /> Take a photo
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
-              <ImageUp className="h-4 w-4 mr-2" /> Upload price list
+              <ImageUp className="h-4 w-4 mr-2" /> Upload price list with AI
             </Button>
           </div>
         </div>
@@ -89,8 +97,9 @@ export const PriceListScanPanel = ({ context, initialService, applyLabel, onAppl
         </Alert>
       )}
 
-      {((scan.phase === 'preview' && scan.previewUrl) || scan.phase === 'reading') && (
+      {(scan.phase === 'preview' || scan.phase === 'reading') && (
         <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">{scan.files?.map((file) => file.name).join(", ")}</p>
           {scan.previewUrl && <div className="flex flex-col gap-3 sm:flex-row">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -114,19 +123,26 @@ export const PriceListScanPanel = ({ context, initialService, applyLabel, onAppl
               </Button>
             </div>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" size="sm" onClick={scan.read}>
-                Read price list
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => cameraRef.current?.click()}>
-                <RotateCcw className="h-4 w-4 mr-2" /> Retake
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
-                Choose another
-              </Button>
-              <Button type="button" variant="ghost" size="sm" onClick={scan.clear}>
-                <X className="h-4 w-4 mr-1" /> Remove
-              </Button>
+            <div className="space-y-3">
+              <label className="flex items-start gap-2 text-xs text-muted-foreground">
+                <input type="checkbox" checked={processingConsent} onChange={(e) => setProcessingConsent(e.target.checked)} className="mt-0.5" />
+                <span>I agree to send this price-list image to Google Gemini and, if needed, OCR.space to read services and prices. I have removed any personal information I do not want shared.</span>
+              </label>
+              <a href="/privacy-policy" target="_blank" rel="noreferrer" className="text-xs underline">Read our Privacy Policy</a>
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" size="sm" onClick={() => scan.read(processingConsent)} disabled={!processingConsent}>
+                  Read price list
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => cameraRef.current?.click()}>
+                  <RotateCcw className="h-4 w-4 mr-2" /> Retake
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
+                  Choose another
+                </Button>
+                <Button type="button" variant="ghost" size="sm" onClick={scan.clear}>
+                  <X className="h-4 w-4 mr-1" /> Remove
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -168,6 +184,7 @@ export const PriceListScanPanel = ({ context, initialService, applyLabel, onAppl
               </select>
             </label>
           )}
+          {scan.job?.source_available && <details className="rounded-md border p-3"><summary className="cursor-pointer text-sm">View original price list</summary><div className="mt-2 space-y-3">{Array.from({ length: scan.job.source_pages ?? 1 }, (_, index) => <a key={index} target="_blank" rel="noreferrer" href={`/api/proxy/laundries/dashboard/price-imports/${scan.job!.id}/source/?page=${index + 1}`} className="block text-sm text-primary underline">Open source page {index + 1}</a>)}</div></details>}
           <PriceListReview
             rows={scan.rows}
             defaultService={scan.defaultService}

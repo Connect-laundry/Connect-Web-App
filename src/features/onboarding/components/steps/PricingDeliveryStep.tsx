@@ -1,3 +1,4 @@
+import { unifiedPricingEnabled } from '@/features/business/lib/unified-pricing'
 import { useFormContext } from 'react-hook-form'
 import { Clock, Shirt, Scale, Layers, Truck, Zap, Info } from 'lucide-react'
 import { NumberField } from '../fields/NumberField'
@@ -46,10 +47,10 @@ export const PricingDeliveryStep = ({
 
   return (
     <div className="space-y-6">
-      <RadioCardGroup name="pricing_model" label="How do you price?" options={pricingModels} />
+      {unifiedPricingEnabled ? <p className="text-sm text-muted-foreground">Next, set up your services and prices. Each service can charge by item, kilogram, weight bracket, basket or package.</p> : <RadioCardGroup name="pricing_model" label="How do you price?" options={pricingModels} />}
 
       {/* Weight-only laundries have no Price List step: offer the scan here. */}
-      {pricingModel === 'BY_WEIGHT' && (
+      {!unifiedPricingEnabled && pricingModel === 'BY_WEIGHT' && (
         <OnboardingPriceScan
           items={[]}
           setItems={() => {}}
@@ -58,7 +59,7 @@ export const PricingDeliveryStep = ({
         />
       )}
 
-      {usesWeightPricing(pricingModel) && (
+      {!unifiedPricingEnabled && usesWeightPricing(pricingModel) && (
         <WeightPricingFields
           tiers={weightTiers}
           setTiers={setWeightTiers}
@@ -69,7 +70,7 @@ export const PricingDeliveryStep = ({
       {/* Weight-only laundries have no Price List step, so express lives here
           next to their tariff; item/hybrid configure express per service on
           the Price List step. */}
-      {!usesItemPricing(pricingModel) && (
+      {!unifiedPricingEnabled && !usesItemPricing(pricingModel) && (
         <ExpressServiceFields
           serviceKey={WEIGHT_EXPRESS_KEY}
           serviceLabel="weight-based orders"
@@ -78,7 +79,7 @@ export const PricingDeliveryStep = ({
         />
       )}
 
-      {pricingModel === 'HYBRID' && (
+      {!unifiedPricingEnabled && pricingModel === 'HYBRID' && (
         <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
           <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
           <p className="text-muted-foreground">
