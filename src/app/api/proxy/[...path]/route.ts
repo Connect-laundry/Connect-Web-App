@@ -86,7 +86,7 @@ async function handleProxyRequest(req: NextRequest, params: { path: string[] }) 
       }
     }
 
-    const responseData = await response.text()
+    const responseData = await response.arrayBuffer()
     return new NextResponse(responseData, {
       status: response.status,
       statusText: response.statusText,

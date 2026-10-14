@@ -1,3 +1,5 @@
+import { bulkCreatePricingItems, saveBasketForRow } from '@/features/business/api/pricing'
+import { serviceCode, unifiedPricingEnabled } from '@/features/business/lib/unified-pricing'
 import { apiPost, apiPut } from '@/shared/api/client'
 import type { SetupFormValues } from './schema'
 import type { DayHours, PriceItem, WeightTier } from './types'
@@ -120,12 +122,23 @@ export async function createLaundry(formData: FormData): Promise<void> {
 export async function saveWeightPricing(
   values: SetupFormValues,
   tiers: WeightTier[],
+  alreadyCreated: Set<string> = new Set(),
 ): Promise<void> {
   const validTiers = tiers
     .map((t) => ({ kg: Number(t.weight_kg), price: Number(t.price) }))
     .filter((t) => t.kg > 0 && t.price > 0)
     .sort((a, b) => a.kg - b.kg)
 
+  if (unifiedPricingEnabled) {
+    await savePriceItems(validTiers.map((tier, index) => ({
+      item_name: `Wash only ${index ? validTiers[index - 1].kg : 0}-${tier.kg} kg`,
+      category: 'Wash Only', service_type: 'WASH_ONLY', pricing_basis: 'WEIGHT_TIER',
+      pricing_rules: { weight_min: String(index ? validTiers[index - 1].kg : 0), weight_max: String(tier.kg) },
+      unit_price: tier.price.toFixed(2),
+    })), alreadyCreated)
+    return
+  }
+  if (validTiers.length !== 1 || validTiers[0].kg !== 1) throw new Error('Flat weight brackets require catalog pricing. Enter a 1 kg rate or enable catalog pricing; brackets will not be converted into per-kg rates.')
   const smallest = validTiers[0]
   if (!smallest) throw new Error('Add at least one weight tier with a price.')
 
@@ -162,6 +175,8 @@ export async function savePriceItems(
     nameCounts.set(name, (nameCounts.get(name) ?? 0) + 1)
   }
 
+  const pending: Array<Partial<import('@/shared/types').PricingItem>> = []
+  const keys: string[] = []
   for (const it of validItems) {
     const baseName = it.item_name.trim()
     const isDuplicated = (nameCounts.get(baseName.toLowerCase()) ?? 0) > 1
@@ -169,14 +184,21 @@ export async function savePriceItems(
       isDuplicated && it.category ? `${baseName} (${it.category})` : baseName
     const key = itemName.toLowerCase()
     if (alreadyCreated.has(key)) continue
-    await apiPost(PRICING_ITEMS_URL, {
+    const basket = unifiedPricingEnabled ? await saveBasketForRow(it) : null
+    const payload = {
+      ...(unifiedPricingEnabled ? { service_type: it.service_type ?? serviceCode(it.category), pricing_basis: it.pricing_basis ?? 'PER_ITEM', pricing_rules: it.pricing_rules ?? {}, basket, description: it.description ?? '', currency: 'GHS' } : {}),
       item_name: itemName,
       category: it.category || '',
       unit_price: it.unit_price,
       display_order: it.display_order,
       is_active: true,
-    })
-    alreadyCreated.add(key)
+    }
+    if (unifiedPricingEnabled) { pending.push(payload); keys.push(key) }
+    else { await apiPost(PRICING_ITEMS_URL, payload); alreadyCreated.add(key) }
+  }
+  if (pending.length) {
+    await bulkCreatePricingItems(pending)
+    keys.forEach((key) => alreadyCreated.add(key))
   }
 }
 

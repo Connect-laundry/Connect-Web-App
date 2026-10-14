@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { cancelImport, getImportJob, getScanAvailability, scanPriceList, toScanError, waitForJob } from '../api'
-import { ACCEPTED_TYPES, prepareUpload } from '../lib/image'
+import { cancelImport, getImportHistory, getImportJob, getScanAvailability, saveImportDraft, scanPriceList, toScanError, waitForJob } from '../api'
+import { ACCEPTED_TYPES, HARD_LIMIT_BYTES, prepareUpload } from '../lib/image'
 import { scanErrorText } from '../lib/messages'
 import {
   DEFAULT_SERVICE,
@@ -8,6 +8,7 @@ import {
   matchExisting,
   reviewProblems,
   rowProblem,
+  newReviewRow, restoreSavedDraft, toSavedDraftRows,
   type ReviewContext,
   type ReviewRow,
 } from '../lib/review'
@@ -52,6 +53,8 @@ export function usePriceListScan(
   const [available, setAvailable] = useState<boolean | null>(null)
   const [phase, setPhase] = useState<ScanPhase>('idle')
   const [file, setFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<File[]>([])
+  const readingRef = useRef(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [job, setJob] = useState<ImportJob | null>(null)
@@ -59,6 +62,11 @@ export function usePriceListScan(
   const [defaultService, setDefaultServiceState] = useState<ServiceType>(initialService)
   const [currencyConfirmed, setCurrencyConfirmed] = useState(false)
   const [elapsed, setElapsed] = useState(0)
+  const [history, setHistory] = useState<ImportJob[]>([])
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [draftSaving, setDraftSaving] = useState(false)
+  const [draftSaved, setDraftSaved] = useState(false)
+  const [maxPages, setMaxPages] = useState(5)
   const abortRef = useRef<AbortController | null>(null)
   const ctxRef = useRef(ctx)
   ctxRef.current = ctx
@@ -71,7 +79,9 @@ export function usePriceListScan(
   const showJob = useCallback((result: ImportJob) => {
     const built = matchExisting(buildReviewRows(result.draft_items, ctxRef.current), ctxRef.current, defaultServiceRef.current)
     setJob(result)
-    setRows(built)
+    setRows(result.review_draft?.items?.length ? restoreSavedDraft(built, result.review_draft.items) : built)
+    setCurrencyConfirmed(result.review_draft?.currency_confirmed ?? false)
+    setDraftSaved(!!result.review_draft?.items?.length)
     setPhase('review')
   }, [])
 
@@ -81,7 +91,8 @@ export function usePriceListScan(
       .then((a) => {
         if (!alive) return
         setAvailable(a.available)
-        const resumeId = a.available ? rememberedJob(scopeRef.current) : null
+        setMaxPages(a.max_pages ?? 5)
+        const resumeId = rememberedJob(scopeRef.current)
         if (resumeId) void resume(resumeId)
       })
       .catch(() => alive && setAvailable(false))
@@ -114,14 +125,14 @@ export function usePriceListScan(
 
   // Unsaved review edits: ask before the tab closes or reloads.
   useEffect(() => {
-    if (phase !== 'review' || rows.length === 0) return
+    if (phase !== 'review' || rows.length === 0 || draftSaved) return
     const warn = (e: BeforeUnloadEvent) => {
       e.preventDefault()
       e.returnValue = ''
     }
     window.addEventListener('beforeunload', warn)
     return () => window.removeEventListener('beforeunload', warn)
-  }, [phase, rows.length])
+  }, [phase, rows.length, draftSaved])
 
   useEffect(() => () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl)
@@ -140,41 +151,52 @@ export function usePriceListScan(
     return () => clearInterval(t)
   }, [phase])
 
-  const pickFile = useCallback((picked: File | null) => {
+  const pickFiles = useCallback((pickedFiles: File[]) => {
+    if (pickedFiles.length > maxPages) { setError(`Choose up to ${maxPages} images or PDF pages.`); return }
+    if (pickedFiles.some((item) => item.type && ![...ACCEPTED_TYPES, 'application/pdf'].includes(item.type))) { setError('Choose JPEG, PNG, WebP images or a PDF.'); return }
+    const picked = pickedFiles[0]
     if (!picked) return
     setError(null)
-    if (picked.type && !picked.type.startsWith('image/')) {
+    if (picked.type && !picked.type.startsWith('image/') && picked.type !== 'application/pdf') {
       setError('Please choose a photo (JPEG, PNG or WebP).')
       return
     }
+    setFiles(pickedFiles)
     setFile(picked)
-    setPreviewUrl(URL.createObjectURL(picked))
+    setPreviewUrl(picked.type === 'application/pdf' ? null : URL.createObjectURL(picked))
     setPhase('preview')
-  }, [])
+  }, [maxPages])
+
+  const pickFile = useCallback((picked: File | null) => { if (picked) pickFiles([picked]) }, [pickFiles])
 
   const clear = useCallback(() => {
     abortRef.current?.abort()
     rememberJob(scopeRef.current, null)
     if (job && job.status === 'READY') void cancelImport(job.id)
     setFile(null)
+    setFiles([])
     setPreviewUrl(null)
     setJob(null)
     setRows([])
     setError(null)
     setCurrencyConfirmed(false)
+    setDraftSaved(false)
     setPhase('idle')
   }, [job])
 
-  const read = useCallback(async () => {
-    if (!file) return
+  const read = useCallback(async (processingConsent: boolean) => {
+    if (!file || readingRef.current || !processingConsent) return
+    readingRef.current = true
     setError(null)
     setElapsed(0)
     setPhase('reading')
     const controller = new AbortController()
     abortRef.current = controller
     try {
-      const upload = await prepareUpload(file)
-      const result = await scanPriceList(upload.blob, upload.filename, controller.signal, (id) => rememberJob(scopeRef.current, id))
+      const uploads = await Promise.all((files.length ? files : [file]).map((item) => item.type === 'application/pdf' ? Promise.resolve({ blob: item, filename: item.name }) : prepareUpload(item)))
+      if (uploads.reduce((total, item) => total + item.blob.size, 0) > HARD_LIMIT_BYTES) throw new Error('The combined files are too large. Choose smaller images or a PDF under 4 MB.')
+      const [upload, ...additional] = uploads
+      const result = await scanPriceList(upload.blob, upload.filename, controller.signal, (id) => rememberJob(scopeRef.current, id), additional, processingConsent)
       showJob(result)
     } catch (e) {
       const err = toScanError(e)
@@ -182,8 +204,8 @@ export function usePriceListScan(
       rememberJob(scopeRef.current, null)
       setError(scanErrorText(err.code, err.message))
       setPhase('preview')
-    }
-  }, [file, showJob])
+    } finally { readingRef.current = false }
+  }, [file, files, showJob])
 
   const cancelReading = useCallback(() => {
     abortRef.current?.abort()
@@ -192,6 +214,7 @@ export function usePriceListScan(
   }, [file])
 
   const updateRow = useCallback((key: string, patch: Partial<ReviewRow>) => {
+    setDraftSaved(false)
     setRows((prev) => {
       const next = prev.map((r) => (r.key === key ? { ...r, ...patch } : r))
       // Service or name changes can change which existing value a row matches.
@@ -200,9 +223,37 @@ export function usePriceListScan(
   }, [defaultService])
 
   const setDefaultService = useCallback((service: ServiceType) => {
+    setDraftSaved(false)
     setDefaultServiceState(service)
     setRows((prev) => matchExisting(prev, ctxRef.current, service))
   }, [])
+
+  const saveDraft = async () => {
+    if (!job || draftSaving) return
+    setDraftSaving(true)
+    setError(null)
+    try {
+      await saveImportDraft(job.id, toSavedDraftRows(rows, defaultService), currencyConfirmed)
+      rememberJob(scopeRef.current, job.id)
+      setDraftSaved(true)
+    } catch { setError('Could not save your draft. Your edits are still here; check your connection and try again.') }
+    finally { setDraftSaving(false) }
+  }
+  const loadHistory = async () => {
+    setHistoryLoading(true)
+    try { setHistory(await getImportHistory()) }
+    catch { setError('Could not load past imports. Please try again.') }
+    finally { setHistoryLoading(false) }
+  }
+  const reopen = async (id: string) => {
+    setError(null)
+    try {
+      const result = await getImportJob(id)
+      if (result.status !== 'READY') { setError('This import is not ready for review. Start a new scan or enter prices manually.'); return }
+      rememberJob(scopeRef.current, id)
+      showJob(result)
+    } catch { setError('Could not reopen this draft. Please try again.') }
+  }
 
   const needsCurrency = !!job && (job.currency !== 'GHS' || job.document_warnings.includes('FOREIGN_CURRENCY'))
   const problems = useMemo(() => {
@@ -217,7 +268,11 @@ export function usePriceListScan(
 
   return {
     available,
-    accept: ACCEPTED_TYPES.join(','),
+    history, historyLoading, loadHistory, reopen, saveDraft, draftSaving, draftSaved,
+    addRow: () => { setDraftSaved(false); setRows((previous) => [...previous, newReviewRow(crypto.randomUUID(), defaultService)]) },
+    accept: [...ACCEPTED_TYPES, 'application/pdf'].join(','),
+    files,
+    pickFiles,
     phase,
     file,
     previewUrl,
@@ -236,7 +291,7 @@ export function usePriceListScan(
     cancelReading,
     updateRow,
     setDefaultService,
-    setCurrencyConfirmed,
+    setCurrencyConfirmed: (value: boolean) => { setDraftSaved(false); setCurrencyConfirmed(value) },
     setError,
   }
 }

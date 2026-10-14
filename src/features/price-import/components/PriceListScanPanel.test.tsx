@@ -82,15 +82,32 @@ async function scanWith(result: ImportJob | Error) {
   await screen.findByRole('button', { name: /take a photo/i })
   fireEvent.change(screen.getByTestId('file-input'), { target: { files: [photo()] } })
   expect(await screen.findByAltText(/your price list photo/i)).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('checkbox', { name: /agree to send this price-list image/i }))
   fireEvent.click(screen.getByRole('button', { name: /read price list/i }))
 }
 
 describe('PriceListScanPanel', () => {
-  it('renders nothing when scanning is unavailable (manual entry stays)', async () => {
+  it('requires explicit third-party processing permission before upload', async () => {
+    renderPanel()
+    await screen.findByRole('button', { name: /take a photo/i })
+    fireEvent.change(screen.getByTestId('file-input'), { target: { files: [photo()] } })
+    const read = await screen.findByRole('button', { name: /read price list/i })
+    expect(read).toBeDisabled()
+    expect(api.scanPriceList).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('checkbox', { name: /agree to send this price-list image/i }))
+    expect(read).toBeEnabled()
+    api.scanPriceList.mockResolvedValue(job([]))
+    fireEvent.click(read)
+    await waitFor(() => expect(api.scanPriceList).toHaveBeenCalledWith(
+      expect.any(Blob), 'list.jpg', expect.any(AbortSignal), expect.any(Function), [], true,
+    ))
+  })
+  it('keeps the scanner visible with explicit unavailable state', async () => {
     api.getScanAvailability.mockResolvedValue({ available: false })
-    const { container } = renderPanel()
+    renderPanel()
     await waitFor(() => expect(api.getScanAvailability).toHaveBeenCalled())
-    expect(container).toBeEmptyDOMElement()
+    expect(screen.getByRole('button', { name: /upload price list with ai/i })).toBeEnabled()
+    expect(screen.getByText(/price-list scanning is temporarily unavailable/i)).toBeInTheDocument()
   })
 
   it('offers camera capture and normal upload', async () => {
@@ -143,8 +160,8 @@ describe('PriceListScanPanel', () => {
   ])('failure %s shows owner-safe copy', async (code, expected) => {
     renderPanel()
     await scanWith(new ScanError(code, 'Gemini 429 RESOURCE_EXHAUSTED'))
-    expect(await screen.findByText(expected)).toBeInTheDocument()
-    expect(document.body.textContent).not.toMatch(/RESOURCE_EXHAUSTED|Gemini/)
+    const safeError = await screen.findByText(expected)
+    expect(safeError.textContent).not.toMatch(/RESOURCE_EXHAUSTED|Gemini/)
     // The photo is kept so the owner can retry or choose another.
     expect(screen.getByRole('button', { name: /read price list/i })).toBeInTheDocument()
   })
@@ -193,6 +210,7 @@ describe('PriceListScanPanel', () => {
       renderScoped()
       await screen.findByRole('button', { name: /take a photo/i })
       fireEvent.change(screen.getByTestId('file-input'), { target: { files: [photo()] } })
+      fireEvent.click(screen.getByRole('checkbox', { name: /agree to send this price-list image/i }))
       fireEvent.click(await screen.findByRole('button', { name: /read price list/i }))
       await screen.findByText(/we found 1 possible price/i)
       expect(sessionStorage.getItem(KEY)).toBe('job-1')

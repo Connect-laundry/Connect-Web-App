@@ -1,3 +1,4 @@
+import { CatalogPreview } from '@/features/business/components/CatalogRuleFields'
 import { useFormContext } from 'react-hook-form'
 import { Check } from 'lucide-react'
 import type { DayHours, ExpressByService, PriceItem, WeightTier } from '../../types'
@@ -69,6 +70,7 @@ export const ReviewStep = ({ hours, priceItems = [], weightTiers = [], express =
         </p>
       </div>
 
+      <CatalogPreview items={priceItems} />
       <div className="rounded-lg border divide-y text-sm bg-card">
         {[
           ['Business', form.watch('name')],

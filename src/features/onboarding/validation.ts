@@ -1,3 +1,4 @@
+import { catalogProblem } from '@/features/business/lib/unified-pricing'
 import type { DayHours, PriceItem, WeightTier, ExpressByService } from './types'
 
 /** Monetary / decimal string with up to 2 decimal places. */
@@ -26,6 +27,8 @@ export function validatePriceList(items: PriceItem[]): string | null {
   if (nonEmpty.length === 0) return 'Add at least one item with a price.'
   const seen = new Set<string>()
   for (const it of nonEmpty) {
+    const problem = catalogProblem(it)
+    if (problem) return `${it.item_name}: ${problem}`
     if (!it.item_name.trim()) return 'Every item needs a name.'
     if (!MONEY_RE.test(it.unit_price) || Number(it.unit_price) <= 0) {
       return `“${it.item_name.trim() || 'Item'}”: enter a price greater than 0.`

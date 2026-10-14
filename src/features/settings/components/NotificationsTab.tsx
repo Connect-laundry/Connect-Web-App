@@ -1,6 +1,7 @@
 'use client'
 
 import { useNotificationSettings } from '../hooks/useNotificationSettings'
+import { SmsBookingAlertsCard } from './SmsBookingAlertsCard'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import { Switch } from '@/shared/ui/switch'
@@ -37,7 +38,10 @@ export const NotificationsTab = ({ initialPrefs, initialNotifications }: Notific
 
   return (
     <div className="space-y-6">
+      <SmsBookingAlertsCard />
+
       {prefs && (
+
         <Card>
           <CardHeader>
             <CardTitle>Notification Preferences</CardTitle>

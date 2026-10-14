@@ -1,3 +1,4 @@
+import type { CatalogFields } from '@/features/business/lib/unified-pricing'
 /** Shared domain types for the owner onboarding flow. */
 
 export interface DayHours {
@@ -21,7 +22,7 @@ export interface CategoryGroup {
 }
 
 /** Flat shape persisted to the backend (one LaundryPricingItem per row). */
-export interface PriceItem {
+export interface PriceItem extends CatalogFields {
   item_name: string
   category: string
   unit_price: string

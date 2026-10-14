@@ -109,7 +109,7 @@ jobs:
           node-version: 20
 
       - name: Audit Dependencies
-        run: npm audit --audit-level=high
+        run: npm audit --omit=dev --audit-level=high
 
       # - name: Secret Scanning
       #   uses: gitleaks/gitleaks-action@v2

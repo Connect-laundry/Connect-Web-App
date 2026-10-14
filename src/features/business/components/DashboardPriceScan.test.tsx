@@ -64,6 +64,7 @@ describe('dashboard: existing owner imports with duplicate handling', () => {
     )
     await screen.findByRole('button', { name: /take a photo/i })
     fireEvent.change(screen.getByTestId('file-input'), { target: { files: [new File(['x'], 'l.jpg', { type: 'image/jpeg' })] } })
+    fireEvent.click(screen.getByRole('checkbox', { name: /agree to send this price-list image/i }))
     fireEvent.click(await screen.findByRole('button', { name: /read price list/i }))
     await screen.findByText(/possible prices/i)
 
@@ -98,6 +99,7 @@ describe('dashboard: existing owner imports with duplicate handling', () => {
     )
     await screen.findByRole('button', { name: /take a photo/i })
     fireEvent.change(screen.getByTestId('file-input'), { target: { files: [new File(['x'], 'l.jpg', { type: 'image/jpeg' })] } })
+    fireEvent.click(screen.getByRole('checkbox', { name: /agree to send this price-list image/i }))
     fireEvent.click(await screen.findByRole('button', { name: /read price list/i }))
     fireEvent.click(await screen.findByRole('button', { name: /confirm & import/i }))
     await waitFor(() => expect(api.confirmImport).toHaveBeenCalled())

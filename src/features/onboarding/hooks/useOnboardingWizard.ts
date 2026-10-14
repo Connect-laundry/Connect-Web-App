@@ -1,3 +1,4 @@
+import { unifiedPricingEnabled } from '@/features/business/lib/unified-pricing'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useOnboardingStorage } from './useOnboardingStorage'
@@ -68,7 +69,7 @@ export function useOnboardingWizard() {
     router.push('/')
   }
   const pricingModel = form.watch('pricing_model')
-  const showPriceList = usesItemPricing(pricingModel)
+  const showPriceList = unifiedPricingEnabled || usesItemPricing(pricingModel)
   const steps = useMemo(() => buildSteps(showPriceList), [showPriceList])
   const currentStepId = steps[currentStep]?.id
   const isLastStep = currentStep === steps.length - 1
@@ -85,7 +86,7 @@ export function useOnboardingWizard() {
   const validateLocalStep = (stepId: StepId | undefined): boolean => {
     let message: string | null = null
     if (stepId === 'hours') message = validateHours(hours)
-    if (stepId === 'pricing') message = (usesWeightPricing(pricingModel) ? validateWeightTiers(weightTiers) : null) || validateExpress(express)
+    if (stepId === 'pricing') message = (!unifiedPricingEnabled && usesWeightPricing(pricingModel) ? validateWeightTiers(weightTiers) : null) || validateExpress(express)
     if (stepId === 'pricelist') message = (showPriceList ? validatePriceList(priceItems) : null) || validateExpress(express)
     setError(message)
     return message === null
@@ -108,7 +109,7 @@ export function useOnboardingWizard() {
   const validateSubmission = () => {
     const checks: Array<[StepId, string | null]> = [
       ['hours', validateHours(hours)],
-      ['pricing', usesWeightPricing(pricingModel) ? validateWeightTiers(weightTiers) : null],
+      ['pricing', !unifiedPricingEnabled && usesWeightPricing(pricingModel) ? validateWeightTiers(weightTiers) : null],
       ['pricelist', showPriceList ? validatePriceList(priceItems) : null],
       [showPriceList ? 'pricelist' : 'pricing', validateExpress(express)],
     ]
@@ -130,7 +131,7 @@ export function useOnboardingWizard() {
         await createLaundry(buildLaundryFormData(values, hours, selectedFile))
         laundryCreatedRef.current = true
       }
-      if (usesWeightPricing(values.pricing_model)) await saveWeightPricing(values, weightTiers)
+      if (usesWeightPricing(values.pricing_model) && (!unifiedPricingEnabled || weightTiers.some((tier) => tier.weight_kg && tier.price))) await saveWeightPricing(values, weightTiers, createdItemsRef.current)
       if (showPriceList) await savePriceItems(priceItems, createdItemsRef.current)
       await refreshLaundry()
       clearDraft()

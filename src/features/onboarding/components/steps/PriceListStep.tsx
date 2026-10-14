@@ -1,3 +1,5 @@
+import { CatalogRuleFields, CatalogPreview } from '@/features/business/components/CatalogRuleFields'
+import { unifiedPricingEnabled } from '@/features/business/lib/unified-pricing'
 import { useState } from 'react'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
@@ -77,6 +79,15 @@ export const PriceListStep = ({
           : 'Pick a service, then add the items customers can order and what each one costs.'}
       </p>
 
+      {/* ------------------- optional: fill prices from a photo of the list */}
+      <OnboardingPriceScan
+        items={items}
+        setItems={setItems}
+        weightTiers={weightTiers}
+        setWeightTiers={setWeightTiers}
+        activeService={activeCategory as ServiceType}
+      />
+
       {/* ----------------------------------------------- service type tabs */}
       <div className="grid grid-cols-3 gap-2">
         {SERVICE_CATEGORIES.map((c) => {
@@ -116,15 +127,6 @@ export const PriceListStep = ({
         })}
       </div>
 
-      {/* ------------------- optional: fill prices from a photo of the list */}
-      <OnboardingPriceScan
-        items={items}
-        setItems={setItems}
-        weightTiers={weightTiers}
-        setWeightTiers={setWeightTiers}
-        activeService={activeCategory as ServiceType}
-      />
-
       {/* ---------------------------------------- items for the active tab */}
       <div className="space-y-3">
         {visible.length === 0 && (
@@ -135,7 +137,8 @@ export const PriceListStep = ({
           </p>
         )}
         {visible.map(({ item, index }) => (
-          <div key={index} className="flex items-center gap-2 rounded-lg border p-3 animate-fadeIn">
+          <div key={index} className="space-y-3 rounded-lg border p-3">
+          <div className="flex flex-wrap items-center gap-2">
             <Tag className="w-4 h-4 text-primary shrink-0" />
             {item.is_custom ? (
               <Input
@@ -176,10 +179,13 @@ export const PriceListStep = ({
               variant="ghost"
               size="icon"
               onClick={() => removeItem(index)}
+              aria-label={`Remove ${item.item_name || "service"}`}
               className="text-destructive hover:text-destructive/80 hover:bg-destructive/5 shrink-0"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
+          </div>
+          {unifiedPricingEnabled && <CatalogRuleFields value={item} category={item.category} unitPrice={item.unit_price} onChange={(patch) => updateItem(index, patch)} />}
           </div>
         ))}
       </div>
@@ -187,6 +193,8 @@ export const PriceListStep = ({
       <Button type="button" variant="outline" className="w-full" onClick={addItem}>
         <Plus className="w-4 h-4 mr-2" /> Add item to {activeMeta.label.toLowerCase()}
       </Button>
+
+      <CatalogPreview items={items} />
 
       {/* Express is configured per service — this block follows the active tab. */}
       <ExpressServiceFields
