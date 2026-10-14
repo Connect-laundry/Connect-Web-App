@@ -7,6 +7,7 @@ const api = vi.hoisted(() => ({
   updateMerchantSmsSettings: vi.fn(),
   startPhoneVerification: vi.fn(),
   confirmPhoneVerification: vi.fn(),
+  adoptAccountPhone: vi.fn(),
   useAccountPhone: vi.fn(),
   sendTestSms: vi.fn(),
 }))
@@ -117,7 +118,7 @@ describe('SmsBookingAlertsCard', () => {
 
   it('adopts account sign-in phone when clicked', async () => {
     api.getMerchantSmsSettings.mockResolvedValue(mockUnverifiedSettings)
-    api.useAccountPhone.mockResolvedValue({
+    api.adoptAccountPhone.mockResolvedValue({
       ...mockUnverifiedSettings,
       phone_masked: '+233 24 *** 8888',
       phone_verified: true,
@@ -132,7 +133,7 @@ describe('SmsBookingAlertsCard', () => {
     fireEvent.click(adoptBtn)
 
     await waitFor(() => {
-      expect(api.useAccountPhone).toHaveBeenCalled()
+      expect(api.adoptAccountPhone).toHaveBeenCalled()
     })
   })
 })

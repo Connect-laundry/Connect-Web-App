@@ -51,10 +51,12 @@ export async function confirmPhoneVerification(data: {
   return unwrap<MerchantSmsSettings>(response)
 }
 
-export async function useAccountPhone(): Promise<MerchantSmsSettings> {
+export async function adoptAccountPhone(): Promise<MerchantSmsSettings> {
   const response = await apiPost<any>('/laundries/dashboard/sms-alerts/use-account-phone/')
   return unwrap<MerchantSmsSettings>(response)
 }
+
+export const useAccountPhone = adoptAccountPhone
 
 export async function sendTestSms(): Promise<MerchantSmsSettings> {
   const response = await apiPost<any>('/laundries/dashboard/sms-alerts/test/')

@@ -10,7 +10,6 @@ import {
   Send,
   Smartphone,
   RefreshCw,
-  ExternalLink,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
@@ -18,7 +17,7 @@ import { Switch } from '@/shared/ui/switch'
 import { Badge } from '@/shared/ui/badge'
 import { Input } from '@/shared/ui/input'
 import { Label } from '@/shared/ui/label'
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert'
+import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Spinner } from '@/shared/ui/spinner'
 import {
   Dialog,
@@ -47,7 +46,7 @@ import {
   updateMerchantSmsSettings,
   startPhoneVerification,
   confirmPhoneVerification,
-  useAccountPhone,
+  adoptAccountPhone,
   sendTestSms,
 } from '../api/sms-alerts'
 
@@ -105,7 +104,7 @@ export function SmsBookingAlertsCard() {
   const handleUseAccountPhone = async () => {
     setUpdating(true)
     try {
-      const updated = await useAccountPhone()
+      const updated = await adoptAccountPhone()
       setSettings(updated)
       toast.success('Your verified sign-in phone is now set for booking SMS alerts.')
     } catch (err: any) {
