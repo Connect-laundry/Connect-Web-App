@@ -7,6 +7,8 @@ import { cn } from '@/shared/lib/utils'
 import { Pencil, Plus, Trash2, X } from 'lucide-react'
 import type { PricingItem } from '@/shared/types'
 import { usePriceItemsEditor } from '../hooks/usePriceItemsEditor'
+import { CatalogRuleFields, CatalogPreview } from './CatalogRuleFields'
+import { unifiedPricingEnabled, priceUnit } from '../lib/unified-pricing'
 import { SERVICE_CATEGORIES } from '../lib/price-items'
 
 interface PriceItemsEditorProps {
@@ -19,7 +21,7 @@ interface PriceItemsEditorProps {
  * and deleting items. Saves via the pricing-items CRUD endpoints.
  */
 export const PriceItemsEditor = ({ items, onSaved }: PriceItemsEditorProps) => {
-  const { editing, setEditing, drafts, isSaving, error, startEditing, update, addRow, removeRow, save } =
+  const { editing, setEditing, drafts, isSaving, error, startEditing, update, addRow, removeRow, save, baskets } =
     usePriceItemsEditor(items, onSaved)
 
   // ------------------------------------------------------------- read mode
@@ -49,7 +51,7 @@ export const PriceItemsEditor = ({ items, onSaved }: PriceItemsEditorProps) => {
                     <tr key={item.id}>
                       <td className="py-4 font-medium">{item.item_name}</td>
                       <td className="py-4">{item.category || '—'}</td>
-                      <td className="py-4">GH₵{Number(item.unit_price).toFixed(2)}</td>
+                      <td className="py-4">GH₵{Number(item.unit_price).toFixed(2)} {priceUnit(item)}</td>
                       <td className="py-4">
                         <span
                           className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase ${
@@ -84,6 +86,16 @@ export const PriceItemsEditor = ({ items, onSaved }: PriceItemsEditorProps) => {
         </Alert>
       )}
 
+      {unifiedPricingEnabled && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
+          <p className="font-medium">Mix pricing methods in one catalogue</p>
+          <p className="mt-1 text-muted-foreground">
+            Add one row per garment, weight bracket, basket size, or package. Basket rows should describe what fits,
+            for example “Half basket” at GH₵35 and “Full basket” at GH₵70.
+          </p>
+        </div>
+      )}
+      <p className="text-sm text-muted-foreground">Unsaved changes. Review the customer preview, then save to publish your approved prices.</p>
       {drafts.map((d, index) => (
         <div key={d.id ?? `new-${index}`} className="space-y-2 rounded-lg border p-3">
           <div className="flex items-center gap-2">
@@ -115,7 +127,7 @@ export const PriceItemsEditor = ({ items, onSaved }: PriceItemsEditorProps) => {
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          {!unifiedPricingEnabled && <div className="grid grid-cols-3 gap-2">
             {SERVICE_CATEGORIES.map((c) => (
               <button
                 key={c.value}
@@ -132,9 +144,12 @@ export const PriceItemsEditor = ({ items, onSaved }: PriceItemsEditorProps) => {
                 {c.label}
               </button>
             ))}
-          </div>
+          </div>}
+          {unifiedPricingEnabled && <CatalogRuleFields value={d} category={d.category} unitPrice={d.unit_price} onChange={(patch) => update(index, patch)} disabled={isSaving} baskets={baskets} />}
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={d.is_active} disabled={isSaving} onChange={(event) => update(index, { is_active: event.target.checked })} />Available to customers</label>
         </div>
       ))}
+      <CatalogPreview items={drafts} />
 
       <Button type="button" variant="outline" className="w-full" onClick={addRow} disabled={isSaving}>
         <Plus className="mr-2 h-4 w-4" /> Add item
@@ -145,7 +160,7 @@ export const PriceItemsEditor = ({ items, onSaved }: PriceItemsEditorProps) => {
           <X className="mr-2 h-4 w-4" /> Cancel
         </Button>
         <Button size="sm" onClick={save} disabled={isSaving}>
-          {isSaving ? 'Saving…' : 'Save price list'}
+          {isSaving ? 'Saving…' : 'Approve & save price list'}
         </Button>
       </div>
     </div>

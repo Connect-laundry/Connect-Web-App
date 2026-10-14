@@ -1,6 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { PricingItem } from '@/shared/types'
-import { createPricingItem, updatePricingItem, deletePricingItem } from '../api'
+import {
+  createBasketDefinition,
+  createPricingItem,
+  deletePricingItem,
+  getBasketDefinitions,
+  updateBasketDefinition,
+  updatePricingItem,
+} from '../api'
+import { unifiedPricingEnabled, type BasketDefinition } from '../lib/unified-pricing'
 import {
   buildPriceItemPayload,
   emptyDraft,
@@ -16,6 +24,22 @@ export function usePriceItemsEditor(items: PricingItem[], onSaved: (items: Prici
   const [deletedIds, setDeletedIds] = useState<string[]>([])
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [baskets, setBaskets] = useState<BasketDefinition[]>([])
+
+  useEffect(() => {
+    if (!unifiedPricingEnabled || !editing) return
+    let cancelled = false
+    getBasketDefinitions()
+      .then((loaded) => {
+        if (!cancelled) setBaskets(loaded)
+      })
+      .catch(() => {
+        if (!cancelled) setError('Unable to load basket definitions. You can still create a new basket while editing.')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [editing])
 
   const startEditing = () => {
     setDrafts(items.map(toDraft))
@@ -43,15 +67,41 @@ export function usePriceItemsEditor(items: PricingItem[], onSaved: (items: Prici
     setIsSaving(true)
     setError(null)
     try {
-      for (const id of deletedIds) await deletePricingItem(id)
+      for (const id of deletedIds) {
+        await deletePricingItem(id)
+        setDeletedIds((previous) => previous.filter((value) => value !== id))
+      }
       const saved: PricingItem[] = []
       for (let i = 0; i < nonEmpty.length; i++) {
-        const payload = buildPriceItemPayload(nonEmpty[i], i)
+        const draft = nonEmpty[i]
+        let basketId = draft.basket ?? null
+        if (draft.pricing_basis === 'PER_BASKET' && draft.basket_draft) {
+          const { id, ...basketData } = draft.basket_draft
+          const savedBasket = id
+            ? await updateBasketDefinition(id, basketData)
+            : await createBasketDefinition(basketData)
+          basketId = savedBasket.id ?? null
+          draft.basket = basketId
+          draft.basket_details = savedBasket
+          draft.basket_draft = undefined
+          setDrafts([...nonEmpty])
+        }
+        const payload = {
+          ...buildPriceItemPayload(draft, i),
+          basket: draft.pricing_basis === 'PER_BASKET' ? basketId : null,
+        }
+        const previous = items.find((item) => item.id === draft.id)
+        if (previous && Object.entries(payload).every(([key, value]) => JSON.stringify(previous[key as keyof PricingItem]) === JSON.stringify(value))) {
+          saved.push(previous)
+          continue
+        }
         saved.push(
-          nonEmpty[i].id
-            ? await updatePricingItem(nonEmpty[i].id!, payload)
+          draft.id
+            ? await updatePricingItem(draft.id, payload)
             : await createPricingItem(payload),
         )
+        draft.id = saved[saved.length - 1].id
+        setDrafts([...nonEmpty])
       }
       onSaved(saved)
       setEditing(false)
@@ -73,5 +123,6 @@ export function usePriceItemsEditor(items: PricingItem[], onSaved: (items: Prici
     addRow,
     removeRow,
     save,
+    baskets,
   }
 }

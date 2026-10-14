@@ -86,6 +86,8 @@ export function scanErrorText(code: string, serverMessage?: string): string {
       return 'The price-list reader is busy. Please try again in a minute, or continue entering prices manually.'
     case 'CANCELLED':
       return ''
+    case 'CONSENT_REQUIRED':
+      return 'Please agree to image processing before scanning your price list.'
     default:
       return READER_UNAVAILABLE
   }

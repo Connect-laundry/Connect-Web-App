@@ -1,3 +1,5 @@
+import type { CatalogFields } from '@/features/business/lib/unified-pricing'
+import { catalogProblem, serviceCode, unifiedPricingEnabled } from './unified-pricing'
 import type { PricingItem } from '@/shared/types'
 
 /** Service categories — must match the onboarding Price List step. */
@@ -7,7 +9,7 @@ export const SERVICE_CATEGORIES = [
   { value: 'Iron Only', label: 'Ironing only' },
 ] as const
 
-export interface ItemDraft {
+export interface ItemDraft extends CatalogFields {
   id: string | null // null = new, unsaved row
   item_name: string
   category: string
@@ -18,6 +20,7 @@ export interface ItemDraft {
 
 export function toDraft(item: PricingItem): ItemDraft {
   return {
+    ...item,
     id: item.id,
     item_name: item.item_name,
     category: item.category,
@@ -47,6 +50,8 @@ export function nonEmptyDrafts(drafts: ItemDraft[]): ItemDraft[] {
 /** Returns the first validation error message, or null when the drafts are valid. */
 export function validatePriceDrafts(drafts: ItemDraft[]): string | null {
   for (const d of drafts) {
+    const problem = catalogProblem(d)
+    if (problem) return `${d.item_name}: ${problem}`
     if (!d.item_name.trim()) return 'Every item needs a name.'
     if (!d.unit_price || Number(d.unit_price) <= 0) {
       return `“${d.item_name.trim()}”: enter a price greater than 0.`
@@ -60,6 +65,7 @@ export function validatePriceDrafts(drafts: ItemDraft[]): string | null {
 
 export function buildPriceItemPayload(draft: ItemDraft, displayOrder: number): Partial<PricingItem> {
   return {
+    ...(unifiedPricingEnabled ? { service_type: draft.service_type ?? serviceCode(draft.category), pricing_basis: draft.pricing_basis ?? 'PER_ITEM', pricing_rules: draft.pricing_rules ?? {}, description: draft.description ?? '', currency: 'GHS', basket: draft.basket ?? null } : {}),
     item_name: draft.item_name.trim(),
     category: draft.category,
     unit_price: draft.unit_price,

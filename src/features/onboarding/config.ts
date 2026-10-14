@@ -25,7 +25,7 @@ export const STEP_META: Record<StepId, StepMeta> = {
   location: { id: 'location', title: 'Location', icon: MapPin, description: 'Where is your laundry located?' },
   hours: { id: 'hours', title: 'Working Hours', icon: CalendarClock, description: 'Set the days and times you operate.' },
   pricing: { id: 'pricing', title: 'Pricing & Delivery', icon: Tag, description: 'Set your pricing and delivery options.' },
-  pricelist: { id: 'pricelist', title: 'Price List', icon: ListChecks, description: 'Add the items customers can order.' },
+  pricelist: { id: 'pricelist', title: 'Services & Prices', icon: ListChecks, description: 'Set up the services customers can order and review your prices.' },
   payout: { id: 'payout', title: 'Payout Account', icon: Wallet, description: 'Set up where to receive your Simame earnings.' },
   review: { id: 'review', title: 'Review', icon: Check, description: 'Review your details before submitting.' },
 }

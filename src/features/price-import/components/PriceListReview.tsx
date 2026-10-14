@@ -1,5 +1,7 @@
 'use client'
 
+import { CatalogRuleFields } from '@/features/business/components/CatalogRuleFields'
+import { unifiedPricingEnabled, serviceCode } from '@/features/business/lib/unified-pricing'
 import { Input } from '@/shared/ui/input'
 import { cn } from '@/shared/lib/utils'
 import { formatGhs } from '../lib/money'
@@ -81,7 +83,7 @@ const ReviewRowCard = ({
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-12">
-        {row.method !== 'PER_KG' && (
+        {(unifiedPricingEnabled || row.method !== 'PER_KG') && (
           <div className="sm:col-span-4">
             <span className="mb-1 block text-xs text-muted-foreground">Service name</span>
             <Input
@@ -91,7 +93,7 @@ const ReviewRowCard = ({
             />
           </div>
         )}
-        {row.method !== 'PER_KG' && (
+        {!unifiedPricingEnabled && row.method !== 'PER_KG' && (
           <div className="sm:col-span-3">
             <span className="mb-1 block text-xs text-muted-foreground">Service type</span>
             <select
@@ -110,7 +112,7 @@ const ReviewRowCard = ({
             </select>
           </div>
         )}
-        {allowPerKg && allowPerItem && (
+        {!unifiedPricingEnabled && allowPerKg && allowPerItem && (
           <div className="sm:col-span-3">
             <span className="mb-1 block text-xs text-muted-foreground">Pricing</span>
             <select
@@ -139,6 +141,7 @@ const ReviewRowCard = ({
         </div>
       </div>
 
+      {unifiedPricingEnabled && <CatalogRuleFields value={{ ...row, pricing_basis: row.method || undefined, service_type: row.service_type ?? serviceCode(row.service === 'UNSTATED' ? defaultService : row.service) }} category={row.service} unitPrice={row.price} onChange={(patch) => onChange({ ...patch, ...(patch.pricing_basis ? { method: patch.pricing_basis } : {}), ...(patch.category ? { service: patch.category as ServiceChoice } : {}) })} />}
       {row.existing && (
         <div className="rounded-md bg-muted/50 p-2 text-xs space-y-2" data-testid="existing-choice">
           <div className="flex flex-wrap gap-x-4 gap-y-1">
