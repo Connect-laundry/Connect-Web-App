@@ -98,6 +98,30 @@ export async function getOrderPriceBreakdown(orderId: string) {
   return unwrap<Record<string, unknown>>(response);
 }
 
+export interface QuoteItemInput {
+  name: string;
+  quantity: number;
+  price: string | number;
+}
+
+export async function submitOrderQuote(
+  orderId: string,
+  items: QuoteItemInput[],
+): Promise<Partial<Order>> {
+  const response = await apiPost<any>(
+    `/booking/lifecycle/${orderId}/quote/`,
+    {
+      items: items.map((item) => ({
+        name: item.name.trim(),
+        quantity: Math.max(1, Number(item.quantity) || 1),
+        price: Number(item.price).toFixed(2),
+      })),
+    },
+  );
+  const data = (response as any)?.data ?? response;
+  return unwrap<Partial<Order>>(data);
+}
+
 export function getAvailableActions(status: string, order?: Order | null): string[] {
   const isCod = order?.payment_method === 'CASH' || order?.payment_method === 'CASH_ON_DELIVERY';
   const isPaid = order?.payment_status === 'PAID';

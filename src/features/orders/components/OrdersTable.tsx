@@ -60,16 +60,27 @@ export const OrdersTable = ({
                     <td className="py-3 px-4 font-medium">{order.order_no}</td>
                     <td className="py-3 px-4">{order.customer_name}</td>
                     <td className="py-3 px-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          order.status,
-                        )}`}
-                      >
-                        {order.status_display}
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            order.status,
+                          )}`}
+                        >
+                          {order.status_display}
+                        </span>
+                        {order.pricing_mode === 'CUSTOM_QUOTE' && !order.priced_at && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                            Needs Quote
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-3 px-4 font-medium">
-                      <div>GH₵{order.total_amount.toLocaleString()}</div>
+                      {order.pricing_mode === 'CUSTOM_QUOTE' && !order.priced_at ? (
+                        <div className="text-amber-700 font-bold text-xs">Awaiting Quote</div>
+                      ) : (
+                        <div>GH₵{Number(order.total_amount).toFixed(2)}</div>
+                      )}
                       <div className="text-[11px] font-normal text-muted-foreground">
                         {order.payment_method === 'CASH' || order.payment_method === 'CASH_ON_DELIVERY'
                           ? (order.payment_status === 'PAID' ? '• Paid in Cash' : '• Cash on Delivery')

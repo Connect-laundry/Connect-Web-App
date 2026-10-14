@@ -139,6 +139,8 @@ export interface Order {
   cash_collected_at?: string | null;
   /** Latest customer report on this order; read-only for the owner. */
   dispute_status?: 'OPEN' | 'RESOLVED_RELEASED' | 'RESOLVED_REFUNDED' | 'MANUAL_REVIEW' | null;
+  pricing_mode?: "BY_ITEM" | "BY_WEIGHT" | "CUSTOM_QUOTE";
+  priced_at?: string | null;
   total_amount: number;
   pickup_date: string;
   delivery_date: string;

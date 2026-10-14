@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { AlertCircle, CheckCircle, Clock, Receipt } from "lucide-react";
 import { OrderWeighingCard } from "./OrderWeighingCard";
 import { OrderHandoverCodeCard } from "./OrderHandoverCodeCard";
+import { OrderQuoteCard } from "./OrderQuoteCard";
 import { OrderModalHeader } from "./OrderModalHeader";
 import { OrderLifecycleStepper } from "./OrderLifecycleStepper";
 import { OrderInfoGrids } from "./OrderInfoGrid";
@@ -72,6 +73,8 @@ export const OrderDetailModal = ({
           )}
 
           <OrderWeighingCard status={order.status} weight={weight} setWeight={setWeight} />
+
+          <OrderQuoteCard order={order} onOrderUpdated={onOrderUpdated} />
 
           <OrderHandoverCodeCard status={order.status} handoverCode={handoverCode} setHandoverCode={setHandoverCode} />
 
