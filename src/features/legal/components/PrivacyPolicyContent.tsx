@@ -50,6 +50,9 @@ export const PrivacyPolicyContent: React.FC = () => {
               <strong className="text-foreground">Technical & Device Metadata:</strong> IP address, device type, operating system version, push notification tokens, app launch diagnostics, and crash logs via Sentry/Vercel Analytics.
             </li>
             <li>
+              <strong className="text-foreground">App Usage Events:</strong> When you are signed in, the mobile app records when it is opened and when you tap a notification, together with a random device identifier, the platform and the app version. These events are linked to your account and are used only by SIMAME to understand and improve the app. They are not shared with third parties or used for advertising.
+            </li>
+            <li>
               <strong className="text-foreground">Sign-in Data:</strong> If you sign in with Google or Apple, we receive your name and email address from that provider. Sign in with Apple lets you hide your email address; we then receive an Apple relay address instead.
             </li>
             <li>
@@ -101,7 +104,16 @@ export const PrivacyPolicyContent: React.FC = () => {
               <strong className="text-foreground">Infrastructure Providers:</strong> Hosting and backend database providers under strict confidentiality agreements.
             </li>
             <li>
-              <strong className="text-foreground">Service Providers:</strong> Clerk (account sign-in, including Google and Apple sign-in), Cloudinary (storage of profile and laundry photos), Expo and Apple/Google push services (delivering notifications), Google Maps (maps and address search), Brevo (account emails such as password resets), Arkesel (SMS/WhatsApp order alerts to our operations team), and Sentry (crash diagnostics). Each receives only the data needed for its task.
+              <strong className="text-foreground">Service Providers:</strong> Clerk (account sign-in, including Google and Apple sign-in), Cloudinary (storage of profile and laundry photos), Expo and Apple/Google push services (delivering notifications), Brevo (account emails such as password resets), Arkesel (SMS/WhatsApp booking alerts to our operations team and to the laundry handling your order, which include your name, phone number and pickup location), and Sentry (crash diagnostics). Each receives only the data needed for its task.
+            </li>
+            <li>
+              <strong className="text-foreground">Maps, Address Search &amp; Directions:</strong> The iOS app displays maps with Apple Maps and the Android app with Google Maps. When you search for or confirm an address, the text you type and the approximate map position are sent to Google Places (through our servers), to Mapbox and, if those return no result, to Photon (operated by komoot). To show the street address of a point on the map, its coordinates are sent to Mapbox. To draw a route between two points, their coordinates are sent to Google Directions and, if it is unavailable, to the public OSRM routing service. These requests contain the search text or coordinates and standard network information such as your IP address. They do not include your name, email address, phone number or account details. When a laundry owner sets their business location on the SIMAME website, the address text or coordinates are sent through our servers to Photon and to Google or Mapbox geocoding.
+            </li>
+            <li>
+              <strong className="text-foreground">Avatars:</strong> The default profile illustrations you can choose from are loaded from DiceBear. The request names a fixed illustration, not your personal details.
+            </li>
+            <li>
+              <strong className="text-foreground">App Updates &amp; Performance:</strong> Expo (EAS Update) delivers app updates and receives the platform, app version and update channel when the app checks for an update. Expo (EAS Observe) receives app start-up and screen-loading times with screen names, without your name, email address, phone number or address.
             </li>
             <li>
               <strong className="text-foreground">Price-List Scanning (laundry owners):</strong> If a laundry owner chooses to scan a photo of their price list, the photo is sent to Google (Gemini API) and, as a fallback, to OCR.space, solely to read the services and prices shown. The owner reviews every result before anything is saved. Stored copies of these photos are deleted after 30 days.
