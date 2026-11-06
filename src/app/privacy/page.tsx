@@ -14,6 +14,7 @@ export default function PrivacyPage() {
     <LegalLayout
       title="Privacy Policy"
       subtitle="How we collect, protect, and process your personal information across SIMAME services."
+      lastUpdated="November 6, 2026"
     >
       <PrivacyPolicyContent />
     </LegalLayout>
